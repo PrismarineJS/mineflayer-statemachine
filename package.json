@@ -1,6 +1,6 @@
 {
   "name": "mineflayer-statemachine",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A state machine plugin for Mineflayer to aid in designing more complex behavior trees.",
   "main": "index.js",
   "scripts": {
