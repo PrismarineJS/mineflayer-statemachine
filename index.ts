@@ -86,6 +86,7 @@ export class BotStateMachine
         this.activateStates();
         this.activeState.onStateEntered();
 
+        // @ts-ignore
         this.bot.on('physicTick', () => this.update());
     }
 
