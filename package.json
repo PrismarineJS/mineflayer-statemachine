@@ -1,0 +1,31 @@
+{
+  "name": "mineflayer-statemachine",
+  "version": "1.0.0",
+  "description": "A state machine plugin for Mineflayer to aid in designing more complex behavior trees.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TheDudeFromCI/mineflayer-statemachine.git"
+  },
+  "keywords": [
+    "ai",
+    "bot",
+    "mineflayer",
+    "state",
+    "machine",
+    "fsm"
+  ],
+  "author": "TheDudeFromCI",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TheDudeFromCI/mineflayer-statemachine/issues"
+  },
+  "homepage": "https://github.com/TheDudeFromCI/mineflayer-statemachine#readme",
+  "dependencies": {
+    "mineflayer": "^2.19.0",
+    "typescript": "^3.9.5"
+  }
+}
