@@ -2,7 +2,8 @@
   "name": "mineflayer-statemachine",
   "version": "1.2.0",
   "description": "A state machine plugin for Mineflayer to aid in designing more complex behavior trees.",
-  "main": "build/index.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf build",
