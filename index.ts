@@ -214,48 +214,62 @@ export class BehaviorIdle implements StateBehavior
 }
 
 /**
+ * The header for the EntityFilters() function.
+ */
+export interface EntityFiltersHeader
+{
+    /**
+     * Returns true for all entities.
+     *
+     * @param entity - The entity.
+     */
+    AllEntities: (entity: Entity) => boolean;
+
+    /**
+     * Returns true for all players. False for all other entities.
+     *
+     * @param entity - The entity.
+     */
+    PlayersOnly: (entity: Entity) => boolean;
+
+    /**
+     * Returns true for all mobs. False for all other entities.
+     *
+     * @param entity - The entity.
+     */
+    MobsOnly: (entity: Entity) => boolean;
+
+    /**
+     * Returns true for item drop entities and collectable arrows. False for
+     * all other entities.
+     *
+     * @param entity - The entity.
+     */
+    ItemDrops: (entity: Entity) => boolean;
+}
+
+/**
  * Gets a list of many default entity filters which can be applied to
  * default state behaviors.
  */
 export function EntityFilters(): object
 {
     return {
-        /**
-         * Returns true for all entities.
-         *
-         * @param entity - The entity.
-         */
         AllEntities: function (): boolean
         {
             return true;
         },
 
-        /**
-         * Returns true for all players. False for all other entities.
-         *
-         * @param entity - The entity.
-         */
         PlayersOnly: function (entity: Entity): boolean
         {
             return entity.type === 'player';
         },
 
-        /**
-         * Returns true for all mobs. False for all other entities.
-         *
-         * @param entity - The entity.
-         */
         MobsOnly: function (entity: Entity): boolean
         {
             return entity.type === 'mob';
         },
 
-        /**
-         * Returns true for item drop entities and collectable arrows. False for
-         * all other entities.
-         *
-         * @param entity - The entity.
-         */
         ItemDrops: function (entity: Entity): boolean
         {
             if (entity.objectType === 'item')
