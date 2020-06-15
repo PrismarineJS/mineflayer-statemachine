@@ -30,8 +30,8 @@ export interface StateTransitionParameters
 {
     parent: StateBehavior;
     child: StateBehavior;
-    shouldTransition: () => boolean;
-    onTransition: () => void;
+    shouldTransition?: () => boolean;
+    onTransition?: () => void;
 }
 
 /**
