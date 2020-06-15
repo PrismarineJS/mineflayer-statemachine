@@ -84,25 +84,15 @@ export class BehaviorLookAtEntities implements StateBehavior
 {
     private readonly bot: Bot;
     private readonly lookAtFilter: (entity: Entity) => boolean;
-    private active: boolean = false;
 
     readonly stateName: string = 'lookAtEntities';
+    active: boolean = false;
 
     constructor(bot: Bot, lookAtFilter: (entity: Entity) => boolean)
     {
         this.bot = bot;
         this.lookAtFilter = lookAtFilter;
         this.bot.on("physicTick", () => this.update());
-    }
-
-    onStateEntered(): void
-    {
-        this.active = true;
-    }
-
-    onStateExited(): void
-    {
-        this.active = false;
     }
 
     private update(): void

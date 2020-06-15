@@ -12,14 +12,19 @@ export interface StateBehavior
     readonly stateName: string;
 
     /**
+     * Gets whether or not this state is currently active.
+     */
+    active: boolean;
+
+    /**
      * Called when the bot enters this behavior state.
      */
-    onStateEntered(): void;
+    onStateEntered?(): void;
 
     /**
      * Called when the bot leaves this behavior state.
      */
-    onStateExited(): void;
+    onStateExited?(): void;
 }
 
 /**
@@ -44,7 +49,6 @@ export class StateTransition
     readonly shouldTransition: () => boolean;
     readonly onTransition: () => void;
     private triggerState: boolean = false;
-    private stateMachine?: BotStateMachine;
 
     /**
      * Creates a new one-way state transition between two states.
@@ -78,30 +82,10 @@ export class StateTransition
      */
     trigger(): void
     {
-        if (!this.stateMachine)
-            throw "This transition is not bound to a state machine!";
-
-        if (this.stateMachine.getActiveState() !== this.parentState)
+        if (!this.parentState.active)
             return;
 
         this.triggerState = true;
-    }
-
-    /**
-     * An internal function which binds this transition to a specific
-     * state machine.
-     * 
-     * @param stateMachine - The state machine to bind to.
-     * 
-     * @throws Exception if this transition is already bound to another
-     * state machine.
-     */
-    bindToStateMachine(stateMachine: BotStateMachine): void
-    {
-        if (this.stateMachine)
-            throw "This transition already belongs to a state machine!";
-
-        this.stateMachine = stateMachine;
     }
 
     /**
@@ -147,10 +131,10 @@ export class BotStateMachine
         this.transitions = transitions;
         this.activeState = start;
 
-        for (let i = 0; i < this.transitions.length; i++)
-            this.transitions[i].bindToStateMachine(this);
+        if (this.activeState.onStateEntered)
+            this.activeState.onStateEntered();
 
-        this.activeState.onStateEntered();
+        this.activeState.active = true;
         this.bot.on('physicTick', () => this.update());
     }
 
@@ -168,11 +152,17 @@ export class BotStateMachine
                 {
                     transition.resetTrigger();
 
-                    this.activeState.onStateExited();
-                    transition.onTransition();
+                    this.activeState.active = false;
+                    if (this.activeState.onStateExited)
+                        this.activeState.onStateExited();
 
+                    transition.onTransition();
                     this.activeState = transition.childState;
-                    this.activeState.onStateEntered();
+
+                    this.activeState.active = true;
+                    if (this.activeState.onStateEntered)
+                        this.activeState.onStateEntered();
+
                     return;
                 }
             }
