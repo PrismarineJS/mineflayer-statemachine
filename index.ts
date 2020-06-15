@@ -152,8 +152,6 @@ export class BotStateMachine
             this.transitions[i].bindToStateMachine(this);
 
         this.activeState.onStateEntered();
-
-        // @ts-ignore // TODO Remove this when mineflayer is updated
         this.bot.on('physicTick', () => this.update());
     }
 
@@ -277,13 +275,10 @@ export function EntityFilters(): object
 
             if (entity.objectType === 'arrow')
             {
-                for (let i = 0; i < entity.metadata.length; i++)
-                    // @ts-ignore // TODO Remove this when mineflayer is updated
-                    if (entity.metadata[i].name === 'pickup')
-                        // @ts-ignore // TODO Remove this when mineflayer is updated
-                        return entity.metadata[i].state == 1;
+                // TODO Check if arrow can be picked up
+                // Current NBT parsing is too limited to effectively check.
 
-                return false;
+                return true;
             }
 
             return false;
@@ -306,8 +301,6 @@ export class BehaviorLookAtEntities implements StateBehavior
     {
         this.bot = bot;
         this.lookAtFilter = lookAtFilter;
-
-        // @ts-ignore // TODO Remove this when mineflayer is updated
         this.bot.on("physicTick", () => this.update());
     }
 
