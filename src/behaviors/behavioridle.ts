@@ -1,4 +1,4 @@
-import { StateBehavior } from ".";
+import { StateBehavior } from "./../statemachine";
 
 /**
  * The bot will stand idle and do... nothing.

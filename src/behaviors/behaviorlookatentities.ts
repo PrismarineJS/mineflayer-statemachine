@@ -1,5 +1,5 @@
 import { Entity } from "prismarine-entity";
-import { StateBehavior } from ".";
+import { StateBehavior } from "./../statemachine";
 import { Bot } from "mineflayer";
 
 /**
