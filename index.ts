@@ -1,4 +1,5 @@
 import { Bot } from 'mineflayer';
+import { Entity } from 'prismarine-entity';
 
 /**
  * A simple behavior state plugin for handling AI state machine
@@ -12,13 +13,6 @@ export interface StateBehavior
     readonly stateName: string;
 
     /**
-     * Called when the state machine is first initialized.
-     * 
-     * @param bot - The bot this state behavior is acting on.
-     */
-    init(bot: Bot): void;
-
-    /**
      * Called when the bot enters this behavior state.
      */
     onStateEntered(): void;
@@ -27,6 +21,14 @@ export interface StateBehavior
      * Called when the bot leaves this behavior state.
      */
     onStateExited(): void;
+}
+
+export interface StateTransitionParameters
+{
+    parent: StateBehavior;
+    child: StateBehavior;
+    shouldTransition: () => boolean;
+    onTransition: () => void;
 }
 
 /**
@@ -39,6 +41,8 @@ export class StateTransition
     readonly childState: StateBehavior;
     readonly shouldTransition: () => boolean;
     readonly onTransition: () => void;
+    private triggerState: boolean = false;
+    private stateMachine?: BotStateMachine;
 
     /**
      * Creates a new one-way state transition between two states.
@@ -49,14 +53,72 @@ export class StateTransition
      * @param onTransition - Called when this transition is run.
      * @param transitionName - The unique name of this transition.
      */
-    constructor(parent: StateBehavior, child: StateBehavior, shouldTransition: () => boolean,
-        onTransition: () => void)
+    constructor({
+        parent,
+        child,
+        shouldTransition = () => false,
+        onTransition = () => { }
+    }: StateTransitionParameters)
     {
         this.parentState = parent;
         this.childState = child;
 
         this.shouldTransition = shouldTransition;
         this.onTransition = onTransition;
+    }
+
+    /**
+     * Triggers this transition to occur on the next Minecraft tick,
+     * regardless of the "shouldTransition" function.
+     * 
+     * @throws Exception if this transition is not yet bound to a
+     * state machine.
+     */
+    trigger(): void
+    {
+        if (!this.stateMachine)
+            throw "This transition is not bound to a state machine!";
+
+        if (this.stateMachine.getActiveState() !== this.parentState)
+            return;
+
+        this.triggerState = true;
+    }
+
+    /**
+     * An internal function which binds this transition to a specific
+     * state machine.
+     * 
+     * @param stateMachine - The state machine to bind to.
+     * 
+     * @throws Exception if this transition is already bound to another
+     * state machine.
+     */
+    bindToStateMachine(stateMachine: BotStateMachine): void
+    {
+        if (this.stateMachine)
+            throw "This transition already belongs to a state machine!";
+
+        this.stateMachine = stateMachine;
+    }
+
+    /**
+     * Checks if this transition if currently triggered to run. This is
+     * separate from the shouldTransition function.
+     * 
+     * @returns True if this transition was triggered to occur.
+     */
+    isTriggered(): boolean
+    {
+        return this.triggerState;
+    }
+
+    /**
+     * Resets the triggered state to false.
+     */
+    resetTrigger(): void
+    {
+        this.triggerState = false;
     }
 }
 
@@ -83,38 +145,13 @@ export class BotStateMachine
         this.transitions = transitions;
         this.activeState = start;
 
-        this.activateStates();
+        for (let i = 0; i < this.transitions.length; i++)
+            this.transitions[i].bindToStateMachine(this);
+
         this.activeState.onStateEntered();
 
-        // @ts-ignore
+        // @ts-ignore // TODO Remove this when mineflayer is updated
         this.bot.on('physicTick', () => this.update());
-    }
-
-    /**
-     * Called to initialize each possible state.
-     */
-    private activateStates(): void
-    {
-        let states = [];
-
-        for (let i = 0; i < this.transitions.length; i++)
-        {
-            let state;
-
-            state = this.transitions[i].parentState;
-            if (states.indexOf(state) == -1)
-            {
-                state.init(this.bot);
-                states.push(state);
-            }
-
-            state = this.transitions[i].childState;
-            if (states.indexOf(state) == -1)
-            {
-                state.init(this.bot);
-                states.push(state);
-            }
-        }
     }
 
     /**
@@ -127,8 +164,10 @@ export class BotStateMachine
             let transition = this.transitions[i];
             if (transition.parentState === this.activeState)
             {
-                if (transition.shouldTransition())
+                if (transition.isTriggered() || transition.shouldTransition())
                 {
+                    transition.resetTrigger();
+
                     this.activeState.onStateExited();
                     transition.onTransition();
 
@@ -148,5 +187,165 @@ export class BotStateMachine
     getActiveState(): StateBehavior
     {
         return this.activeState;
+    }
+}
+
+// ============================== { ACTUAL STATE BEHAVIORS } ===========================
+
+/**
+ * The bot will stand idle and do... nothing.
+ */
+export class BehaviorIdle implements StateBehavior
+{
+    readonly stateName: string = 'idle';
+
+    onStateEntered(): void
+    {
+        // Nothing to do.
+    }
+
+    onStateExited(): void
+    {
+        // Nothing to do.
+    }
+}
+
+/**
+ * Gets a list of many default entity filters which can be applied to
+ * default state behaviors.
+ */
+export function EntityFilters(): object
+{
+    return {
+        /**
+         * Returns true for all entities.
+         *
+         * @param entity - The entity.
+         */
+        AllEntities: function (): boolean
+        {
+            return true;
+        },
+
+        /**
+         * Returns true for all players. False for all other entities.
+         *
+         * @param entity - The entity.
+         */
+        PlayersOnly: function (entity: Entity): boolean
+        {
+            return entity.type === 'player';
+        },
+
+        /**
+         * Returns true for all mobs. False for all other entities.
+         *
+         * @param entity - The entity.
+         */
+        MobsOnly: function (entity: Entity): boolean
+        {
+            return entity.type === 'mob';
+        },
+
+        /**
+         * Returns true for item drop entities and collectable arrows. False for
+         * all other entities.
+         *
+         * @param entity - The entity.
+         */
+        ItemDrops: function (entity: Entity): boolean
+        {
+            if (entity.objectType === 'item')
+                return true;
+
+            if (entity.objectType === 'arrow')
+            {
+                for (let i = 0; i < entity.metadata.length; i++)
+                    // @ts-ignore // TODO Remove this when mineflayer is updated
+                    if (entity.metadata[i].name === 'pickup')
+                        // @ts-ignore // TODO Remove this when mineflayer is updated
+                        return entity.metadata[i].state == 1;
+
+                return false;
+            }
+
+            return false;
+        }
+    };
+}
+
+/**
+ * The bot will look at the nearest entity, player, or specific entity.
+ */
+export class BehaviorLookAtEntities implements StateBehavior
+{
+    private readonly bot: Bot;
+    private readonly lookAtFilter: (entity: Entity) => boolean;
+    private active: boolean = false;
+
+    readonly stateName: string = 'lookAtEntities';
+
+    constructor(bot: Bot, lookAtFilter: (entity: Entity) => boolean)
+    {
+        this.bot = bot;
+        this.lookAtFilter = lookAtFilter;
+
+        // @ts-ignore // TODO Remove this when mineflayer is updated
+        this.bot.on("physicTick", () => this.update());
+    }
+
+    onStateEntered(): void
+    {
+        this.active = true;
+    }
+
+    onStateExited(): void
+    {
+        this.active = false;
+    }
+
+    private update(): void
+    {
+        if (!this.active)
+            return;
+
+        let closest = this.getClosestEntity();
+
+        if (closest)
+            // @ts-ignore
+            this.bot.lookAt(closest.position.offset(0, closest.height, 0));
+    }
+
+    /**
+     * Gets the closest entity to the bot, filtering entities as needed.
+     * 
+     * @returns The closest entity, or null if there are none.
+     */
+    private getClosestEntity(): Entity | null
+    {
+        let closest = null;
+        let distance = 0;
+
+        for (let entityName of Object.keys(this.bot.entities))
+        {
+            let entity = this.bot.entities[entityName];
+
+            if (entity === this.bot.entity)
+                continue;
+
+            if (!this.lookAtFilter(entity))
+                continue;
+
+            // @ts-ignore
+            let dist = entity.position.distanceTo(this.bot.entity.position);
+
+            if (closest === null || dist < distance)
+            {
+                closest = entity;
+                distance = dist;
+            }
+        }
+
+        return closest;
     }
 }

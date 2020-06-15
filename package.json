@@ -4,6 +4,7 @@
   "description": "A state machine plugin for Mineflayer to aid in designing more complex behavior trees.",
   "main": "index.js",
   "scripts": {
+    "build": "tsc --outDir build",
     "test": "test"
   },
   "repository": {
@@ -25,7 +26,9 @@
   },
   "homepage": "https://github.com/TheDudeFromCI/mineflayer-statemachine#readme",
   "dependencies": {
-    "mineflayer": "^2.19.0",
+    "@types/node": "^14.0.13",
+    "mineflayer": "^2.19.2",
+    "prismarine-entity": "^1.0.0",
     "typescript": "^3.9.5"
   }
 }
