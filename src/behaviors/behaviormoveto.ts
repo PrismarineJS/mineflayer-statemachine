@@ -1,23 +1,22 @@
-import { StateBehavior } from "./../statemachine";
+import { StateBehavior } from "../statemachine";
 import { Bot } from "mineflayer";
-import { Entity } from "prismarine-entity";
 import { Movements, goals } from "mineflayer-pathfinder";
+import { Vec3 } from "vec3";
 
 /**
  * Causes the bot to follow an entity.
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
-export class BehaviorFollowEntity implements StateBehavior
+export class BehaviorMoveTo implements StateBehavior
 {
     private readonly bot: Bot;
     private readonly mcData: any;
-    private entity?: Entity;
+    private position?: Vec3;
 
-    readonly stateName: string = 'followEntity';
+    readonly stateName: string = 'moveTo';
     readonly movements: Movements;
     active: boolean = false;
-    followDistance: number = 2;
 
     constructor(bot: Bot)
     {
@@ -37,24 +36,23 @@ export class BehaviorFollowEntity implements StateBehavior
     }
 
     /**
-     * Sets the target entity this bot should follow. If the bot
-     * is currently following another entity, it will stop following
-     * that entity and follow this entity instead.
+     * Sets the target block position to move to. If the bot
+     * is currently moving, it will stop and move to here instead.
      * 
      * If the bot is not currently in this state, the entity will still
-     * be assigned as the target entity when this state is entered.
+     * be assigned as the target position when this state is entered.
      * 
-     * @param entity - The entity to follow.
+     * @param position - The position to move to.
      */
-    setFollowTarget(entity: Entity): void
+    setMoveTarget(position: Vec3): void
     {
-        if (this.entity === entity)
+        if (this.position == position)
             return;
 
         if (this.active)
             this.stopMoving();
 
-        this.entity = entity;
+        this.position = position;
 
         if (this.active)
             this.startMoving();
@@ -75,13 +73,14 @@ export class BehaviorFollowEntity implements StateBehavior
      */
     private startMoving(): void
     {
-        if (!this.entity)
+        if (!this.position)
             return;
 
         // @ts-ignore
         let pathfinder = this.bot.pathfinding;
 
-        const goal = new goals.GoalFollow(this.entity, this.followDistance);
+        // @ts-ignore
+        const goal = new goals.GoalBlock(this.position.x, this.position.y, this.position.z);
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal, true);
     }
