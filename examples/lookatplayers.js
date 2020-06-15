@@ -4,21 +4,24 @@
 const mineflayer = require("mineflayer");
 const args = require("minimist")(process.argv.slice(2));
 
-console.log(`Starting bot '${args.login}' on ${args.host}:${args.port || 25565}`);
+const login = args.login;
+const password = args.password;
+const host = args.host || "localhost";
+const port = args.port || 25565;
+
+console.log(`Starting bot '${login}' on ${host}:${port}`);
 const bot = mineflayer.createBot({
-    username: args.login,
-    password: args.password,
-    host: args.host,
-    port: args.port,
+    username: login,
+    password: password,
+    host: host,
+    port: port,
 });
 
 /**
  * Setting up the state machine is pretty straightforward.
- * 
- * Note: You'd normally put require("mineflayer-statemachine") here.
  */
 const { StateTransition, BotStateMachine, BehaviorIdle,
-    BehaviorLookAtEntities, EntityFilters } = require("../index.js"); 
+    BehaviorLookAtEntities, EntityFilters } = require("mineflayer-statemachine"); 
 
 // The idle state makes the bot well, idle.
 const idleState = new BehaviorIdle(bot);
