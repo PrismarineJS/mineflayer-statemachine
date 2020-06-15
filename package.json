@@ -27,10 +27,12 @@
   },
   "homepage": "https://github.com/TheDudeFromCI/mineflayer-statemachine#readme",
   "dependencies": {
-    "@types/node": "^14.0.13",
     "mineflayer": "^2.19.2",
     "mineflayer-pathfinder": "^1.0.5",
-    "prismarine-entity": "^1.0.0",
+    "prismarine-entity": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.13",
     "typescript": "^3.9.5"
   }
 }
