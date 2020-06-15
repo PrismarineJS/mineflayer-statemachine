@@ -41,8 +41,9 @@ export class BehaviorFollowEntity implements StateBehavior
      * is currently following another entity, it will stop following
      * that entity and follow this entity instead.
      * 
-     * If the bot is not currently in this state, the entity will still
-     * be assigned as the target entity when this state is entered.
+     * If the bot is not currently in this behavior state, the entity
+     * will still be assigned as the target entity when this state is
+     * entered.
      * 
      * @param entity - The entity to follow.
      */
@@ -84,5 +85,18 @@ export class BehaviorFollowEntity implements StateBehavior
         const goal = new goals.GoalFollow(this.entity, this.followDistance);
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal, true);
+    }
+
+    /**
+     * Stops and restarts this movement behavior. Does nothing if
+     * this behavior is not active.
+     */
+    restart(): void
+    {
+        if (!this.active)
+            return;
+
+        this.stopMoving();
+        this.startMoving();
     }
 }

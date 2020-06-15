@@ -39,8 +39,9 @@ export class BehaviorMoveTo implements StateBehavior
      * Sets the target block position to move to. If the bot
      * is currently moving, it will stop and move to here instead.
      * 
-     * If the bot is not currently in this state, the entity will still
-     * be assigned as the target position when this state is entered.
+     * If the bot is not currently in this behavior state, the entity
+     * will still be assigned as the target position when this state
+     * is entered.
      * 
      * @param position - The position to move to.
      */
@@ -83,5 +84,18 @@ export class BehaviorMoveTo implements StateBehavior
         const goal = new goals.GoalBlock(this.position.x, this.position.y, this.position.z);
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal, true);
+    }
+
+    /**
+     * Stops and restarts this movement behavior. Does nothing if
+     * this behavior is not active.
+     */
+    restart(): void
+    {
+        if (!this.active)
+            return;
+
+        this.stopMoving();
+        this.startMoving();
     }
 }
