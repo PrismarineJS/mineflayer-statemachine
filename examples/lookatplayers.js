@@ -14,9 +14,11 @@ const bot = mineflayer.createBot({
 
 /**
  * Setting up the state machine is pretty straightforward.
+ * 
+ * Note: You'd normally put require("mineflayer-statemachine") here.
  */
 const { StateTransition, BotStateMachine, BehaviorIdle,
-    BehaviorLookAtEntities, EntityFilters } = require("mineflayer-statemachine"); 
+    BehaviorLookAtEntities, EntityFilters } = require("../index.js"); 
 
 // The idle state makes the bot well, idle.
 const idleState = new BehaviorIdle(bot);

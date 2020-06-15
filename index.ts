@@ -23,6 +23,9 @@ export interface StateBehavior
     onStateExited(): void;
 }
 
+/**
+ * The parameters for initializing a state transition.
+ */
 export interface StateTransitionParameters
 {
     parent: StateBehavior;
