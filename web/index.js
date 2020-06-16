@@ -8,9 +8,11 @@ const NODE_TEXT_FONT = '12px Calibri';
 const NODE_TEXT_COLOR = '#CCCCCC';
 const NODE_ACTIVE_COLOR = '#559966';
 const NODE_INIT_COLOR = '#556699';
-const LINE_COLOR = '#AAAAAA';
+const LINE_COLOR = '#555555';
 const LINE_THICKNESS = 5;
 const LINE_SEPARATION = 16;
+const LINE_HIGHLIGHT = '#888888';
+const LINE_TEXT_FONT = '12px Calibri';
 
 class Graph
 {
@@ -82,6 +84,9 @@ class Graph
 
         for (let state of this.states)
             state.draw(ctx);
+
+        for (let trans of this.transitions)
+            trans.drawHover(ctx);
     }
 
     drawBackground(ctx)
@@ -160,6 +165,8 @@ class Graph
 
     updateHover(x, y)
     {
+        const mousePos = {x: x, y: y};
+
         for (let state of this.states)
         {
             let mousedOver = state.isInBounds(x, y);
@@ -167,6 +174,23 @@ class Graph
             if (mousedOver != state.highlight)
             {
                 state.highlight = mousedOver;
+                this.repaint = true;
+            }
+        }
+
+        for (let trans of this.transitions)
+        {
+            let mousedOver = trans.isInBounds(x, y);
+            
+            if (mousedOver != trans.highlight)
+            {
+                trans.highlight = mousedOver;
+                this.repaint = true;
+            }
+
+            if (mousedOver)
+            {
+                trans.mousePos = mousePos;
                 this.repaint = true;
             }
         }
@@ -349,12 +373,14 @@ class TransitionGroup
 
 class Transition
 {
-    constructor(id, parent, child, group)
+    constructor(id, name, parent, child, group)
     {
         this.id = id;
+        this.name = name
         this.parent = parent;
         this.child = child;
         this.group = group;
+        this.highlight = false;
 
         group.transitions.push(this);
     }
@@ -375,15 +401,16 @@ class Transition
             y: this.child.rect.cy() + offset.y,
         }
 
-        this.clipArrow(a, b);
+        this.clipArrow(this.child.rect, a, b);
         const arrow = this.arrowBase(a, b);
 
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(arrow.x, arrow.y);
+        ctx.closePath();
 
         ctx.lineWidth = LINE_THICKNESS;
-        ctx.strokeStyle = LINE_COLOR;
+        ctx.strokeStyle = this.highlight ? LINE_HIGHLIGHT : LINE_COLOR;
         ctx.stroke();
 
         ctx.beginPath();
@@ -393,8 +420,56 @@ class Transition
         ctx.lineTo(b.x, b.y);
         ctx.closePath();
 
-        ctx.fillStyle = LINE_COLOR;
+        ctx.fillStyle = this.highlight ? LINE_HIGHLIGHT : LINE_COLOR;
         ctx.fill();
+    }
+
+    drawHover(ctx)
+    {
+        if (!this.highlight || !this.name)
+            return;
+
+        ctx.fillStyle = NODE_TEXT_COLOR;
+        ctx.font = LINE_TEXT_FONT;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(this.name, this.mousePos.x, this.mousePos.y - 10);
+    }
+
+    isInBounds(x, y)
+    {
+        function sqr(x) { return x * x; }
+        function dist2(v, w) { return sqr(v.x - w.x) + sqr(v.y - w.y); }
+        function distToSegmentSquared(p, v, w)
+        {
+            var l2 = dist2(v, w);
+            if (l2 == 0) return dist2(p, v);
+            var t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            return dist2(p, {
+                x: v.x + t * (w.x - v.x),
+                y: v.y + t * (w.y - v.y)
+            });
+        }
+        function distToSegment(p, v, w) { return Math.sqrt(distToSegmentSquared(p, v, w)); }
+
+        const offset = this.group.offset(this);
+
+        const a =
+        {
+            x: this.parent.rect.cx() + offset.x,
+            y: this.parent.rect.cy() + offset.y,
+        };
+
+        const b =
+        {
+            x: this.child.rect.cx() + offset.x,
+            y: this.child.rect.cy() + offset.y,
+        }
+
+        this.clipArrow(this.child.rect, a, b);
+        this.clipArrow(this.parent.rect, b, a);
+        return distToSegment({x: x, y: y}, a, b) <= LINE_THICKNESS;
     }
 
     arrowBase(a, b)
@@ -413,10 +488,8 @@ class Transition
         };
     }
 
-    clipArrow(a, b)
+    clipArrow(rect, a, b)
     {
-        const rect = this.child.rect;
-
         let intersect = this.liang_barsky_clipper(
             rect.x, rect.y, rect.x + rect.w, rect.y + rect.h,
             a.x, a.y,
@@ -518,7 +591,7 @@ function loadTransitions(packet, graph)
         const child = graph.states[transition.childState];
         const group = getTransitionGroup(groups, parent, child);
 
-        const t = new Transition(transition.id, parent, child, group);
+        const t = new Transition(transition.id, transition.name, parent, child, group);
         graph.transitions.push(t);
     }
 }

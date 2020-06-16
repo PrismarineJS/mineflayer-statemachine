@@ -111,6 +111,7 @@ export class StateMachineWebserver
             let transition = transitions[i];
             let s: StateMachineTransitionPacket = {
                 id: i,
+                name: transition.name,
                 parentState: states.indexOf(transition.parentState),
                 childState: states.indexOf(transition.childState),
             };
@@ -156,6 +157,7 @@ interface StateMachineStatePacket
 interface StateMachineTransitionPacket
 {
     id: number;
+    name?: string;
     parentState: number;
     childState: number;
 }

@@ -29,7 +29,8 @@
   "homepage": "https://github.com/TheDudeFromCI/mineflayer-statemachine#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "mineflayer": "^2.19.2",
+    "minecraft-data": "^2.55.0",
+    "mineflayer": "^2.20.0",
     "mineflayer-pathfinder": "^1.0.5",
     "prismarine-entity": "^1.0.0",
     "socket.io": "^2.3.0",
