@@ -85,7 +85,7 @@ export class BehaviorLookAtEntities implements StateBehavior
     private readonly bot: Bot;
     private readonly lookAtFilter: (entity: Entity) => boolean;
 
-    readonly stateName: string = 'lookAtEntities';
+    stateName: string = 'lookAtEntities';
     active: boolean = false;
 
     constructor(bot: Bot, lookAtFilter: (entity: Entity) => boolean)

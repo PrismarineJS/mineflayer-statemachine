@@ -5,6 +5,6 @@ import { StateBehavior } from "./../statemachine";
  */
 export class BehaviorIdle implements StateBehavior
 {
-    readonly stateName: string = 'idle';
+    stateName: string = 'idle';
     active: boolean = false;
 }

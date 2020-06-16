@@ -11,7 +11,7 @@ export class BehaviorLogin implements StateBehavior
     private readonly printDebug: boolean;
     private initialized: boolean = false;
 
-    readonly stateName: string = "login";
+    stateName: string = "login";
     active: boolean = false;
 
     /**

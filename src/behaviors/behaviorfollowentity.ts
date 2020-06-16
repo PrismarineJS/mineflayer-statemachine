@@ -14,8 +14,8 @@ export class BehaviorFollowEntity implements StateBehavior
     private readonly mcData: any;
     private entity?: Entity;
 
-    readonly stateName: string = 'followEntity';
     readonly movements: Movements;
+    stateName: string = 'followEntity';
     active: boolean = false;
     followDistance: number = 2;
 

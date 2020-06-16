@@ -14,8 +14,8 @@ export class BehaviorMoveTo implements StateBehavior
     private readonly mcData: any;
     private position?: Vec3;
 
-    readonly stateName: string = 'moveTo';
     readonly movements: Movements;
+    stateName: string = 'moveTo';
     active: boolean = false;
 
     constructor(bot: Bot)

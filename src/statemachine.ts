@@ -11,7 +11,7 @@ export interface StateBehavior
     /**
      * The name of this behavior state.
      */
-    readonly stateName: string;
+    stateName: string;
 
     /**
      * Gets whether or not this state is currently active.
@@ -36,6 +36,7 @@ export interface StateTransitionParameters
 {
     parent: StateBehavior;
     child: StateBehavior;
+    name?: string;
     shouldTransition?: () => boolean;
     onTransition?: () => void;
 }
@@ -48,15 +49,18 @@ export class StateTransition
 {
     readonly parentState: StateBehavior;
     readonly childState: StateBehavior;
-    readonly shouldTransition: () => boolean;
-    readonly onTransition: () => void;
     private triggerState: boolean = false;
+
+    shouldTransition: () => boolean;
+    onTransition: () => void;
+    name?: string;
 
     /**
      * Creates a new one-way state transition between two states.
      * 
      * @param parent - The state to move from.
      * @param child - The state to move to.
+     * @param name - The name of this transition.
      * @param shouldTransition - Runs each tick to check if this transition should be called.
      * @param onTransition - Called when this transition is run.
      * @param transitionName - The unique name of this transition.
@@ -64,6 +68,7 @@ export class StateTransition
     constructor({
         parent,
         child,
+        name,
         shouldTransition = () => false,
         onTransition = () => { }
     }: StateTransitionParameters)
@@ -73,6 +78,7 @@ export class StateTransition
 
         this.shouldTransition = shouldTransition;
         this.onTransition = onTransition;
+        this.name = name;
     }
 
     /**
