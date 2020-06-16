@@ -1,5 +1,6 @@
 import { Bot } from 'mineflayer';
 import { EventEmitter } from 'events';
+import { globalSettings } from ".";
 
 /**
  * A simple behavior state plugin for handling AI state machine
@@ -189,6 +190,9 @@ export class BotStateMachine extends EventEmitter
                     this.activeState.active = true;
                     if (this.activeState.onStateEntered)
                         this.activeState.onStateEntered();
+
+                    if (globalSettings.debugMode)
+                        console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
 
                     this.emit("stateChanged");
 

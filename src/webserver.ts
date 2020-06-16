@@ -6,7 +6,6 @@ import express from 'express';
 
 const publicFolder = "./../web";
 
-
 // TODO Add option to shutdown server
 
 /**

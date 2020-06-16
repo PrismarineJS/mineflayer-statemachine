@@ -21,7 +21,10 @@ const {
     BehaviorLookAtEntities,
     EntityFilters,
     StateMachineWebserver, 
-    BehaviorLogin} = require("./../lib");
+    BehaviorLogin,
+    globalSettings } = require("./../lib");
+
+globalSettings.debugMode = true;
 
 const loginState = new BehaviorLogin(bot);
 const idleState = new BehaviorIdle(bot);
@@ -52,10 +55,10 @@ const transitions = [
 bot.on("chat", (username, message) =>
 {
     if (message === "hi")
-        transitions[0].trigger();
+        transitions[1].trigger();
 
     if (message === "bye")
-        transitions[1].trigger();
+        transitions[2].trigger();
 });
 
 const stateMachine = new BotStateMachine(bot, transitions, loginState);
