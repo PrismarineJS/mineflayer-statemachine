@@ -1,4 +1,6 @@
 import { Bot } from 'mineflayer';
+import { EventEmitter } from 'events';
+import { globalSettings } from ".";
 
 /**
  * A simple behavior state plugin for handling AI state machine
@@ -9,7 +11,7 @@ export interface StateBehavior
     /**
      * The name of this behavior state.
      */
-    readonly stateName: string;
+    stateName: string;
 
     /**
      * Gets whether or not this state is currently active.
@@ -34,6 +36,7 @@ export interface StateTransitionParameters
 {
     parent: StateBehavior;
     child: StateBehavior;
+    name?: string;
     shouldTransition?: () => boolean;
     onTransition?: () => void;
 }
@@ -46,15 +49,18 @@ export class StateTransition
 {
     readonly parentState: StateBehavior;
     readonly childState: StateBehavior;
-    readonly shouldTransition: () => boolean;
-    readonly onTransition: () => void;
     private triggerState: boolean = false;
+
+    shouldTransition: () => boolean;
+    onTransition: () => void;
+    name?: string;
 
     /**
      * Creates a new one-way state transition between two states.
      * 
      * @param parent - The state to move from.
      * @param child - The state to move to.
+     * @param name - The name of this transition.
      * @param shouldTransition - Runs each tick to check if this transition should be called.
      * @param onTransition - Called when this transition is run.
      * @param transitionName - The unique name of this transition.
@@ -62,6 +68,7 @@ export class StateTransition
     constructor({
         parent,
         child,
+        name,
         shouldTransition = () => false,
         onTransition = () => { }
     }: StateTransitionParameters)
@@ -71,6 +78,7 @@ export class StateTransition
 
         this.shouldTransition = shouldTransition;
         this.onTransition = onTransition;
+        this.name = name;
     }
 
     /**
@@ -112,11 +120,14 @@ export class StateTransition
  * An AI state machine which runs on a bot to help simplify complex
  * behavior trees.
  */
-export class BotStateMachine
+export class BotStateMachine extends EventEmitter
 {
     private readonly bot: Bot;
-    private readonly transitions: StateTransition[];
+    private readonly initialState: StateBehavior;
     private activeState: StateBehavior;
+
+    readonly transitions: StateTransition[];
+    readonly states: StateBehavior[];
 
     /**
      * Creates a new, simple state machine for handling bot behavior.
@@ -127,15 +138,38 @@ export class BotStateMachine
      */
     constructor(bot: Bot, transitions: StateTransition[], start: StateBehavior)
     {
+        super();
+
         this.bot = bot;
         this.transitions = transitions;
         this.activeState = start;
+        this.initialState = start;
+
+        this.states = [];
+        this.findStates();
 
         if (this.activeState.onStateEntered)
             this.activeState.onStateEntered();
 
         this.activeState.active = true;
         this.bot.on('physicTick', () => this.update());
+    }
+
+    /**
+     * Creates a quick lookup list of all states in this state machine.
+     */
+    private findStates(): void
+    {
+        this.states.push(this.activeState);
+
+        for (let i = 0; i < this.transitions.length; i++)
+        {
+            if (this.states.indexOf(this.transitions[i].parentState) == -1)
+                this.states.push(this.transitions[i].parentState);
+
+            if (this.states.indexOf(this.transitions[i].childState) == -1)
+                this.states.push(this.transitions[i].childState);
+        }
     }
 
     /**
@@ -163,6 +197,11 @@ export class BotStateMachine
                     if (this.activeState.onStateEntered)
                         this.activeState.onStateEntered();
 
+                    if (globalSettings.debugMode)
+                        console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+
+                    this.emit("stateChanged");
+
                     return;
                 }
             }
@@ -177,5 +216,15 @@ export class BotStateMachine
     getActiveState(): StateBehavior
     {
         return this.activeState;
+    }
+
+    /**
+     * Gets the state that the state machine was initialized with.
+     * 
+     * @returns The initial state.
+     */
+    getInitialState(): StateBehavior
+    {
+        return this.initialState;
     }
 }

@@ -5,13 +5,11 @@ import { StateBehavior } from "../statemachine";
  * A simple state which represents a bot that is waiting to
  * finish logging in.
  */
-export class BehaviorLogin implements StateBehavior
+export class BehaviorPrintServerStats implements StateBehavior
 {
     private readonly bot: Bot;
-    private readonly printDebug: boolean;
-    private initialized: boolean = false;
 
-    readonly stateName: string = "login";
+    stateName: string = "printServerStats";
     active: boolean = false;
 
     /**
@@ -19,25 +17,14 @@ export class BehaviorLogin implements StateBehavior
      * 
      * @param bot - The bot this behavior is acting on.
      */
-    constructor(bot: Bot, printDebug: boolean = true)
+    constructor(bot: Bot)
     {
         this.bot = bot;
-        this.printDebug = printDebug;
-        this.bot.on("spawn", () => this.onSpawn());
     }
 
-    /**
-     * Called when the bot spawns in the server, or respawns after death.
-     */
-    private onSpawn(): void
+    onStateEntered(): void
     {
-        if (this.initialized)
-            return;
-
-        this.initialized = true;
-
-        if (this.printDebug)
-            this.logStats();
+        this.logStats();
     }
 
     /**
@@ -58,15 +45,5 @@ export class BehaviorLogin implements StateBehavior
 
         for (let playerName of playerNames)
             console.log(`  - ${playerName}`);
-    }
-
-    /**
-     * Checks if the bot has finished logging it.
-     * 
-     * @returns True if the bot has logged in.
-     */
-    isLoggedIn(): boolean
-    {
-        return this.initialized;
     }
 }

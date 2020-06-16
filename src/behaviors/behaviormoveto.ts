@@ -14,8 +14,8 @@ export class BehaviorMoveTo implements StateBehavior
     private readonly mcData: any;
     private position?: Vec3;
 
-    readonly stateName: string = 'moveTo';
     readonly movements: Movements;
+    stateName: string = 'moveTo';
     active: boolean = false;
 
     constructor(bot: Bot)
@@ -65,7 +65,7 @@ export class BehaviorMoveTo implements StateBehavior
     private stopMoving(): void
     {
         // @ts-ignore
-        let pathfinder = this.bot.pathfinding;
+        let pathfinder = this.bot.pathfinder;
         pathfinder.setGoal(null);
     }
 
@@ -78,7 +78,7 @@ export class BehaviorMoveTo implements StateBehavior
             return;
 
         // @ts-ignore
-        let pathfinder = this.bot.pathfinding;
+        let pathfinder = this.bot.pathfinder;
 
         // @ts-ignore
         const goal = new goals.GoalBlock(this.position.x, this.position.y, this.position.z);

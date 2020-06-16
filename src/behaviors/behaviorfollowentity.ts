@@ -14,8 +14,8 @@ export class BehaviorFollowEntity implements StateBehavior
     private readonly mcData: any;
     private entity?: Entity;
 
-    readonly stateName: string = 'followEntity';
     readonly movements: Movements;
+    stateName: string = 'followEntity';
     active: boolean = false;
     followDistance: number = 2;
 
@@ -67,7 +67,7 @@ export class BehaviorFollowEntity implements StateBehavior
     private stopMoving(): void
     {
         // @ts-ignore
-        let pathfinder = this.bot.pathfinding;
+        let pathfinder = this.bot.pathfinder;
         pathfinder.setGoal(null);
     }
 
@@ -80,7 +80,7 @@ export class BehaviorFollowEntity implements StateBehavior
             return;
 
         // @ts-ignore
-        let pathfinder = this.bot.pathfinding;
+        let pathfinder = this.bot.pathfinder;
 
         const goal = new goals.GoalFollow(this.entity, this.followDistance);
         pathfinder.setMovements(this.movements);
