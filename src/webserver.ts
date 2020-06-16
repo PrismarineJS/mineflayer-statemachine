@@ -122,7 +122,8 @@ export class StateMachineWebserver
         let packet: StateMachineStructurePacket = {
             states: packetStates,
             transitions: packetTransitions,
-            activeState: states.indexOf(this.stateMachine.getActiveState())
+            activeState: states.indexOf(this.stateMachine.getActiveState()),
+            initialState: states.indexOf(this.stateMachine.getInitialState())
         };
 
         socket.emit("connected", packet);
@@ -144,6 +145,7 @@ interface StateMachineStructurePacket
     states: StateMachineStatePacket[];
     transitions: StateMachineTransitionPacket[];
     activeState: number;
+    initialState: number;
 }
 
 interface StateMachineStatePacket

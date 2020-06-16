@@ -116,6 +116,7 @@ export class StateTransition
 export class BotStateMachine extends EventEmitter
 {
     private readonly bot: Bot;
+    private readonly initialState: StateBehavior;
     private activeState: StateBehavior;
 
     readonly transitions: StateTransition[];
@@ -135,6 +136,7 @@ export class BotStateMachine extends EventEmitter
         this.bot = bot;
         this.transitions = transitions;
         this.activeState = start;
+        this.initialState = start;
 
         this.states = [];
         this.findStates();
@@ -204,5 +206,15 @@ export class BotStateMachine extends EventEmitter
     getActiveState(): StateBehavior
     {
         return this.activeState;
+    }
+
+    /**
+     * Gets the state that the state machine was initialized with.
+     * 
+     * @returns The initial state.
+     */
+    getInitialState(): StateBehavior
+    {
+        return this.initialState;
     }
 }
