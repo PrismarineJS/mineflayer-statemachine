@@ -1,4 +1,5 @@
 import { Bot } from 'mineflayer';
+import { EventEmitter } from 'events';
 
 /**
  * A simple behavior state plugin for handling AI state machine
@@ -112,11 +113,13 @@ export class StateTransition
  * An AI state machine which runs on a bot to help simplify complex
  * behavior trees.
  */
-export class BotStateMachine
+export class BotStateMachine extends EventEmitter
 {
     private readonly bot: Bot;
-    private readonly transitions: StateTransition[];
     private activeState: StateBehavior;
+
+    readonly transitions: StateTransition[];
+    readonly states: StateBehavior[];
 
     /**
      * Creates a new, simple state machine for handling bot behavior.
@@ -127,15 +130,37 @@ export class BotStateMachine
      */
     constructor(bot: Bot, transitions: StateTransition[], start: StateBehavior)
     {
+        super();
+
         this.bot = bot;
         this.transitions = transitions;
         this.activeState = start;
+
+        this.states = [];
+        this.findStates();
 
         if (this.activeState.onStateEntered)
             this.activeState.onStateEntered();
 
         this.activeState.active = true;
         this.bot.on('physicTick', () => this.update());
+    }
+
+    /**
+     * Creates a quick lookup list of all states in this state machine.
+     */
+    private findStates(): void
+    {
+        this.states.push(this.activeState);
+
+        for (let i = 0; i < this.transitions.length; i++)
+        {
+            if (this.states.indexOf(this.transitions[i].parentState) == -1)
+                this.states.push(this.transitions[i].parentState);
+
+            if (this.states.indexOf(this.transitions[i].childState) == -1)
+                this.states.push(this.transitions[i].childState);
+        }
     }
 
     /**
@@ -162,6 +187,8 @@ export class BotStateMachine
                     this.activeState.active = true;
                     if (this.activeState.onStateEntered)
                         this.activeState.onStateEntered();
+
+                    this.emit("stateChanged");
 
                     return;
                 }

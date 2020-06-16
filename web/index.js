@@ -79,6 +79,27 @@ class Graph
 
 function init()
 {
+
     const canvas = document.getElementById('graph');
     const graph = new Graph(canvas);
+
+    const socket = io();
+    socket.on("connected", packet => onConnected(packet, graph));
+    socket.on("stateChanged", packet => onStateChanged(packet, graph));
+    socket.on("disconnect", () => onDisconnected(graph));
+}
+
+function onConnected(packet, graph)
+{
+    console.log("Bot connected.");
+}
+
+function onStateChanged(packet, graph)
+{
+    console.log("Bot behavior state changed.");
+}
+
+function onDisconnected(graph)
+{
+    console.log("Bot disconnected.");
 }
