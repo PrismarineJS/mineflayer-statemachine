@@ -20,12 +20,20 @@ const {
     BehaviorIdle,
     BehaviorLookAtEntities,
     EntityFilters,
-    StateMachineWebserver } = require("./../lib");
+    StateMachineWebserver, 
+    BehaviorLogin} = require("./../lib");
 
+const loginState = new BehaviorLogin(bot);
 const idleState = new BehaviorIdle(bot);
 const lookAtPlayersState = new BehaviorLookAtEntities(bot, EntityFilters().PlayersOnly);
 
 const transitions = [
+
+    new StateTransition({
+        parent: loginState,
+        child: idleState,
+        shouldTransition: () => loginState.isLoggedIn(),
+    }),
 
     new StateTransition({
         parent: idleState,
@@ -50,7 +58,7 @@ bot.on("chat", (username, message) =>
         transitions[1].trigger();
 });
 
-const stateMachine = new BotStateMachine(bot, transitions, idleState);
+const stateMachine = new BotStateMachine(bot, transitions, loginState);
 const webserver = new StateMachineWebserver(bot, stateMachine);
 
 webserver.startServer();

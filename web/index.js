@@ -8,6 +8,9 @@ const NODE_TEXT_FONT = '12px Calibri';
 const NODE_TEXT_COLOR = '#CCCCCC';
 const NODE_ACTIVE_COLOR = '#559966';
 const NODE_INIT_COLOR = '#556699';
+const LINE_COLOR = '#AAAAAA';
+const LINE_THICKNESS = 3;
+const LINE_SEPARATION = 10;
 
 class Graph
 {
@@ -63,6 +66,9 @@ class Graph
 
         let ctx = this.canvas.getContext('2d');
         this.drawBackground(ctx);
+
+        for (let trans of this.transitions)
+            trans.draw(ctx);
 
         for (let state of this.states)
             state.draw(ctx);
@@ -196,6 +202,16 @@ class Rect
         this.w = w;
         this.h = h;
     }
+
+    cx()
+    {
+        return this.x + this.w / 2;
+    }
+
+    cy()
+    {
+        return this.y + this.h / 2;
+    }
 }
 
 class State
@@ -265,14 +281,92 @@ class State
             && y < this.rect.y + this.rect.h + r;
     }
 }
-    
+
+class TransitionGroup
+{
+    constructor(parent, child)
+    {
+        this.parent = parent;
+        this.child = child;
+        this.transitions = [];
+    }
+
+    offset(transition)
+    {
+        let index = this.transitions.indexOf(transition);
+
+        const dir =
+        {
+            x: this.parent.rect.cx() - this.child.rect.cx(),
+            y: this.parent.rect.cy() - this.child.rect.cy(),
+        }
+
+        this.rotateDir(dir, Math.PI / 2);
+        this.normalizeDir(dir);
+
+        const str = (index - this.transitions.length / 2) * LINE_SEPARATION;
+
+        return {
+            x: dir.x * str,
+            y: dir.y * str,
+        }
+    }
+
+    rotateDir(p, angle)
+    {
+        const s = Math.sin(angle);
+        const c = Math.cos(angle);
+
+        const x = p.x * c - p.y * s;
+        const y = p.x * s + p.y * c;
+
+        p.x = x;
+        p.y = y;
+    }
+
+    normalizeDir(dir)
+    {
+        const mag = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+        dir.x /= mag;
+        dir.y /= mag;
+    }
+}
+
 class Transition
 {
-    constructor(id, parent, child)
+    constructor(id, parent, child, group)
     {
         this.id = id;
         this.parent = parent;
         this.child = child;
+        this.group = group;
+
+        group.transitions.push(this);
+    }
+
+    draw(ctx)
+    {
+        const offset = this.group.offset(this);
+
+        const a =
+        {
+            x: this.parent.rect.cx() + offset.x,
+            y: this.parent.rect.cy() + offset.y,
+        }
+
+        const b =
+        {
+            x: this.child.rect.cx() + offset.x,
+            y: this.child.rect.cy() + offset.y,
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+
+        ctx.lineWidth = LINE_THICKNESS;
+        ctx.strokeStyle = LINE_COLOR;
+        ctx.stroke();
     }
 }
 
@@ -291,11 +385,18 @@ function onConnected(packet, graph)
 {
     console.log("Bot connected.");
 
+    loadStates(packet, graph);
+    loadTransitions(packet, graph);
+    graph.repaint = true;
+}
+
+function loadStates(packet, graph)
+{
     const centerX = graph.width / 2 - NODE_WIDTH / 2;
     const centerY = graph.height / 2 - NODE_HEIGHT / 2;
     const radiusX = graph.width / 3;
     const radiusY = graph.height / 3;
-    
+
     let index = 0;
     for (let state of packet.states)
     {
@@ -315,13 +416,43 @@ function onConnected(packet, graph)
 
         graph.states.push(stateNode);
     }
+}
 
-    graph.repaint = true;
+function loadTransitions(packet, graph)
+{
+    const groups = [];
+
+    for (let transition of packet.transitions)
+    {
+        const parent = graph.states[transition.parentState];
+        const child = graph.states[transition.childState];
+        const group = getTransitionGroup(groups, parent, child);
+
+        const t = new Transition(transition.id, parent, child, group);
+        graph.transitions.push(t);
+    }
+}
+
+function getTransitionGroup(groups, parent, child)
+{
+    if (parent.id < child.id) // To make groups order ambiguous
+        return getTransitionGroup(groups, child, parent);
+    
+    for (let group of groups)
+    {
+        if (group.parent === parent && group.child === child)
+            return group;
+    }
+
+    const group = new TransitionGroup(parent, child);
+    groups.push(group);
+
+    return group;
 }
 
 function onStateChanged(packet, graph)
 {
-    console.log(`"Bot behavior state changed to ${packet.activeState}.`);
+    console.log(`Bot behavior state changed to ${packet.activeState}.`);
 
     for (let state of graph.states)
     {
