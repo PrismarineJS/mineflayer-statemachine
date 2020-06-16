@@ -48,7 +48,7 @@ const transitions = [
         parent: lookAtPlayersState,
         child: idleState,
         onTransition: () => bot.chat("goodbye")
-    })
+    }),
 
 ];
 

@@ -3,14 +3,14 @@ const NODE_COLOR = '#552222';
 const NODE_BORDER_COLOR = '#555555';
 const NODE_HIGHLIGHT_COLOR = '#777777';
 const NODE_WIDTH = 150;
-const NODE_HEIGHT = 50;
+const NODE_HEIGHT = 75;
 const NODE_TEXT_FONT = '12px Calibri';
 const NODE_TEXT_COLOR = '#CCCCCC';
 const NODE_ACTIVE_COLOR = '#559966';
 const NODE_INIT_COLOR = '#556699';
 const LINE_COLOR = '#AAAAAA';
-const LINE_THICKNESS = 3;
-const LINE_SEPARATION = 10;
+const LINE_THICKNESS = 5;
+const LINE_SEPARATION = 16;
 
 class Graph
 {
@@ -27,6 +27,13 @@ class Graph
 
         this.repaint = true;
         requestAnimationFrame(() => this.animation());
+    }
+
+    clear()
+    {
+        this.states = [];
+        this.transitions = [];
+        this.repaint = true;
     }
 
     subscribeEvents()
@@ -66,6 +73,9 @@ class Graph
 
         let ctx = this.canvas.getContext('2d');
         this.drawBackground(ctx);
+
+        for (let state of this.states)
+            state.drawActive(ctx);
 
         for (let trans of this.transitions)
             trans.draw(ctx);
@@ -237,19 +247,22 @@ class State
         ctx.strokeStyle = this.highlight ? NODE_HIGHLIGHT_COLOR : NODE_BORDER_COLOR;
         ctx.stroke();
 
-        if (this.activeState)
-        {
-            this.fillNodePath(ctx, 8);
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = NODE_ACTIVE_COLOR;
-            ctx.stroke();
-        }
-
         ctx.fillStyle = NODE_TEXT_COLOR;
         ctx.font = NODE_TEXT_FONT;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(this.name, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2);
+    }
+
+    drawActive(ctx)
+    {
+        if (!this.activeState)
+            return;
+        
+        this.fillNodePath(ctx, 8);
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = NODE_ACTIVE_COLOR;
+        ctx.stroke();
     }
 
     fillNodePath(ctx, buffer = 0)
@@ -304,11 +317,13 @@ class TransitionGroup
         this.rotateDir(dir, Math.PI / 2);
         this.normalizeDir(dir);
 
-        const str = (index - this.transitions.length / 2) * LINE_SEPARATION;
+        const str = ((index + 0.5) - this.transitions.length / 2) * LINE_SEPARATION;
 
         return {
             x: dir.x * str,
             y: dir.y * str,
+            dirX: dir.x,
+            dirY: dir.y,
         }
     }
 
@@ -360,13 +375,88 @@ class Transition
             y: this.child.rect.cy() + offset.y,
         }
 
+        this.clipArrow(a, b);
+        const arrow = this.arrowBase(a, b);
+
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
-        ctx.lineTo(b.x, b.y);
+        ctx.lineTo(arrow.x, arrow.y);
 
         ctx.lineWidth = LINE_THICKNESS;
         ctx.strokeStyle = LINE_COLOR;
         ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(arrow.x + offset.dirX * arrow.size, arrow.y + offset.dirY * arrow.size);
+        ctx.lineTo(arrow.x - offset.dirX * arrow.size, arrow.y - offset.dirY * arrow.size);
+        ctx.lineTo(b.x, b.y);
+        ctx.closePath();
+
+        ctx.fillStyle = LINE_COLOR;
+        ctx.fill();
+    }
+
+    arrowBase(a, b)
+    {
+        const dir = { x: b.x - a.x, y: b.y - a.y };
+        const mag = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
+        dir.x /= mag;
+        dir.y /= mag;
+
+        const arrowSize = LINE_THICKNESS * 2;
+
+        return {
+            x: b.x - dir.x * arrowSize * 2,
+            y: b.y - dir.y * arrowSize * 2,
+            size: arrowSize,
+        };
+    }
+
+    clipArrow(a, b)
+    {
+        const rect = this.child.rect;
+
+        let intersect = this.liang_barsky_clipper(
+            rect.x, rect.y, rect.x + rect.w, rect.y + rect.h,
+            a.x, a.y,
+            b.x, b.y);
+        
+        b.x = intersect.x;
+        b.y = intersect.y;
+    }
+
+    liang_barsky_clipper(xmin, ymin, xmax, ymax, x1, y1, x2, y2)
+    {
+        let p1 = -(x2 - x1);
+        let p2 = -p1;
+        let p3 = -(y2 - y1);
+        let p4 = -p3;
+
+        let n1 = 0;
+        let n2 = 0;
+
+        if (p1 != 0)
+        {
+            if (p1 < 0)
+                n1 = (x1 - xmin) / p1;
+            else
+                n1 = (xmax - x1) / p2;
+        }
+
+        if (p3 != 0)
+        {
+            if (p3 < 0)
+                n2 = (y1 - ymin) / p3;
+            else
+                n2 = (ymax - y1) / p4;
+        }
+
+        let rn = Math.max(0, n1, n2);
+        return {
+            x: x1 + p2 * rn,
+            y: y1 + p4 * rn,
+        };
     }
 }
 
@@ -378,13 +468,13 @@ function init()
     const socket = io();
     socket.on("connected", packet => onConnected(packet, graph));
     socket.on("stateChanged", packet => onStateChanged(packet, graph));
-    socket.on("disconnect", () => onDisconnected(graph));
 }
 
 function onConnected(packet, graph)
 {
     console.log("Bot connected.");
 
+    graph.clear();
     loadStates(packet, graph);
     loadTransitions(packet, graph);
     graph.repaint = true;
@@ -459,9 +549,4 @@ function onStateChanged(packet, graph)
         state.activeState = packet.activeState === state.id;
         graph.repaint = true;
     }
-}
-
-function onDisconnected(graph)
-{
-    console.log("Bot disconnected.");
 }
