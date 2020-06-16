@@ -273,7 +273,13 @@ function onConnected(packet, graph)
 
 function onStateChanged(packet, graph)
 {
-    console.log("Bot behavior state changed.");
+    console.log(`"Bot behavior state changed to ${packet.activeState}.`);
+
+    for (let state of graph.states)
+    {
+        state.activeState = packet.activeState === state.id;
+        graph.repaint = true;
+    }
 }
 
 function onDisconnected(graph)
