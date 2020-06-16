@@ -29,6 +29,8 @@ class Graph
     subscribeEvents()
     {
         this.canvas.addEventListener('mousemove', e => this.onMouseMove(e));
+        this.canvas.addEventListener('mouseup', e => this.onMouseUp(e));
+        this.canvas.addEventListener('mousedown', e => this.onMouseDown(e));
     }
 
     needsRepaint()
@@ -126,6 +128,22 @@ class Graph
         event.preventDefault();
         const { x, y } = this.eventPos(event);
 
+        this.updateDrag(x, y);
+        this.updateHover(x, y)
+    }
+
+    updateDrag(x, y)
+    {
+        if (!this.drag)
+            return;
+        
+        this.drag.target.rect.x = x - this.drag.mouseX + this.drag.startX;
+        this.drag.target.rect.y = y - this.drag.mouseY + this.drag.startY;
+        this.repaint = true;
+    }
+
+    updateHover(x, y)
+    {
         for (let state of this.states)
         {
             let mousedOver = state.isInBounds(x, y);
@@ -136,6 +154,36 @@ class Graph
                 this.repaint = true;
             }
         }
+    }
+
+    onMouseDown(event)
+    {
+        event.preventDefault();
+        const { x, y } = this.eventPos(event);
+
+        let targetState;
+        for (let state of this.states)
+        {
+            if (state.isInBounds(x, y))
+                targetState = state;
+        }
+
+        if (!targetState)
+            return;
+
+        this.drag = {
+            target: targetState,
+            startX: targetState.rect.x,
+            startY: targetState.rect.y,
+            mouseX: x,
+            mouseY: y
+        };
+    }
+
+    onMouseUp(event)
+    {
+        event.preventDefault();
+        this.drag = null;
     }
 }
 
