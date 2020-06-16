@@ -1,6 +1,66 @@
-import { Entity } from "prismarine-entity";
-import { StateBehavior } from "./../statemachine";
+import { StateBehavior, StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
+import { Entity } from "prismarine-entity";
+
+/**
+ * Gets the closest entity to the bot and sets it as the entity
+ * target. This behavior executes once right when the behavior
+ * is entered, and should transition out immediately.
+ */
+export class BehaviorGetClosestEntity implements StateBehavior
+{
+    private readonly bot: Bot;
+    private readonly filter: (entity: Entity) => boolean;
+
+    readonly targets: StateMachineTargets;
+    stateName: string = 'getClosestEntity';
+    active: boolean = false;
+
+    constructor(bot: Bot, targets: StateMachineTargets, filter: (entity: Entity) => boolean)
+    {
+        this.bot = bot;
+        this.targets = targets;
+        this.filter = filter;
+    }
+
+    onStateEntered(): void
+    {
+        this.targets.entity = this.getClosestEntity() || undefined;
+    }
+
+    /**
+     * Gets the closest entity to the bot, filtering entities as needed.
+     * 
+     * @returns The closest entity, or null if there are none.
+     */
+    private getClosestEntity(): Entity | null
+    {
+        let closest = null;
+        let distance = 0;
+
+        for (let entityName of Object.keys(this.bot.entities))
+        {
+            let entity = this.bot.entities[entityName];
+
+            if (entity === this.bot.entity)
+                continue;
+
+            if (!this.filter(entity))
+                continue;
+
+            // @ts-ignore
+            let dist = entity.position.distanceTo(this.bot.entity.position);
+
+            if (closest === null || dist < distance)
+            {
+                closest = entity;
+                distance = dist;
+            }
+        }
+
+        return closest;
+    }
+}
 
 /**
  * The header for the EntityFilters() function.
@@ -75,68 +135,4 @@ export function EntityFilters(): object
             return false;
         }
     };
-}
-
-/**
- * The bot will look at the nearest entity, player, or specific entity.
- */
-export class BehaviorLookAtEntities implements StateBehavior
-{
-    private readonly bot: Bot;
-    private readonly lookAtFilter: (entity: Entity) => boolean;
-
-    stateName: string = 'lookAtEntities';
-    active: boolean = false;
-
-    constructor(bot: Bot, lookAtFilter: (entity: Entity) => boolean)
-    {
-        this.bot = bot;
-        this.lookAtFilter = lookAtFilter;
-        this.bot.on("physicTick", () => this.update());
-    }
-
-    private update(): void
-    {
-        if (!this.active)
-            return;
-
-        let closest = this.getClosestEntity();
-
-        if (closest)
-            // @ts-ignore
-            this.bot.lookAt(closest.position.offset(0, closest.height, 0));
-    }
-
-    /**
-     * Gets the closest entity to the bot, filtering entities as needed.
-     * 
-     * @returns The closest entity, or null if there are none.
-     */
-    private getClosestEntity(): Entity | null
-    {
-        let closest = null;
-        let distance = 0;
-
-        for (let entityName of Object.keys(this.bot.entities))
-        {
-            let entity = this.bot.entities[entityName];
-
-            if (entity === this.bot.entity)
-                continue;
-
-            if (!this.lookAtFilter(entity))
-                continue;
-
-            // @ts-ignore
-            let dist = entity.position.distanceTo(this.bot.entity.position);
-
-            if (closest === null || dist < distance)
-            {
-                closest = entity;
-                distance = dist;
-            }
-        }
-
-        return closest;
-    }
 }

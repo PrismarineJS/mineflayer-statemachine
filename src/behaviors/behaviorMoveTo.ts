@@ -1,10 +1,10 @@
-import { StateBehavior } from "../statemachine";
+import { StateBehavior, StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
 import { Movements, goals } from "mineflayer-pathfinder";
 import { Vec3 } from "vec3";
 
 /**
- * Causes the bot to follow an entity.
+ * Causes the bot to move to the target position.
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
@@ -12,15 +12,16 @@ export class BehaviorMoveTo implements StateBehavior
 {
     private readonly bot: Bot;
     private readonly mcData: any;
-    private position?: Vec3;
 
+    readonly targets: StateMachineTargets;
     readonly movements: Movements;
     stateName: string = 'moveTo';
     active: boolean = false;
 
-    constructor(bot: Bot)
+    constructor(bot: Bot, targets: StateMachineTargets)
     {
         this.bot = bot;
+        this.targets = targets;
         this.mcData = require('minecraft-data')(this.bot.version);
         this.movements = new Movements(this.bot, this.mcData);
     }
@@ -43,20 +44,17 @@ export class BehaviorMoveTo implements StateBehavior
      * will still be assigned as the target position when this state
      * is entered.
      * 
+     * This method updates the target position.
+     * 
      * @param position - The position to move to.
      */
     setMoveTarget(position: Vec3): void
     {
-        if (this.position == position)
+        if (this.targets.position == position)
             return;
 
-        if (this.active)
-            this.stopMoving();
-
-        this.position = position;
-
-        if (this.active)
-            this.startMoving();
+        this.targets.position = position;
+        this.restart();
     }
 
     /**
@@ -74,14 +72,15 @@ export class BehaviorMoveTo implements StateBehavior
      */
     private startMoving(): void
     {
-        if (!this.position)
+        let position = this.targets.position;
+        if (!position)
             return;
 
         // @ts-ignore
         let pathfinder = this.bot.pathfinder;
 
         // @ts-ignore
-        const goal = new goals.GoalBlock(this.position.x, this.position.y, this.position.z);
+        const goal = new goals.GoalBlock(position.x, position.y, position.z);
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal, true);
     }

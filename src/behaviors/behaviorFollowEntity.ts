@@ -1,10 +1,10 @@
-import { StateBehavior } from "./../statemachine";
+import { StateBehavior, StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
 import { Entity } from "prismarine-entity";
 import { Movements, goals } from "mineflayer-pathfinder";
 
 /**
- * Causes the bot to follow an entity.
+ * Causes the bot to follow the target entity.
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
@@ -12,16 +12,17 @@ export class BehaviorFollowEntity implements StateBehavior
 {
     private readonly bot: Bot;
     private readonly mcData: any;
-    private entity?: Entity;
 
+    readonly targets: StateMachineTargets;
     readonly movements: Movements;
     stateName: string = 'followEntity';
     active: boolean = false;
-    followDistance: number = 2;
+    followDistance: number = 0;
 
-    constructor(bot: Bot)
+    constructor(bot: Bot, targets: StateMachineTargets)
     {
         this.bot = bot;
+        this.targets = targets;
         this.mcData = require('minecraft-data')(this.bot.version);
         this.movements = new Movements(this.bot, this.mcData);
     }
@@ -45,20 +46,17 @@ export class BehaviorFollowEntity implements StateBehavior
      * will still be assigned as the target entity when this state is
      * entered.
      * 
+     * Calling this method will update the targets object.
+     * 
      * @param entity - The entity to follow.
      */
     setFollowTarget(entity: Entity): void
     {
-        if (this.entity === entity)
+        if (this.targets.entity === entity)
             return;
 
-        if (this.active)
-            this.stopMoving();
-
-        this.entity = entity;
-
-        if (this.active)
-            this.startMoving();
+        this.targets.entity = entity;
+        this.restart();
     }
 
     /**
@@ -76,13 +74,14 @@ export class BehaviorFollowEntity implements StateBehavior
      */
     private startMoving(): void
     {
-        if (!this.entity)
+        let entity = this.targets.entity;
+        if (!entity)
             return;
 
         // @ts-ignore
         let pathfinder = this.bot.pathfinder;
 
-        const goal = new goals.GoalFollow(this.entity, this.followDistance);
+        const goal = new goals.GoalFollow(entity, this.followDistance);
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal, true);
     }
@@ -90,6 +89,9 @@ export class BehaviorFollowEntity implements StateBehavior
     /**
      * Stops and restarts this movement behavior. Does nothing if
      * this behavior is not active.
+     * 
+     * Useful if the target entity is updated while this behavior
+     * is still active.
      */
     restart(): void
     {
@@ -98,5 +100,20 @@ export class BehaviorFollowEntity implements StateBehavior
 
         this.stopMoving();
         this.startMoving();
+    }
+
+    /**
+     * Gets the distance to the target entity.
+     * 
+     * @returns The distance, or 0 if no target entity is assigned.
+     */
+    distanceToTarget(): number
+    {
+        let entity = this.targets.entity;
+        if (!entity)
+            return 0;
+
+        // @ts-ignore
+        return this.bot.entity.position.distanceTo(entity.position);
     }
 }

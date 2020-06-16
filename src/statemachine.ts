@@ -1,6 +1,8 @@
-import { Bot } from 'mineflayer';
+import { Bot, Player } from 'mineflayer';
 import { EventEmitter } from 'events';
 import { globalSettings } from ".";
+import { Entity } from 'prismarine-entity';
+import { Vec3 } from 'vec3';
 
 /**
  * A simple behavior state plugin for handling AI state machine
@@ -227,4 +229,16 @@ export class BotStateMachine extends EventEmitter
     {
         return this.initialState;
     }
+}
+
+/**
+ * A collection of targets which the bot is currently
+ * storing in memory. These are primarily used to allow
+ * states to communicate with each other more effectively.
+ */
+export interface StateMachineTargets
+{
+    entity?: Entity;
+    position?: Vec3;
+    player?: Player;
 }
