@@ -43,6 +43,12 @@ Mineflayer-StateMachine is a plugin for Mineflayer. It aims to add a flexible an
 
 Writing a complex bot AI can be difficult, especially if it has to be convincing. Finite state machines make this process much eaiser by offloading the fine details into isolated modules which only serve a single function or behavior. These modules can then be connected together in a top level component to customize how these seperate modules should interact and pass around control of the bot and state machine parameters.
 
+### Showcase
+
+##### Videos
+
+[Webserver Demo](https://www.youtube.com/watch?v=ZWMrJJ_RKu8)
+
 ### Getting Started
 
 This plugin is built using Node and can be installed using:
@@ -120,3 +126,23 @@ bot.on("spawn", () =>
     new BotStateMachine(bot, transitions, printServerStates);
 });
 ```
+
+### API Documentation
+
+Coming soon, I promise!
+
+### Roadmap
+
+**Implemented**
+* Web View
+* Look at Entity Behavior
+* Follow Entity Behavior
+* Move to Position Behavior
+
+**To Do**
+* Multi-Layered State Machines
+* Show Targets in Web View
+* Camera Controls in Web View
+* Collection-based Behaviors
+* Fighting-based Behaviors
+* Conversation-based Behaviors
