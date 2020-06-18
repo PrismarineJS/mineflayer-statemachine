@@ -10,7 +10,7 @@ Welcome to the *mineflayer-statemachine* API documentation page.
     - [1.2.1 Transition Execution Order](#121-transition-execution-order)
     - [1.2.2. Transition Based Events](#122-transition-based-events)
   - [1.3. Targets](#13-targets)
-    - [1.4. Common Targets](#14-common-targets)
+    - [1.3.1 Common Targets](#131-common-targets)
 - [2. Web View](#2-web-view)
 - [3. Existing Behaviors](#3-existing-behaviors)
   - [3.1. Follow Entity](#31-follow-entity)
@@ -207,7 +207,7 @@ This makes our code reusable, too! For example, if we had a state which gets our
 
 **Note:** When working with targets, it should be assumed that any specific target may be unassigned. Check if the value exists before using it.
 
-#### 1.4. Common Targets
+#### 1.3.1 Common Targets
 
 In order to keep things as portable as possible, behaviors are encouraged to keep a uniform naming style for targets. If one behavior used the target `targets.entity` and another behavior used the target `targets.itemDrop`, then it would be difficult for behaviors to effectively interact with each other. Below is a table of common target names and the data type they represent.
 
