@@ -64,7 +64,7 @@ The API for Mineflayer-StateMachine aims to be simple and intuitive, requiring m
 ```js
 // Create your bot
 const mineflayer = require("mineflayer");
-const bot = mineflayer.createBot({ username: "Player });
+const bot = mineflayer.createBot({ username: "Player" });
 
 // Load your dependency plugins.
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
