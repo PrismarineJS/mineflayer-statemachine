@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="44cm" height="34cm" viewBox="238 -12 873 673" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="240" y="-10" width="870" height="670"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="240" y="-10" width="870" height="670"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="675" y="328.881">
+      <tspan x="675" y="328.881"></tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="460" y="160" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="460" y="160" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="530" y="185.881">
+      <tspan x="530" y="185.881">Collect</tspan>
+      <tspan x="530" y="201.881">Wood</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="280" y="160" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="280" y="160" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="350" y="193.881">
+      <tspan x="350" y="193.881">Main</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="460" y="320" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="460" y="320" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="530" y="345.881">
+      <tspan x="530" y="345.881">Eat</tspan>
+      <tspan x="530" y="361.881">(Idle State)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="640" y="160" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="640" y="160" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="710" y="185.881">
+      <tspan x="710" y="185.881">Collect</tspan>
+      <tspan x="710" y="201.881">Stone</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="350,220.981 350,290 530,290 530,310.264 "/>
+    <polygon style="fill: #000000" points="530,317.764 525,307.764 530,310.264 535,307.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="530,317.764 525,307.764 530,310.264 535,307.764 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="710,220 710,290 530,290 530,309.261 "/>
+    <polygon style="fill: #000000" points="530,316.761 525,306.761 530,309.261 535,306.761 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="530,316.761 525,306.761 530,309.261 535,306.761 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="530" y1="220.977" x2="530" y2="309.287"/>
+    <polygon style="fill: #000000" points="530,316.787 525,306.787 530,309.287 535,306.787 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="530,316.787 525,306.787 530,309.287 535,306.787 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="476.425" y="244.55" width="107.15" height="30.8998"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="530" y="256.431">
+      <tspan x="530" y="256.431">If hunger is &lt; 10</tspan>
+      <tspan x="530" y="272.431">&amp; Can Eat</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="656.425" y="244.55" width="107.15" height="30.8998"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="710" y="256.431">
+      <tspan x="710" y="256.431">If hunger is &lt; 10</tspan>
+      <tspan x="710" y="272.431">&amp; Can Eat</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="296.425" y="244.55" width="107.15" height="30.8998"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="350" y="256.431">
+      <tspan x="350" y="256.431">If hunger is &lt; 20</tspan>
+      <tspan x="350" y="272.431">&amp; Can Eat</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="370" y="550" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="370" y="550" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="440" y="583.881">
+      <tspan x="440" y="583.881">Eat Item</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="570" y="420" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="570" y="420" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="640" y="453.881">
+      <tspan x="640" y="453.881">Find Food</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="570" y="550" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="570" y="550" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="640" y="583.881">
+      <tspan x="640" y="583.881">Collect Food</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="370,580 257.991,580 257.991,190 269.255,190 "/>
+    <polygon style="fill: #000000" points="276.755,190 266.755,195 269.255,190 266.755,185 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="276.755,190 266.755,195 269.255,190 266.755,185 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="568.998" y1="580" x2="520.738" y2="580"/>
+    <polygon style="fill: #000000" points="513.238,580 523.238,575 520.738,580 523.238,585 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="513.238,580 523.238,575 520.738,580 523.238,585 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="640" y1="480.992" x2="640" y2="539.272"/>
+    <polygon style="fill: #000000" points="640,546.772 635,536.772 640,539.272 645,536.772 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="640,546.772 635,536.772 640,539.272 645,536.772 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="840,480 840,480 840,640 259,640 259,190 270.264,190 "/>
+    <polygon style="fill: #000000" points="277.764,190 267.764,195 270.264,190 267.764,185 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="277.764,190 267.764,195 270.264,190 267.764,185 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="770" y="420" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="770" y="420" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="840" y="445.881">
+      <tspan x="840" y="445.881">Set Can Eat</tspan>
+      <tspan x="840" y="461.881">to False</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="711.002" y1="450" x2="759.262" y2="450"/>
+    <polygon style="fill: #000000" points="766.762,450 756.762,455 759.262,450 756.762,445 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="766.762,450 756.762,455 759.262,450 756.762,445 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="530,380 530,450 560.264,450 "/>
+    <polygon style="fill: #000000" points="567.764,450 557.764,455 560.264,450 557.764,445 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="567.764,450 557.764,455 560.264,450 557.764,445 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="505.85" y="412.55" width="48.3" height="14.8998"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="530" y="424.431">
+      <tspan x="530" y="424.431">no food</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="460,350 439,350 439,449.5 440,449.5 440,540.264 "/>
+    <polygon style="fill: #000000" points="440,547.764 435,537.764 440,540.264 445,537.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="440,547.764 435,537.764 440,540.264 445,537.764 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="412.525" y="442.55" width="54.95" height="14.8998"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="440" y="454.431">
+      <tspan x="440" y="454.431">has food</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="440" y="30" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="440" y="30" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="510" y="63.8811">
+      <tspan x="510" y="63.8811">Kill Cow</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="610" y="30" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="610" y="30" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="680" y="63.8811">
+      <tspan x="680" y="63.8811">Collect Steak</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="780" y="30" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="780" y="30" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="850" y="63.8811">
+      <tspan x="850" y="63.8811">Cook Steak</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="580.992" y1="60" x2="599.272" y2="60"/>
+    <polygon style="fill: #000000" points="606.772,60 596.772,65 599.272,60 596.772,55 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="606.772,60 596.772,65 599.272,60 596.772,55 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="950" y="30" width="140" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="950" y="30" width="140" height="60"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1020" y="55.8811">
+      <tspan x="1020" y="55.8811">Set Can Eat</tspan>
+      <tspan x="1020" y="71.8811">to True</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="750.992" y1="60" x2="769.272" y2="60"/>
+    <polygon style="fill: #000000" points="776.772,60 766.772,65 769.272,60 766.772,55 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="776.772,60 766.772,65 769.272,60 766.772,55 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="920.992" y1="60" x2="939.272" y2="60"/>
+    <polygon style="fill: #000000" points="946.772,60 936.772,65 939.272,60 936.772,55 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="946.772,60 936.772,65 939.272,60 936.772,55 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="385,160 385,60 430.264,60 "/>
+    <polygon style="fill: #000000" points="437.764,60 427.764,65 430.264,60 427.764,55 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="437.764,60 427.764,65 430.264,60 427.764,55 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="347.775" y="104.55" width="72.45" height="30.8998"/>
+    <text font-size="12.7998" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="384" y="116.431">
+      <tspan x="384" y="116.431">Sees Cow</tspan>
+      <tspan x="384" y="132.431">&amp; Can't Eat</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1020,30 1020,9 315,9 315,150.264 "/>
+    <polygon style="fill: #000000" points="315,157.764 310,147.764 315,150.264 320,147.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="315,157.764 310,147.764 315,150.264 320,147.764 "/>
+  </g>
+</svg>

@@ -240,5 +240,11 @@ export interface StateMachineTargets
 {
     entity?: Entity;
     position?: Vec3;
+    item?: any;
     player?: Player;
+
+    entities?: Entity[];
+    positions?: Vec3[];
+    items?: any[];
+    players?: Player[];
 }

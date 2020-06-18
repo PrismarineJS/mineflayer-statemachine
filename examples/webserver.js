@@ -39,7 +39,7 @@ bot.on("spawn", () =>
     const targets = {};
 
     const printServerStates = new BehaviorPrintServerStats(bot);
-    const idleState = new BehaviorIdle(bot);
+    const idleState = new BehaviorIdle();
     const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets);
     const followPlayer = new BehaviorFollowEntity(bot, targets);
     const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly);

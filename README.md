@@ -45,8 +45,7 @@ Writing a complex bot AI can be difficult, especially if it has to be convincing
 
 ### Showcase
 
-##### Videos
-
+**Videos**
 [Webserver Demo](https://www.youtube.com/watch?v=ZWMrJJ_RKu8)
 
 ### Getting Started
@@ -127,9 +126,9 @@ bot.on("spawn", () =>
 });
 ```
 
-### API Documentation
+### Documentation
 
-Coming soon, I promise!
+[API](https://thedudefromci.github.io/mineflayer-statemachine/docs/api.md)
 
 ### Roadmap
 
@@ -141,8 +140,19 @@ Coming soon, I promise!
 
 **To Do**
 * Multi-Layered State Machines
+* Nested State Machines
 * Show Targets in Web View
 * Camera Controls in Web View
 * Collection-based Behaviors
 * Fighting-based Behaviors
 * Conversation-based Behaviors
+
+### License
+
+This project uses the [MIT](https://github.com/TheDudeFromCI/mineflayer-statemachine/blob/master/LICENSE) license.
+
+### Contributions
+
+This project is accepting PRs and Issues. See something you think can be improved? Go for it! Any and all help is highly appreciated!
+
+For larger changes, it is recommended to discuss these changes in the issues tab before writing any code. It's also preferred to make many smaller PRs than one large one, where applicable.

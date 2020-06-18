@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="59cm" height="27cm" viewBox="318 138 1163 523" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <rect style="fill: #ffffff" x="320" y="140" width="1160" height="520"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #ffffff" x="320" y="140" width="1160" height="520"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="900" y="403.881">
+      <tspan x="900" y="403.881"></tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="560" y="400" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="560" y="400" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="640" y="425.881">
+      <tspan x="640" y="425.881">Main</tspan>
+      <tspan x="640" y="441.881">(Idle State)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="340" y="400" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="340" y="400" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="420" y="425.881">
+      <tspan x="420" y="425.881">Login</tspan>
+      <tspan x="420" y="441.881">(Idle State)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="900" y="560" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="900" y="560" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="980" y="593.881">
+      <tspan x="980" y="593.881">Find Closest Bed</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1100" y="560" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1100" y="560" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1180" y="593.881">
+      <tspan x="1180" y="593.881">Sleep in Bed</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="720.981,430 740,430 740,590 890.264,590 "/>
+    <polygon style="fill: #000000" points="897.764,590 887.764,595 890.264,590 887.764,585 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="897.764,590 887.764,595 890.264,590 887.764,585 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="1060.98" y1="590" x2="1089.28" y2="590"/>
+    <polygon style="fill: #000000" points="1096.78,590 1086.78,595 1089.28,590 1086.78,585 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1096.78,590 1086.78,595 1089.28,590 1086.78,585 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1180,620 1180,641 640,641 640,469.736 "/>
+    <polygon style="fill: #000000" points="640,462.236 645,472.236 640,469.736 635,472.236 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="640,462.236 645,472.236 640,469.736 635,472.236 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="720.981,430 740,430 740,270 890.264,270 "/>
+    <polygon style="fill: #000000" points="897.764,270 887.764,275 890.264,270 887.764,265 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="897.764,270 887.764,275 890.264,270 887.764,265 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="720.352" y1="430" x2="889.912" y2="430"/>
+    <polygon style="fill: #000000" points="897.412,430 887.412,435 889.912,430 887.412,425 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="897.412,430 887.412,435 889.912,430 887.412,425 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="693.775" y="492.55" width="92.45" height="14.9"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="740" y="504.431">
+      <tspan x="740" y="504.431">If time is night</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="767.175" y="406.55" width="105.65" height="46.9"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="820" y="418.431">
+      <tspan x="820" y="418.431">"Else"</tspan>
+      <tspan x="820" y="434.431">(See transition</tspan>
+      <tspan x="820" y="450.431">execution order)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="686.325" y="352.55" width="107.35" height="14.9"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="740" y="364.431">
+      <tspan x="740" y="364.431">If hunger is &lt; 15</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="501.003" y1="430" x2="549.261" y2="430"/>
+    <polygon style="fill: #000000" points="556.761,430 546.761,435 549.261,430 546.761,425 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="556.761,430 546.761,435 549.261,430 546.761,425 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="900" y="240" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="900" y="240" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="980" y="273.881">
+      <tspan x="980" y="273.881">Find Food</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1100" y="240" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1100" y="240" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1180" y="273.881">
+      <tspan x="1180" y="273.881">Eat Food</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="1060.98" y1="270" x2="1089.28" y2="270"/>
+    <polygon style="fill: #000000" points="1096.78,270 1086.78,275 1089.28,270 1086.78,265 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1096.78,270 1086.78,275 1089.28,270 1086.78,265 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1180,240 1180,219 640,219 640,389.256 "/>
+    <polygon style="fill: #000000" points="640,396.756 635,386.756 640,389.256 645,386.756 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="640,396.756 635,386.756 640,389.256 645,386.756 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="900" y="400" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="900" y="400" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="980" y="425.881">
+      <tspan x="980" y="425.881">Get Mine</tspan>
+      <tspan x="980" y="441.881">Position</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1100" y="400" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1100" y="400" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1180" y="425.881">
+      <tspan x="1180" y="425.881">Go to Mine</tspan>
+      <tspan x="1180" y="441.881">(Move To State)</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1300" y="400" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1300" y="400" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1380" y="433.881">
+      <tspan x="1380" y="433.881">Mine</tspan>
+    </text>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="1060.98" y1="430" x2="1089.28" y2="430"/>
+    <polygon style="fill: #000000" points="1096.78,430 1086.78,435 1089.28,430 1086.78,425 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1096.78,430 1086.78,435 1089.28,430 1086.78,425 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="1260.98" y1="430" x2="1289.28" y2="430"/>
+    <polygon style="fill: #000000" points="1296.78,430 1286.78,435 1289.28,430 1286.78,425 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1296.78,430 1286.78,435 1289.28,430 1286.78,425 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1300" y="160" width="160" height="60"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x="1300" y="160" width="160" height="60"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1380" y="185.881">
+      <tspan x="1380" y="185.881">Empty Inventory</tspan>
+      <tspan x="1380" y="201.881">Into Chest</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1300,190 640,190 640,390.264 "/>
+    <polygon style="fill: #000000" points="640,397.764 635,387.764 640,390.264 645,387.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="640,397.764 635,387.764 640,390.264 645,387.764 "/>
+  </g>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="1380" y1="398.997" x2="1380" y2="230.739"/>
+    <polygon style="fill: #000000" points="1380,223.239 1385,233.239 1380,230.739 1375,233.239 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1380,223.239 1385,233.239 1380,230.739 1375,233.239 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1329.33" y="302.55" width="101.35" height="14.9"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1380" y="314.431">
+      <tspan x="1380" y="314.431">Inventory is Full</tspan>
+    </text>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1380,398.992 1380,349.496 980,349.496 980,309.736 "/>
+    <polygon style="fill: #000000" points="980,302.236 985,312.236 980,309.736 975,312.236 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="980,302.236 985,312.236 980,309.736 975,312.236 "/>
+  </g>
+  <g>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="1380,460 1380,510 980,510 980,550.264 "/>
+    <polygon style="fill: #000000" points="980,557.764 975,547.764 980,550.264 985,547.764 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="980,557.764 975,547.764 980,550.264 985,547.764 "/>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1236.32" y="342.55" width="107.35" height="14.9"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1290" y="354.431">
+      <tspan x="1290" y="354.431">If hunger is &lt; 15</tspan>
+    </text>
+  </g>
+  <g>
+    <rect style="fill: #ffffff" x="1243.78" y="502.55" width="92.45" height="14.9"/>
+    <text font-size="12.8" style="fill: #000000;text-anchor:middle;font-family:sans-serif;font-style:normal;font-weight:normal" x="1290" y="514.431">
+      <tspan x="1290" y="514.431">If time is night</tspan>
+    </text>
+  </g>
+</svg>
