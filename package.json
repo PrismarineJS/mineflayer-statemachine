@@ -5,9 +5,10 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "build": "tsc && webpack --config webpack.config.js",
+    "build": "tsc",
     "clean": "rm -rf lib",
-    "test": "test"
+    "test": "test",
+    "postinstall": "tsc"
   },
   "repository": {
     "type": "git",
