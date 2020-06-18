@@ -128,7 +128,7 @@ bot.on("spawn", () =>
 
 ### Documentation
 
-[API](https://github.com/TheDudeFromCI/mineflayer-statemachine/blob/master/docs/api.md)
+[API](https://thedudefromci.github.io/mineflayer-statemachine/docs/api)
 
 ### Roadmap
 
