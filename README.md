@@ -21,7 +21,7 @@
 
 <h3 align="center">And a Warm Thank You To</h3>
 <p align="center">
-  :rocket:  :rocket:
+  :rocket: chezhead :rocket:
 </p>
 
 <br />
