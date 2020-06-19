@@ -2,18 +2,79 @@ html {
     overflow: hidden;
 }
 
-html, body {
-	height: 100%;
-
+* {
 	margin: 0;
 	padding: 0;
 }
 
-canvas {
+html, body {
+	height: 100%;
+}
+
+#content {
 	height: 100%;
 	width: 100%;
 	font-size: 0;
+}
 
-	margin: 0;
-	padding: 0;
+#properties-panel, canvas {
+	display: inline-block;
+	vertical-align: top;
+	height: 100%;
+}
+
+#properties-panel {
+	width: min(25%, 300px);
+	background-color: #222222;
+}
+
+canvas {
+	width: max(75%, calc(100% - 300px));
+}
+
+#properties-panel button {
+	height: 50px;
+	width: calc(100% - 8px);
+
+	margin: 4px;
+	background-color: #444444;
+	color: #dddddd;
+	font-weight: 900;
+	border: none;
+
+	border-radius: 10px;
+}
+
+#properties-panel .selected {
+	background-color: #666666;
+}
+
+#properties-panel .nested1 {
+	margin-left: 20px;
+	width: calc(100% - 24px);
+}
+
+#properties-panel .nested2 {
+	margin-left: 40px;
+	width: calc(100% - 44px);
+}
+
+#properties-panel .nested3 {
+	margin-left: 60px;
+	width: calc(100% - 64px);
+}
+
+#properties-panel .nested4 {
+	margin-left: 80px;
+	width: calc(100% - 84px);
+}
+
+#properties-panel .nested5 {
+	margin-left: 100px;
+	width: calc(100% - 104px);
+}
+
+#properties-panel .nested6 {
+	margin-left: 120px;
+	width: calc(100% - 124px);
 }

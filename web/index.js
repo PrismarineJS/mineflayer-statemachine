@@ -563,7 +563,7 @@ function loadStates(packet, graph)
     let index = 0;
     for (let state of packet.states)
     {
-        const angle = (index / packet.states.length) * Math.PI;
+        const angle = (index / packet.states.length) * Math.PI * 2;
         index++;
 
         const rect = new Rect(
