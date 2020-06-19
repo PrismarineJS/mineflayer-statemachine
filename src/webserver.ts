@@ -1,5 +1,5 @@
 import { Bot } from "mineflayer";
-import { BotStateMachine } from "./statemachine";
+import { BotStateMachine, NestedStateMachine, StateBehavior } from "./statemachine";
 import { Socket } from "socket.io";
 import path from 'path';
 import express from 'express';
@@ -91,39 +91,16 @@ export class StateMachineWebserver
 
     private sendStatemachineStructure(socket: Socket): void
     {
-        let states = this.stateMachine.rootStateMachine.states || [];
-        let packetStates: StateMachineStatePacket[] = [];
-        for (let i = 0; i < states.length; i++)
-        {
-            let state = states[i];
-            let s: StateMachineStatePacket = {
-                id: i,
-                name: state.stateName
-            };
+        const states = this.getStates();
+        const transitions = this.getTransitions();
+        const nestGroups = this.getNestGroups();
+        const activeState = this.stateMachine.states.indexOf(this.stateMachine.getActiveState());
 
-            packetStates.push(s);
-        }
-
-        let transitions = this.stateMachine.rootStateMachine.transitions;
-        let packetTransitions: StateMachineTransitionPacket[] = [];
-        for (let i = 0; i < transitions.length; i++)
-        {
-            let transition = transitions[i];
-            let s: StateMachineTransitionPacket = {
-                id: i,
-                name: transition.name,
-                parentState: states.indexOf(transition.parentState),
-                childState: states.indexOf(transition.childState),
-            };
-
-            packetTransitions.push(s);
-        }
-
-        let packet: StateMachineStructurePacket = {
-            states: packetStates,
-            transitions: packetTransitions,
-            activeState: states.indexOf(this.stateMachine.getActiveState()),
-            initialState: states.indexOf(this.stateMachine.getInitialState())
+        const packet: StateMachineStructurePacket = {
+            activeState: activeState,
+            states: states,
+            transitions: transitions,
+            nestGroups: nestGroups,
         };
 
         socket.emit("connected", packet);
@@ -138,20 +115,96 @@ export class StateMachineWebserver
 
         socket.emit("stateChanged", packet);
     }
+
+    private getStates(): StateMachineStatePacket[]
+    {
+        const states: StateMachineStatePacket[] = [];
+
+        for (let i = 0; i < this.stateMachine.states.length; i++)
+        {
+            const state = this.stateMachine.states[i];
+            states.push({
+                id: i,
+                name: state.stateName,
+                nestGroup: this.getNestGroup(state),
+            });
+        }
+
+        return states;
+    }
+
+    private getNestGroup(state: StateBehavior): number
+    {
+        for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++)
+        {
+            const n = this.stateMachine.nestedStateMachines[i];
+
+            if (!n.states)
+                continue;
+
+            if (n.states.indexOf(state) > -1)
+                return i;
+        }
+
+        return -1;
+    }
+
+    private getTransitions(): StateMachineTransitionPacket[]
+    {
+        const transitions: StateMachineTransitionPacket[] = [];
+
+        for (let i = 0; i < this.stateMachine.transitions.length; i++)
+        {
+            const transition = this.stateMachine.transitions[i];
+            transitions.push({
+                id: i,
+                name: transition.name,
+                parentState: this.stateMachine.states.indexOf(transition.parentState),
+                childState: this.stateMachine.states.indexOf(transition.childState),
+            });
+        }
+
+        return transitions;
+    }
+
+    private getNestGroups(): NestedStateMachinePacket[]
+    {
+        const nestGroups: NestedStateMachinePacket[] = [];
+
+        for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++)
+        {
+            const nest = this.stateMachine.nestedStateMachines[i];
+            nestGroups.push({
+                enter: this.stateMachine.states.indexOf(nest.enter),
+                exit: nest.exit ? this.stateMachine.states.indexOf(nest.exit) : undefined,
+                indent: nest.depth || -1,
+            });
+        }
+
+        return nestGroups;
+    }
 }
 
 interface StateMachineStructurePacket
 {
+    activeState: number;
     states: StateMachineStatePacket[];
     transitions: StateMachineTransitionPacket[];
-    activeState: number;
-    initialState: number;
+    nestGroups: NestedStateMachinePacket[];
+}
+
+interface NestedStateMachinePacket
+{
+    enter: number;
+    exit?: number;
+    indent: number;
 }
 
 interface StateMachineStatePacket
 {
     id: number;
     name: string;
+    nestGroup: number;
 }
 
 interface StateMachineTransitionPacket

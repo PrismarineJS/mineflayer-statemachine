@@ -126,10 +126,28 @@ export class BotStateMachine extends EventEmitter
 {
     private readonly bot: Bot;
     private readonly initialState: StateBehavior;
-    private readonly transitions: StateTransition[];
     private activeState: StateBehavior;
     
+    /**
+     * The root-level state machine in the behavior tree.
+     */
     readonly rootStateMachine: NestedStateMachine;
+
+    /**
+     * An unrolled list of all transitions in this state machine across all layers.
+     */
+    readonly transitions: StateTransition[];
+
+    /**
+     * An unrolled list of all states in this state machine across all layers.
+     */
+    readonly states: StateBehavior[];
+
+    /**
+     * An unrolled list of all nested state machines in this state machine across
+     * all layers.
+     */
+    readonly nestedStateMachines: NestedStateMachine[];
 
     /**
      * Creates a new, simple state machine for handling bot behavior.
@@ -153,8 +171,11 @@ export class BotStateMachine extends EventEmitter
         };
         
         this.transitions = [];
-        this.findTransitionsRecursive(this.rootStateMachine, this.transitions);
+        this.states = [];
+        this.nestedStateMachines = [];
+        this.findTransitionsRecursive(this.rootStateMachine);
         this.findStatesRecursive(this.rootStateMachine);
+        this.findNestedStateMachines(this.rootStateMachine);
 
         this.activeState.active = true;
         if (this.activeState.onStateEntered)
@@ -163,10 +184,28 @@ export class BotStateMachine extends EventEmitter
         this.bot.on('physicTick', () => this.update());
     }
 
+    private findNestedStateMachines(nested: NestedStateMachine, depth: number = 0): void
+    {
+        this.nestedStateMachines.push(nested);
+        nested.depth = depth;
+
+        if (nested.nestedStateMachines)
+        {
+            for (const n of nested.nestedStateMachines)
+                this.findNestedStateMachines(n, depth + 1);
+        }
+    }
+
     private findStatesRecursive(nested: NestedStateMachine): void
     {
         if (!nested.states)
             nested.states = this.findStates(nested.transitions, nested.enter);
+
+        for (const state of nested.states)
+        {
+            if (this.states.indexOf(state) === -1)
+                this.states.push(state);
+        }
 
         if (nested.nestedStateMachines)
         {
@@ -202,15 +241,15 @@ export class BotStateMachine extends EventEmitter
      * @param nested - The nested state machine to iterate over.
      * @param transitions - The list of transitions to write to.
      */
-    private findTransitionsRecursive(nested: NestedStateMachine, transitions: StateTransition[]): void
+    private findTransitionsRecursive(nested: NestedStateMachine): void
     {
         for (const trans of nested.transitions)
-            transitions.push(trans);
+            this.transitions.push(trans);
 
         if (nested.nestedStateMachines)
         {
             for (const n of nested.nestedStateMachines)
-            this.findTransitionsRecursive(n, transitions);
+            this.findTransitionsRecursive(n);
         }
     }
 
@@ -325,4 +364,10 @@ export interface NestedStateMachine
      * A list of nested state machines within this state machine.
      */
     nestedStateMachines?: NestedStateMachine[];
+
+    /**
+     * The depth of this layer within the state machine. This is automatically
+     * assigned by the state machine upon initialization.
+     */
+    depth?: number;
 }
