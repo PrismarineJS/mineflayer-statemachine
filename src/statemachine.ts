@@ -126,10 +126,10 @@ export class BotStateMachine extends EventEmitter
 {
     private readonly bot: Bot;
     private readonly initialState: StateBehavior;
+    private readonly transitions: StateTransition[];
     private activeState: StateBehavior;
-
-    readonly transitions: StateTransition[];
-    readonly states: StateBehavior[];
+    
+    readonly rootStateMachine: NestedStateMachine;
 
     /**
      * Creates a new, simple state machine for handling bot behavior.
@@ -138,17 +138,17 @@ export class BotStateMachine extends EventEmitter
      * @param transitions - A list of all state transitions which can occur.
      * @param start - The starting state.
      */
-    constructor(bot: Bot, transitions: StateTransition[], start: StateBehavior)
+    constructor(bot: Bot, transitions: StateTransition[], start: StateBehavior, nestedStateMachines?: NestedStateMachine[])
     {
         super();
 
         this.bot = bot;
-        this.transitions = transitions;
         this.activeState = start;
         this.initialState = start;
-
-        this.states = [];
-        this.findStates();
+        this.rootStateMachine = this.buildMainState(transitions, start, nestedStateMachines);
+        
+        this.transitions = [];
+        this.findTransitionsRecursive(this.rootStateMachine, this.transitions);
 
         if (this.activeState.onStateEntered)
             this.activeState.onStateEntered();
@@ -157,21 +157,50 @@ export class BotStateMachine extends EventEmitter
         this.bot.on('physicTick', () => this.update());
     }
 
+    private buildMainState(transitions: StateTransition[], startState: StateBehavior, nestedStateMachines?: NestedStateMachine[]): NestedStateMachine
+    {
+        return {
+            enterState: startState,
+            transitions: transitions,
+            states: this.findStates(transitions, startState),
+            nestedStateMachines: nestedStateMachines || [],
+        };
+    }
+
     /**
      * Creates a quick lookup list of all states in this state machine.
      */
-    private findStates(): void
+    private findStates(transitions: StateTransition[], start: StateBehavior): StateBehavior[]
     {
-        this.states.push(this.activeState);
+        const states = [];
+        states.push(start);
 
-        for (let i = 0; i < this.transitions.length; i++)
+        for (let i = 0; i < transitions.length; i++)
         {
-            if (this.states.indexOf(this.transitions[i].parentState) == -1)
-                this.states.push(this.transitions[i].parentState);
+            if (states.indexOf(transitions[i].parentState) == -1)
+                states.push(transitions[i].parentState);
 
-            if (this.states.indexOf(this.transitions[i].childState) == -1)
-                this.states.push(this.transitions[i].childState);
+            if (states.indexOf(transitions[i].childState) == -1)
+                states.push(transitions[i].childState);
         }
+
+        return states;
+    }
+
+    /**
+     * Gets a list of all transitions used in the given nested state machine and all
+     * child nested state machines within it, recursively.
+     * 
+     * @param nested - The nested state machine to iterate over.
+     * @param transitions - The list of transitions to write to.
+     */
+    private findTransitionsRecursive(nested: NestedStateMachine, transitions: StateTransition[]): void
+    {
+        for (const trans of nested.transitions)
+            transitions.push(trans);
+
+        for (const n of nested.nestedStateMachines)
+            this.findTransitionsRecursive(n, transitions);
     }
 
     /**
@@ -247,4 +276,40 @@ export interface StateMachineTargets
     positions?: Vec3[];
     items?: any[];
     players?: Player[];
+}
+
+/**
+ * A collection of state transitions which represent a smaller state machine
+ * within the main state machine. These can be nested any number of times.
+ */
+export interface NestedStateMachine
+{
+    /**
+     * The public state which other states are expected to transition to
+     * to enter this nested state machine.
+     */
+    enterState: StateBehavior;
+
+    /**
+     * The exit state which other states are expected to transition out
+     * of to leave this nested state machine. May be undefined if nested
+     * state machine should not be exited.
+     */
+    exitState?: StateBehavior;
+
+    /**
+     * A list of all states within this nested state machine. (Including
+     * the enter and exit states)
+     */
+    states: StateBehavior[];
+
+    /**
+     * A list of state transitions which make up this state machine.
+     */
+    transitions: StateTransition[];
+
+    /**
+     * A list of nested state machines within this state machine.
+     */
+    nestedStateMachines: NestedStateMachine[];
 }
