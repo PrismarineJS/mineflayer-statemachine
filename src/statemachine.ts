@@ -145,26 +145,34 @@ export class BotStateMachine extends EventEmitter
         this.bot = bot;
         this.activeState = start;
         this.initialState = start;
-        this.rootStateMachine = this.buildMainState(transitions, start, nestedStateMachines);
+
+        this.rootStateMachine = {
+            enter: start,
+            transitions: transitions,
+            nestedStateMachines: nestedStateMachines
+        };
         
         this.transitions = [];
         this.findTransitionsRecursive(this.rootStateMachine, this.transitions);
+        this.findStatesRecursive(this.rootStateMachine);
 
+        this.activeState.active = true;
         if (this.activeState.onStateEntered)
             this.activeState.onStateEntered();
 
-        this.activeState.active = true;
         this.bot.on('physicTick', () => this.update());
     }
 
-    private buildMainState(transitions: StateTransition[], startState: StateBehavior, nestedStateMachines?: NestedStateMachine[]): NestedStateMachine
+    private findStatesRecursive(nested: NestedStateMachine): void
     {
-        return {
-            enterState: startState,
-            transitions: transitions,
-            states: this.findStates(transitions, startState),
-            nestedStateMachines: nestedStateMachines || [],
-        };
+        if (!nested.states)
+            nested.states = this.findStates(nested.transitions, nested.enter);
+
+        if (nested.nestedStateMachines)
+        {
+            for (const n of nested.nestedStateMachines)
+                this.findStatesRecursive(n);
+        }
     }
 
     /**
@@ -199,8 +207,11 @@ export class BotStateMachine extends EventEmitter
         for (const trans of nested.transitions)
             transitions.push(trans);
 
-        for (const n of nested.nestedStateMachines)
+        if (nested.nestedStateMachines)
+        {
+            for (const n of nested.nestedStateMachines)
             this.findTransitionsRecursive(n, transitions);
+        }
     }
 
     /**
@@ -288,20 +299,22 @@ export interface NestedStateMachine
      * The public state which other states are expected to transition to
      * to enter this nested state machine.
      */
-    enterState: StateBehavior;
+    enter: StateBehavior;
 
     /**
      * The exit state which other states are expected to transition out
      * of to leave this nested state machine. May be undefined if nested
      * state machine should not be exited.
      */
-    exitState?: StateBehavior;
+    exit?: StateBehavior;
 
     /**
      * A list of all states within this nested state machine. (Including
      * the enter and exit states)
+     * 
+     * If not assigned, this is generated automatically.
      */
-    states: StateBehavior[];
+    states?: StateBehavior[];
 
     /**
      * A list of state transitions which make up this state machine.
@@ -311,5 +324,5 @@ export interface NestedStateMachine
     /**
      * A list of nested state machines within this state machine.
      */
-    nestedStateMachines: NestedStateMachine[];
+    nestedStateMachines?: NestedStateMachine[];
 }

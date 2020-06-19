@@ -91,7 +91,7 @@ export class StateMachineWebserver
 
     private sendStatemachineStructure(socket: Socket): void
     {
-        let states = this.stateMachine.rootStateMachine.states;
+        let states = this.stateMachine.rootStateMachine.states || [];
         let packetStates: StateMachineStatePacket[] = [];
         for (let i = 0; i < states.length; i++)
         {
@@ -131,7 +131,7 @@ export class StateMachineWebserver
 
     private updateClient(socket: Socket): void
     {
-        let states = this.stateMachine.rootStateMachine.states;
+        let states = this.stateMachine.rootStateMachine.states || [];
         let packet: StateMachineUpdatePacket = {
             activeState: states.indexOf(this.stateMachine.getActiveState())
         };
