@@ -55,11 +55,11 @@ class Graph
     {
         if (this.repaint)
             return true;
-        
+
         if (this.canvas.clientWidth != this.width
             || this.canvas.clientHeight != this.height)
             return true;
-        
+
         return false;
     }
 
@@ -70,7 +70,7 @@ class Graph
             this.repaint = false;
             this.drawScene();
         }
-        
+
         requestAnimationFrame(() => this.animation());
     }
 
@@ -156,14 +156,14 @@ class Graph
         const { x, y } = this.eventPos(event);
 
         this.updateDrag(x, y);
-        this.updateHover(x, y)
+        this.updateHover(x, y);
     }
 
     updateDrag(x, y)
     {
         if (!this.drag)
             return;
-        
+
         this.drag.target.rect.x = x - this.drag.mouseX + this.drag.startX;
         this.drag.target.rect.y = y - this.drag.mouseY + this.drag.startY;
         this.repaint = true;
@@ -171,7 +171,7 @@ class Graph
 
     updateHover(x, y)
     {
-        const mousePos = {x: x, y: y};
+        const mousePos = { x: x, y: y };
 
         for (let state of this.states)
         {
@@ -187,7 +187,7 @@ class Graph
         for (let trans of this.transitions)
         {
             let mousedOver = trans.isInBounds(x, y);
-            
+
             if (mousedOver != trans.highlight)
             {
                 trans.highlight = mousedOver;
@@ -296,7 +296,7 @@ class State
 
         if (!this.activeState)
             return;
-        
+
         this.fillNodePath(ctx, 8);
         ctx.lineWidth = 3;
         ctx.strokeStyle = NODE_ACTIVE_COLOR;
@@ -353,7 +353,7 @@ class TransitionGroup
         {
             x: this.parent.rect.cx() - this.child.rect.cx(),
             y: this.parent.rect.cy() - this.child.rect.cy(),
-        }
+        };
 
         this.rotateDir(dir, Math.PI / 2);
         this.normalizeDir(dir);
@@ -365,7 +365,7 @@ class TransitionGroup
             y: dir.y * str,
             dirX: dir.x,
             dirY: dir.y,
-        }
+        };
     }
 
     rotateDir(p, angle)
@@ -393,7 +393,7 @@ class Transition
     constructor(id, name, parent, child, group)
     {
         this.id = id;
-        this.name = name
+        this.name = name;
         this.parent = parent;
         this.child = child;
         this.group = group;
@@ -405,7 +405,7 @@ class Transition
     draw(ctx)
     {
         if (this.parent.layer != graph.activeLayer
-                || this.child.layer != graph.activeLayer)
+            || this.child.layer != graph.activeLayer)
             return;
 
         const offset = this.group.offset(this);
@@ -414,13 +414,13 @@ class Transition
         {
             x: this.parent.rect.cx() + offset.x,
             y: this.parent.rect.cy() + offset.y,
-        }
+        };
 
         const b =
         {
             x: this.child.rect.cx() + offset.x,
             y: this.child.rect.cy() + offset.y,
-        }
+        };
 
         this.clipArrow(this.child.rect, a, b);
         const arrow = this.arrowBase(a, b);
@@ -448,7 +448,7 @@ class Transition
     drawHover(ctx)
     {
         if (this.parent.layer != graph.activeLayer
-                || this.child.layer != graph.activeLayer)
+            || this.child.layer != graph.activeLayer)
             return;
 
         if (!this.highlight || !this.name)
@@ -464,7 +464,7 @@ class Transition
     isInBounds(x, y)
     {
         if (this.parent.layer != graph.activeLayer
-                || this.child.layer != graph.activeLayer)
+            || this.child.layer != graph.activeLayer)
             return false;
 
         function sqr(x) { return x * x; }
@@ -494,11 +494,11 @@ class Transition
         {
             x: this.child.rect.cx() + offset.x,
             y: this.child.rect.cy() + offset.y,
-        }
+        };
 
         this.clipArrow(this.child.rect, a, b);
         this.clipArrow(this.parent.rect, b, a);
-        return distToSegment({x: x, y: y}, a, b) <= LINE_THICKNESS;
+        return distToSegment({ x: x, y: y }, a, b) <= LINE_THICKNESS;
     }
 
     arrowBase(a, b)
@@ -523,7 +523,7 @@ class Transition
             rect.x, rect.y, rect.x + rect.w, rect.y + rect.h,
             a.x, a.y,
             b.x, b.y);
-        
+
         b.x = intersect.x;
         b.y = intersect.y;
     }
@@ -615,7 +615,7 @@ function loadStates(packet)
         );
 
         const stateNode = new State(state.id, state.name, rect, state.nestGroup);
-        stateNode.activeState = packet.activeState === state.id;
+        stateNode.activeState = false;
         stateNode.enterState = graph.nestedGroups[state.nestGroup].enter === state.id;
         stateNode.exitState = graph.nestedGroups[state.nestGroup].exit === state.id;
 
@@ -653,7 +653,7 @@ function loadNestedGroups(packet)
         button.addEventListener("click", () => selectLayer(n.id, button));
 
         if (n.indent > 0)
-            button.classList.add(`nested${n.indent}`); 
+            button.classList.add(`nested${n.indent}`);
         else
             button.classList.add("selected");
 
@@ -665,7 +665,7 @@ function getTransitionGroup(groups, parent, child)
 {
     if (parent.id < child.id) // To make group order ambiguous
         return getTransitionGroup(groups, child, parent);
-    
+
     for (let group of groups)
     {
         if (group.parent === parent && group.child === child)
@@ -680,13 +680,12 @@ function getTransitionGroup(groups, parent, child)
 
 function onStateChanged(packet)
 {
-    console.log(`Bot behavior state changed to ${packet.activeState}.`);
+    console.log(`Bot behavior states changed to ${packet.activeStates}.`);
 
     for (let state of graph.states)
-    {
-        state.activeState = packet.activeState === state.id;
-        graph.repaint = true;
-    }
+        state.activeState = packet.activeStates.includes(state.id);
+
+    graph.repaint = true;
 }
 
 function selectLayer(layer, newLayerButton)

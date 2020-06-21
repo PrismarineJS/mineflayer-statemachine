@@ -176,12 +176,17 @@ export class BotStateMachine extends EventEmitter
         this.findNestedStateMachines(this.rootStateMachine);
 
         this.bot.on('physicTick', () => this.update());
+
+        this.rootStateMachine.active = true;
+        this.rootStateMachine.onStateEntered();
     }
 
     private findNestedStateMachines(nested: NestedStateMachine, depth: number = 0): void
     {
         this.nestedStateMachines.push(nested);
         nested.depth = depth;
+
+        nested.on("stateChanged", () => this.emit("stateChanged"));
 
         for (const state of nested.states)
         {
@@ -334,8 +339,13 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
     onStateEntered(): void
     {
         this.activeState = this.enter;
-        this.activeState.active = false;
-        this.activeState.onStateExited?.();
+        this.activeState.active = true;
+        this.activeState.onStateEntered?.();
+
+        if (globalSettings.debugMode)
+            console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+
+        this.emit("stateChanged");
     }
 
     update(): void
@@ -378,7 +388,6 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
 
         this.activeState.active = false;
         this.activeState.onStateExited?.();
-
         this.activeState = undefined;
     }
 

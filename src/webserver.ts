@@ -78,6 +78,7 @@ export class StateMachineWebserver
         console.log(`Client ${socket.handshake.address} connected to webserver.`);
 
         this.sendStatemachineStructure(socket);
+        this.updateClient(socket);
 
         const updateClient = () => this.updateClient(socket);
         this.stateMachine.on("stateChanged", updateClient);
@@ -94,11 +95,8 @@ export class StateMachineWebserver
         const states = this.getStates();
         const transitions = this.getTransitions();
         const nestGroups = this.getNestGroups();
-        // const activeState = this.stateMachine.states.indexOf(this.stateMachine.getActiveState());
-        const activeState = 0;
 
         const packet: StateMachineStructurePacket = {
-            activeState: activeState,
             states: states,
             transitions: transitions,
             nestGroups: nestGroups,
@@ -109,10 +107,21 @@ export class StateMachineWebserver
 
     private updateClient(socket: Socket): void
     {
-        // let states = this.stateMachine.rootStateMachine.states || [];
-        let packet: StateMachineUpdatePacket = {
-            // activeState: states.indexOf(this.stateMachine.getActiveState())
-            activeState: 0,
+        let states = this.stateMachine.states;
+        const activeStates: number[] = [];
+
+        for (const layer of this.stateMachine.nestedStateMachines)
+        {
+            if (!layer.activeState) continue;
+
+            const index = states.indexOf(layer.activeState);
+
+            if (index > -1)
+                activeStates.push(index);
+        }
+
+        const packet: StateMachineUpdatePacket = {
+            activeStates: activeStates,
         };
 
         socket.emit("stateChanged", packet);
@@ -191,7 +200,6 @@ export class StateMachineWebserver
 
 interface StateMachineStructurePacket
 {
-    activeState: number;
     states: StateMachineStatePacket[];
     transitions: StateMachineTransitionPacket[];
     nestGroups: NestedStateMachinePacket[];
@@ -223,5 +231,5 @@ interface StateMachineTransitionPacket
 
 interface StateMachineUpdatePacket
 {
-    activeState: number;
+    activeStates: number[];
 }
