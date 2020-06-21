@@ -20,8 +20,14 @@ const bot = mineflayer.createBot({
 /**
  * Setting up the state machine is pretty straightforward.
  */
-const { StateTransition, BotStateMachine, BehaviorIdle,
-    BehaviorLookAtEntities, EntityFilters } = require("mineflayer-statemachine"); 
+
+// Imports
+const {
+    StateTransition,
+    BotStateMachine,
+    BehaviorIdle,
+    BehaviorLookAtEntities,
+    EntityFilters } = require("mineflayer-statemachine");
 
 // The idle state makes the bot well, idle.
 const idleState = new BehaviorIdle(bot);
@@ -55,11 +61,15 @@ bot.on("chat", (username, message) =>
 {
     if (message === "hi")
         transitions[0].trigger();
-    
+
     if (message === "bye")
         transitions[1].trigger();
 });
 
+// A state machine is made from a series of layers, so let's create the root
+// layer to place in our state machine. We just need the transition list and
+// the starting position.
+const rootLayer = new NestedStateMachine(transitions, idleState);
+
 // Let's add these settings to the state machine and start it!
-// We just need the bot, the transition list, and we want to start in the idle state.
-new BotStateMachine(bot, transitions, idleState);
+new BotStateMachine(bot, rootLayer);
