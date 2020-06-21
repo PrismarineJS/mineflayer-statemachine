@@ -16,14 +16,10 @@ export class BehaviorLookAtEntity implements StateBehavior
     {
         this.bot = bot;
         this.targets = targets;
-        this.bot.on("physicTick", () => this.update());
     }
 
-    private update(): void
+    update(): void
     {
-        if (!this.active)
-            return;
-
         let entity = this.targets.entity;
         if (entity)
             // @ts-ignore

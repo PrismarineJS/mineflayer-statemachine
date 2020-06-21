@@ -1,5 +1,5 @@
 import { Bot } from "mineflayer";
-import { BotStateMachine, NestedStateMachine, StateBehavior } from "./statemachine";
+import { BotStateMachine, StateBehavior } from "./statemachine";
 import { Socket } from "socket.io";
 import path from 'path';
 import express from 'express';
@@ -94,7 +94,8 @@ export class StateMachineWebserver
         const states = this.getStates();
         const transitions = this.getTransitions();
         const nestGroups = this.getNestGroups();
-        const activeState = this.stateMachine.states.indexOf(this.stateMachine.getActiveState());
+        // const activeState = this.stateMachine.states.indexOf(this.stateMachine.getActiveState());
+        const activeState = 0;
 
         const packet: StateMachineStructurePacket = {
             activeState: activeState,
@@ -108,9 +109,10 @@ export class StateMachineWebserver
 
     private updateClient(socket: Socket): void
     {
-        let states = this.stateMachine.rootStateMachine.states || [];
+        // let states = this.stateMachine.rootStateMachine.states || [];
         let packet: StateMachineUpdatePacket = {
-            activeState: states.indexOf(this.stateMachine.getActiveState())
+            // activeState: states.indexOf(this.stateMachine.getActiveState())
+            activeState: 0,
         };
 
         socket.emit("stateChanged", packet);
@@ -146,7 +148,7 @@ export class StateMachineWebserver
                 return i;
         }
 
-        return -1;
+        throw "Unexpected state!";
     }
 
     private getTransitions(): StateMachineTransitionPacket[]
@@ -175,9 +177,11 @@ export class StateMachineWebserver
         {
             const nest = this.stateMachine.nestedStateMachines[i];
             nestGroups.push({
+                id: i,
                 enter: this.stateMachine.states.indexOf(nest.enter),
                 exit: nest.exit ? this.stateMachine.states.indexOf(nest.exit) : undefined,
                 indent: nest.depth || -1,
+                name: nest.stateName,
             });
         }
 
@@ -195,9 +199,11 @@ interface StateMachineStructurePacket
 
 interface NestedStateMachinePacket
 {
+    id: number;
     enter: number;
     exit?: number;
     indent: number;
+    name?: string;
 }
 
 interface StateMachineStatePacket

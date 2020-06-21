@@ -1,8 +1,6 @@
 import { StateBehavior, StateMachineTargets } from "../statemachine";
 import { Bot, EquipmentDestination } from "mineflayer";
 import { Item } from "prismarine-item";
-import { globalSettings } from "..";
-import { Block } from "prismarine-block";
 
 /**
  * A collection of useful functions for inventory-based behaviors.
@@ -53,7 +51,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
         let failed = false;
         if (amount == -1)
         {
-            this.bot.tossStack(item, (err) => {if (err) failed = true});
+            this.bot.tossStack(item, (err) => { if (err) failed = true });
 
             if (failed)
                 return 0;
@@ -61,7 +59,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
             return item.count;
         }
 
-        this.bot.toss(item.type, null, amount, (err) => {if (err) failed = true});
+        this.bot.toss(item.type, null, amount, (err) => { if (err) failed = true });
 
         if (failed)
             return 0;
