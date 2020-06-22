@@ -8,3 +8,4 @@ export * from "./behaviorPrintServerStats";
 export * from "./behaviorMoveTo";
 export * from "./behaviorGetClosestEntity";
 export * from "./behaviorEquipItem";
+export * from "./behaviorFindBlock";
