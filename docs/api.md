@@ -12,6 +12,13 @@ Welcome to the *mineflayer-statemachine* API documentation page.
   - [1.3. Targets](#13-targets)
     - [1.3.1 Common Targets](#131-common-targets)
 - [2. Web View](#2-web-view)
+  - [2.1. Activating the Web Vew](#21-activating-the-web-vew)
+  - [2.2. Web View Components](#22-web-view-components)
+    - [2.2.1 Layer Selection](#221-layer-selection)
+    - [2.2.2 Enter/Exit State](#222-enterexit-state)
+    - [2.2.3 Active State](#223-active-state)
+    - [2.2.4 Transitions](#224-transitions)
+    - [2.2.5 Nested States](#225-nested-states)
 - [3. Existing Behaviors](#3-existing-behaviors)
   - [3.1. Follow Entity](#31-follow-entity)
   - [3.2. Get Closest Entity](#32-get-closest-entity)
@@ -224,7 +231,58 @@ In order to keep things as portable as possible, behaviors are encouraged to kee
 
 ## 2. Web View
 
-To do.
+As the size of a state machine grows, it can be hard to debug what exactly is going on or why certain events are occurring. It can often be useful to visualize the statemachine as it is running to get a better feel for how each of the gears and pulleys are working. The web view is a simple way to debug your state machine to ensure that everything is moving swiftly and easily.
+
+![Web View Example](./webview-sm.png)
+
+Once enabled, the web view can be accessed through your browser by navigating to http://localhost:8934 on the same device as the bot. The port can optionally be adjusted or viewed on separate devices if allowed by your firewall settings.
+
+It is worth noting that the web view is designed for informational purposes only and cannot currently control or direct the bot in any way.
+
+### 2.1. Activating the Web Vew
+
+To activate the web, you simply need to run create a new `StateMachineWebServer` object and pass in the state machine you want to expose.
+
+```js
+const stateMachine = new BotStateMachine(bot, rootLayer);
+const webserver = new StateMachineWebserver(bot, stateMachine);
+webserver.startServer();
+```
+
+You can optionally specify which port the web view should run on by passing it as a third argument.
+
+```js
+const port = 12345;
+const webserver = new StateMachineWebserver(bot, stateMachine, port);
+```
+
+### 2.2. Web View Components
+
+![Web View Components](./webview-breakdown.png)
+
+#### 2.2.1 Layer Selection
+
+The right side panel can be used to specify which layer within the state machine is currently visible. These layers can be selected to switch which layer is currently being viewed.
+
+Nested State Machines which reside within another layer are shown as indented below that layer in tree-style format. The name of the layer is the `stateName` of the nested layer object.
+
+#### 2.2.2 Enter/Exit State
+
+The enter state is the state which is activated when the layer is entered. It is shown in the web view, highlighted in green.
+
+If a nested state machine layer has an exit state specified, it is shown in a yellow color. When this state is active, it singles to the parent state that it is ready to leave this layer.
+
+#### 2.2.3 Active State
+
+The active state within the layer is shown by a blue outline. This is the state or nested state machine which is currently running on the bot. As the bot switches behaviors, this outline will update automatically.
+
+#### 2.2.4 Transitions
+
+Transitions are shown as arrows pointing from the parent state to the child state. If moused over, the name of the transition will be shown if specified.
+
+#### 2.2.5 Nested States
+
+Nested state machines are represented in the web view as an ordinary state. If will show the blue outline when active and show transitions just like any other state. See [2.2.1 Layer Selection](#221-layer-selection) above for viewing the internal components of this nested state machine.
 
 ## 3. Existing Behaviors
 
