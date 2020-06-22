@@ -121,10 +121,10 @@ export function EntityFilters(): object
 
         ItemDrops: function (entity: Entity): boolean
         {
-            if (entity.objectType === 'item')
+            if (entity.objectType === 'Item')
                 return true;
 
-            if (entity.objectType === 'arrow')
+            if (entity.objectType === 'Arrow')
             {
                 // TODO Check if arrow can be picked up
                 // Current NBT parsing is too limited to effectively check.

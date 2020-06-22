@@ -26,6 +26,11 @@ export interface StateBehavior
     onStateEntered?(): void;
 
     /**
+     * Called each tick to update this behavior.
+     */
+    update?(): void;
+
+    /**
      * Called when the bot leaves this behavior state.
      */
     onStateExited?(): void;
@@ -124,110 +129,101 @@ export class StateTransition
  */
 export class BotStateMachine extends EventEmitter
 {
-    private readonly bot: Bot;
-    private readonly initialState: StateBehavior;
-    private activeState: StateBehavior;
+    /**
+     * The bot this state machine is operating on.
+     */
+    readonly bot: Bot;
 
+    /**
+     * The root-level state machine in the behavior tree.
+     */
+    readonly rootStateMachine: NestedStateMachine;
+
+    /**
+     * An unrolled list of all transitions in this state machine across all layers.
+     */
     readonly transitions: StateTransition[];
+
+    /**
+     * An unrolled list of all states in this state machine across all layers.
+     */
     readonly states: StateBehavior[];
+
+    /**
+     * An unrolled list of all nested state machines in this state machine across
+     * all layers.
+     */
+    readonly nestedStateMachines: NestedStateMachine[];
 
     /**
      * Creates a new, simple state machine for handling bot behavior.
      * 
      * @param bot - The bot being acted on.
-     * @param transitions - A list of all state transitions which can occur.
-     * @param start - The starting state.
+     * @param rootStateMachine - The root level state machine.
      */
-    constructor(bot: Bot, transitions: StateTransition[], start: StateBehavior)
+    constructor(bot: Bot, rootStateMachine: NestedStateMachine)
     {
         super();
 
         this.bot = bot;
-        this.transitions = transitions;
-        this.activeState = start;
-        this.initialState = start;
+        this.rootStateMachine = rootStateMachine;
 
         this.states = [];
-        this.findStates();
+        this.transitions = [];
+        this.nestedStateMachines = [];
+        this.findStatesRecursive(this.rootStateMachine);
+        this.findTransitionsRecursive(this.rootStateMachine);
+        this.findNestedStateMachines(this.rootStateMachine);
 
-        if (this.activeState.onStateEntered)
-            this.activeState.onStateEntered();
-
-        this.activeState.active = true;
         this.bot.on('physicTick', () => this.update());
+
+        this.rootStateMachine.active = true;
+        this.rootStateMachine.onStateEntered();
     }
 
-    /**
-     * Creates a quick lookup list of all states in this state machine.
-     */
-    private findStates(): void
+    private findNestedStateMachines(nested: NestedStateMachine, depth: number = 0): void
     {
-        this.states.push(this.activeState);
+        this.nestedStateMachines.push(nested);
+        nested.depth = depth;
 
-        for (let i = 0; i < this.transitions.length; i++)
+        nested.on("stateChanged", () => this.emit("stateChanged"));
+
+        for (const state of nested.states)
         {
-            if (this.states.indexOf(this.transitions[i].parentState) == -1)
-                this.states.push(this.transitions[i].parentState);
+            if (state instanceof NestedStateMachine)
+                this.findNestedStateMachines(state, depth + 1);
+        }
+    }
 
-            if (this.states.indexOf(this.transitions[i].childState) == -1)
-                this.states.push(this.transitions[i].childState);
+    private findStatesRecursive(nested: NestedStateMachine): void
+    {
+        for (const state of nested.states)
+        {
+            this.states.push(state);
+
+            if (state instanceof NestedStateMachine)
+                this.findStatesRecursive(state);
+        }
+    }
+
+    private findTransitionsRecursive(nested: NestedStateMachine): void
+    {
+        for (const trans of nested.transitions)
+            this.transitions.push(trans);
+
+        for (const state of nested.states)
+        {
+            if (state instanceof NestedStateMachine)
+                this.findTransitionsRecursive(state);
         }
     }
 
     /**
-     * Called each tick to check if a transition should occur.
+     * Called each tick to update the root state machine.
      */
     private update(): void
     {
-        for (let i = 0; i < this.transitions.length; i++)
-        {
-            let transition = this.transitions[i];
-            if (transition.parentState === this.activeState)
-            {
-                if (transition.isTriggered() || transition.shouldTransition())
-                {
-                    transition.resetTrigger();
-
-                    this.activeState.active = false;
-                    if (this.activeState.onStateExited)
-                        this.activeState.onStateExited();
-
-                    transition.onTransition();
-                    this.activeState = transition.childState;
-
-                    this.activeState.active = true;
-                    if (this.activeState.onStateEntered)
-                        this.activeState.onStateEntered();
-
-                    if (globalSettings.debugMode)
-                        console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
-
-                    this.emit("stateChanged");
-
-                    return;
-                }
-            }
-        }
-    }
-
-    /**
-     * Gets the currently active state.
-     * 
-     * @returns The active state.
-     */
-    getActiveState(): StateBehavior
-    {
-        return this.activeState;
-    }
-
-    /**
-     * Gets the state that the state machine was initialized with.
-     * 
-     * @returns The initial state.
-     */
-    getInitialState(): StateBehavior
-    {
-        return this.initialState;
+        this.rootStateMachine.update();
     }
 }
 
@@ -247,4 +243,165 @@ export interface StateMachineTargets
     positions?: Vec3[];
     items?: any[];
     players?: Player[];
+}
+
+/**
+ * A single state machine layer within the global state machine. Can recursively
+ * contain nested state machines as well.
+ * 
+ * This can be treated as a state behavior, allowing users to transition into
+ * and out of this state machine without knowing it's internal components.
+ */
+export class NestedStateMachine extends EventEmitter implements StateBehavior
+{
+    /**
+     * A list of all states within this state machine layer.
+     */
+    readonly states: StateBehavior[];
+
+    /**
+     * A list of all transitions within this state machine layer.
+     */
+    readonly transitions: StateTransition[];
+
+    /**
+     * The state to initialize from when entering this behavior.
+     */
+    readonly enter: StateBehavior;
+
+    /**
+     * The state to symbolize this state machine operation has finished.
+     */
+    readonly exit?: StateBehavior;
+
+    /**
+     * The currently active state within this state machine layer.
+     */
+    activeState?: StateBehavior;
+
+    /**
+     * The name of this state behavior.
+     */
+    stateName: string = 'nestedStateMachine';
+
+    /**
+     * Whether or not this state machine layer is active.
+     */
+    active: boolean = false;
+
+    /**
+     * The depth of this layer within the entire state machine.
+     */
+    depth: number = 0;
+
+    /**
+     * Creates a new nested state machine layer.
+     * @param transitions - The list of transitions within this layer.
+     * @param enter - The state to activate when entering this state.
+     * @param exit - The state used to symbolize this layer has completed.
+     */
+    constructor(transitions: StateTransition[], enter: StateBehavior, exit?: StateBehavior)
+    {
+        super();
+
+        this.transitions = transitions;
+        this.enter = enter;
+        this.exit = exit;
+
+        this.states = this.findStates();
+    }
+
+    private findStates(): StateBehavior[]
+    {
+        const states = [];
+        states.push(this.enter);
+
+        if (this.exit)
+        {
+            if (states.indexOf(this.exit) == -1)
+                states.push(this.exit);
+        }
+
+        for (let i = 0; i < this.transitions.length; i++)
+        {
+            const trans = this.transitions[i];
+
+            if (states.indexOf(trans.parentState) == -1)
+                states.push(trans.parentState);
+
+            if (states.indexOf(trans.childState) == -1)
+                states.push(trans.childState);
+        }
+
+        return states;
+    }
+
+    onStateEntered(): void
+    {
+        this.activeState = this.enter;
+        this.activeState.active = true;
+        this.activeState.onStateEntered?.();
+
+        if (globalSettings.debugMode)
+            console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+
+        this.emit("stateChanged");
+    }
+
+    update(): void
+    {
+        this.activeState?.update?.();
+
+        for (let i = 0; i < this.transitions.length; i++)
+        {
+            let transition = this.transitions[i];
+            if (transition.parentState === this.activeState)
+            {
+                if (transition.isTriggered() || transition.shouldTransition())
+                {
+                    transition.resetTrigger();
+
+                    this.activeState.active = false;
+                    this.activeState.onStateExited?.();
+
+                    transition.onTransition();
+                    this.activeState = transition.childState;
+
+                    this.activeState.active = true;
+                    this.activeState.onStateEntered?.();
+
+                    if (globalSettings.debugMode)
+                        console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+
+                    this.emit("stateChanged");
+
+                    return;
+                }
+            }
+        }
+    }
+
+    onStateExited(): void
+    {
+        if (!this.activeState)
+            return;
+
+        this.activeState.active = false;
+        this.activeState.onStateExited?.();
+        this.activeState = undefined;
+    }
+
+    /**
+     * Checks whether or not this state machine layer has finished running.
+     */
+    isFinished(): boolean
+    {
+        if (!this.active)
+            return true;
+
+        if (!this.exit)
+            return true;
+
+        return this.activeState == this.exit;
+    }
 }

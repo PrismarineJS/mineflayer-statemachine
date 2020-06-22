@@ -1,5 +1,5 @@
 <h1 align="center">Mineflayer-StateMachine</h1>
-<p align="center"><i>This project is a plugin designed for <a href="https://github.com/PrismarineJS/mineflayer">Mineflayer</a> that adds a high level API for writing state machines. As bot AI code can grow very quickly, writing this code in a finite state machine manner can help keep the code base manageable and improve quality of the bot's behavior trees.</i></p>
+<p align="center"><i>This project is a plugin designed for <a href="https://github.com/PrismarineJS/mineflayer">Mineflayer</a> that adds a high level API for writing state machines. As bot AI code can grow very quickly, writing this code in a finite state machine manner can help keep the code base manageable and improve quality of bot behavior trees.</i></p>
 
 <p align="center">
   <img src="https://github.com/TheDudeFromCI/mineflayer-statemachine/workflows/Build/badge.svg" />
@@ -21,7 +21,8 @@
 
 <h3 align="center">And a Warm Thank You To</h3>
 <p align="center">
-  :rocket: chezhead :rocket:
+  :rocket: chezhead
+ :rocket:
 </p>
 
 <br />
@@ -76,15 +77,12 @@ const {
     EntityFilters,
     BehaviorFollowEntity,
     BehaviorLookAtEntity,
-    BehaviorGetClosestEntity } = require("mineflayer-statemachine");
+    BehaviorGetClosestEntity,
+    NestedStateMachine } = require("mineflayer-statemachine");
     
 // wait for our bot to login.
-let initialized = false;
-bot.on("spawn", () =>
+bot.once("spawn", () =>
 {
-    if (initialized) return;
-    initialized = true;
-
     // This targets object is used to pass data between different states. It can be left empty.
     const targets = {};
 
@@ -120,9 +118,13 @@ bot.on("spawn", () =>
             shouldTransition: () => lookAtPlayer.distanceToTarget() >= 2,
         }),
     ];
+
+    // Now we just wrap our transition list in a nested state machine layer. We want the bot
+    // to start on the getClosestPlayer state, so we'll specify that here.
+    const rootLayer = new NestedStateMachine(transitions, getClosestPlayer);
     
     // We can start our state machine simply by creating a new instance.
-    new BotStateMachine(bot, transitions, printServerStates);
+    new BotStateMachine(bot, rootLayer);
 });
 ```
 
@@ -137,10 +139,9 @@ bot.on("spawn", () =>
 * Look at Entity Behavior
 * Follow Entity Behavior
 * Move to Position Behavior
+* Nested State Machines
 
 **To Do**
-* Multi-Layered State Machines
-* Nested State Machines
 * Show Targets in Web View
 * Camera Controls in Web View
 * Collection-based Behaviors

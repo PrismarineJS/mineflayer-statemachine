@@ -17,25 +17,22 @@ const bot = mineflayer.createBot({
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
 
 const {
-    globalSettings, 
+    globalSettings,
     StateTransition,
     BotStateMachine,
-    StateMachineWebserver, 
+    StateMachineWebserver,
     EntityFilters,
     BehaviorIdle,
     BehaviorPrintServerStats,
     BehaviorFollowEntity,
     BehaviorLookAtEntity,
-    BehaviorGetClosestEntity } = require("./../lib");
+    BehaviorGetClosestEntity,
+    NestedStateMachine } = require("./../lib");
 
 globalSettings.debugMode = true;
 
-let initialized = false;
-bot.on("spawn", () =>
+bot.once("spawn", () =>
 {
-    if (initialized) return;
-    initialized = true;
-
     const targets = {};
 
     const printServerStates = new BehaviorPrintServerStats(bot);
@@ -123,6 +120,9 @@ bot.on("spawn", () =>
 
     ];
 
+    const root = new NestedStateMachine(transitions, printServerStates);
+    root.name = "main";
+
     bot.on("chat", (username, message) =>
     {
         if (message === "hi")
@@ -145,8 +145,7 @@ bot.on("spawn", () =>
         }
     });
 
-    const stateMachine = new BotStateMachine(bot, transitions, printServerStates);
+    const stateMachine = new BotStateMachine(bot, root);
     const webserver = new StateMachineWebserver(bot, stateMachine);
-
     webserver.startServer();
 });
