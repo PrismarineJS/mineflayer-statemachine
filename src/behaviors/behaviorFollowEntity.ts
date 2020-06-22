@@ -10,13 +10,18 @@ import { Movements, goals } from "mineflayer-pathfinder";
  */
 export class BehaviorFollowEntity implements StateBehavior
 {
-    private readonly bot: Bot;
     private readonly mcData: any;
 
+    readonly bot: Bot;
     readonly targets: StateMachineTargets;
     readonly movements: Movements;
+
     stateName: string = 'followEntity';
     active: boolean = false;
+
+    /**
+     * How close to the entity should the bot attempt to get?
+     */
     followDistance: number = 0;
 
     constructor(bot: Bot, targets: StateMachineTargets)
