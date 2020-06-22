@@ -11,6 +11,7 @@ Welcome to the *mineflayer-statemachine* API documentation page.
     - [1.2.2. Transition Based Events](#122-transition-based-events)
   - [1.3. Targets](#13-targets)
     - [1.3.1 Common Targets](#131-common-targets)
+  - [1.4. Nested State Machines](#14-nested-state-machines)
 - [2. Web View](#2-web-view)
   - [2.1. Activating the Web Vew](#21-activating-the-web-vew)
   - [2.2. Web View Components](#22-web-view-components)
@@ -30,6 +31,7 @@ Welcome to the *mineflayer-statemachine* API documentation page.
   - [3.4. Look At Entity](#34-look-at-entity)
   - [3.5. Move To](#35-move-to)
   - [3.6. Print Server Stats](#36-print-server-stats)
+  - [3.7. Equip Item](#37-equip-item)
 
 ## 1. State Machine
 
@@ -229,6 +231,83 @@ In order to keep things as portable as possible, behaviors are encouraged to kee
 | targets.player    | A specific player. Should be used when working with player APIs specifically. Otherwise, `targets.entity` is recommend.               |
 | targets.players   | A list of players. See `targets.player`                                                                                               |
 
+### 1.4. Nested State Machines
+
+Nested state machines, often referred to as layers, are a method of making large state machines more manageable and more scalable. They work by allowing a state machine to act as a singular behavior within another state machine. This state can be transitioned into and out of like any other state. While this state is active, it's own inner state machine starts operating and updating as a normal state machine.
+
+Nested state machines operate completely independently from their parent state machine. Neither needs to know how the other is implemented. This allows the state machine creation process to be separated across many files or classes easily.
+
+A nested state machine can be created by passing in a list of transitions, an enter state, and an optional exit state.
+
+```js
+function createFollowPlayerState()
+{
+    const targets = {};
+    const playerFilter = EntityFilters().PlayersOnly;
+
+    const enter = new IdleBehavior();
+    const exit = new IdleBehavior();
+
+    const followPlayer = new BehaviorFollowEntity(bot, targets);
+    const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, playerFilter);
+
+    const transitions = [
+
+        new StateTransition({
+            parent: enter,
+            child: getClosestPlayer,
+            shouldTransition: () => true,
+        }),
+
+        new StateTransition({
+            parent: getClosestPlayer,
+            child: followPlayer,
+            shouldTransition: () => targets.entity !== undefined,
+        }),
+
+        new StateTransition({
+            parent: getClosestPlayer,
+            child: exit,
+            shouldTransition: () => targets.entity === undefined,
+        }),
+
+        new StateTransition({
+            parent: followPlayer,
+            child: exit,
+            shouldTransition: () => followPlayer.distanceToTarget() < 2,
+        }),
+
+    ];
+
+    return new NestedStateMachine(transitions, enter, exit);
+}
+```
+
+After creating a nested state machine, it can be used like any other state!
+
+```js
+const idleState = new IdleBehavior();
+const followPlayerState = createFollowPlayerState();
+
+const transitions = [
+
+    new StateTransition({
+        parent: idleState,
+        child: followPlayerState,
+        shouldTransition: () => true,
+    }),
+
+    new StateTransition({
+        parent: followPlayerState,
+        child: idleState,
+        shouldTransition: () => followPlayerState.isFinished(),
+    }),
+
+];
+```
+
+With this set up, the entire implementation of the followPlayer state is completely encapsulated, making it easy to tweak and adjust without needing to worry about breaking other states which rely on it.
+
 ## 2. Web View
 
 As the size of a state machine grows, it can be hard to debug what exactly is going on or why certain events are occurring. It can often be useful to visualize the statemachine as it is running to get a better feel for how each of the gears and pulleys are working. The web view is a simple way to debug your state machine to ensure that everything is moving swiftly and easily.
@@ -357,13 +436,14 @@ Returns true for all item drops and collectable arrows.
 
 ### 3.3. Idle
 
-Class Name: **BehaviorIdle**
+Class Name: **BehaviorIdle** <br />
+Type: **Active**
 
 This behavior preforms no action. It's useful as a default state that the bot can use while waiting for a command.
 
 ### 3.4. Look At Entity
 
-Class Name: **BehaviorLookAtEntity**
+Class Name: **BehaviorLookAtEntity** <br />
 Type: **Active**
 
 This behavior will look at the target entity ([Target `targets.entity`](#13-targets)) without moving. If the target entity moves around, the bot will track it's movements. If no target entity is assigned, this behavior will do nothing.
@@ -372,7 +452,7 @@ By default, this behavior looks at the head of the target entity.
 
 ### 3.5. Move To
 
-Class Name: **BehaviorMoveTo**
+Class Name: **BehaviorMoveTo** <br />
 Type: **Active**
 
 This behavior will path find to the target position, ([Target `targets.position`](#13-targets)), or try and get as close as possible. This behavior is built of using [mineflayer-pathfinder](https://github.com/Karang/mineflayer-pathfinder). The `movements` field of this behavior can be used to configure the pathfinding operation, as specified by the *mineflayer-pathfinder* API.
@@ -381,7 +461,16 @@ If the target position is not assigned, this behavior will preform no action. If
 
 ### 3.6. Print Server Stats
 
-Class Name: **BehaviorPrintServerStats**
+Class Name: **BehaviorPrintServerStats** <br />
 Type: **Passive**
 
 This behavior prints a set of debug information to the console about the server, such as Minecraft version, players online, game mode, etc. This can be used as an the initial state when first logging in to a server for debugging purposes.
+
+### 3.7. Equip Item
+
+Class Name: **BehaviorEquipItem** <br />
+Type: **Passive**
+
+This behavior causes the bot to equip the item as specified by ([Target `targets.item`](#13-targets)) This item can optionally be moved to the bots hand or equipped as armor.
+
+If the target item is undefined or cannot be equipped for any reason, this behavior preforms no action.
