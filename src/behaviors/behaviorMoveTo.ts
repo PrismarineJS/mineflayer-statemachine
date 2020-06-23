@@ -97,4 +97,15 @@ export class BehaviorMoveTo implements StateBehavior
         this.stopMoving();
         this.startMoving();
     }
+
+    /**
+     * Checks if the bot has finished moving or not.
+     */
+    isFinished(): boolean
+    {
+        // @ts-ignore
+        const pathfinder = this.bot.pathfinder;
+
+        return !pathfinder.isMoving();
+    }
 }
