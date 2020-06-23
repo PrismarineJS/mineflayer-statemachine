@@ -78,7 +78,9 @@ export class BehaviorFindInteractPosition implements StateBehavior
         }
 
         positions.sort((a, b) => a.cost - b.cost);
-        this.targets.position = positions[0].position;
+
+        // @ts-ignore
+        this.targets.position = positions[0].position.offset(0.5, 0, 0.5);
     }
 
     /**
@@ -184,7 +186,7 @@ class StandingPositionCosts
         ];
 
         this.blockCosts = [
-            [mcData.blocksByName.water.id, 25, 100]
+            [mcData.blocksByName.water.id, 25, 100],
             [mcData.blocksByName.wheat.id, 5]
         ];
     }
