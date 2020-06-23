@@ -366,14 +366,13 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
 
                     transition.onTransition();
                     this.activeState = transition.childState;
-
                     this.activeState.active = true;
-                    this.activeState.onStateEntered?.();
 
                     if (globalSettings.debugMode)
                         console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
-
                     this.emit("stateChanged");
+
+                    this.activeState.onStateEntered?.();
 
                     return;
                 }
