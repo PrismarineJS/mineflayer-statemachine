@@ -53,7 +53,7 @@ export class BehaviorFindBlock implements StateBehavior
             matching: (block: Block) => this.matchesBlock(block),
             maxDistance: this.maxDistance,
             point: this.bot.entity.position, // TODO Remove when mineflayer makes field optional in TS.
-        }).position;
+        })?.position;
     }
 
     private matchesBlock(block: Block): boolean
