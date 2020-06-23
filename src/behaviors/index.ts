@@ -9,3 +9,4 @@ export * from "./behaviorMoveTo";
 export * from "./behaviorGetClosestEntity";
 export * from "./behaviorEquipItem";
 export * from "./behaviorFindBlock";
+export * from "./behaviorFindInteractPosition";

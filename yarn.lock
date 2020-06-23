@@ -3,23 +3,23 @@
 
 
 "@babel/code-frame@^7.0.0":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.1.tgz#d5481c5095daa1c57e16e54c6f9198443afb49ff"
-  integrity sha512-IGhtTmpjGbYzcEDOw7DcQtbQSXcG9ftmAXtWTu9V936vDye4xjjekktFAtgZsWpzTj/X01jocB46mTywm/4SZw==
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.10.3.tgz#324bcfd8d35cd3d47dae18cde63d752086435e9a"
+  integrity sha512-fDx9eNW0qz0WkUeqL6tXEXzVlPh6Y5aCDEZesl0xBGA8ndRukX91Uk44ZqnkECp01NAZUdCAl+aiQNGi0k88Eg==
   dependencies:
-    "@babel/highlight" "^7.10.1"
+    "@babel/highlight" "^7.10.3"
 
-"@babel/helper-validator-identifier@^7.10.1":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.10.1.tgz#5770b0c1a826c4f53f5ede5e153163e0318e94b5"
-  integrity sha512-5vW/JXLALhczRCWP0PnFDMCJAchlBvM7f4uk/jXritBnIa6E1KmqmtrS3yn1LAnxFBypQ3eneLuXjsnfQsgILw==
+"@babel/helper-validator-identifier@^7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/helper-validator-identifier/-/helper-validator-identifier-7.10.3.tgz#60d9847f98c4cea1b279e005fdb7c28be5412d15"
+  integrity sha512-bU8JvtlYpJSBPuj1VUmKpFGaDZuLxASky3LhaKj3bmpSTY6VWooSM8msk+Z0CZoErFye2tlABF6yDkT3FOPAXw==
 
-"@babel/highlight@^7.10.1":
-  version "7.10.1"
-  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.10.1.tgz#841d098ba613ba1a427a2b383d79e35552c38ae0"
-  integrity sha512-8rMof+gVP8mxYZApLF/JgNDAkdKa+aJt3ZYxF8z6+j/hpeXL7iMsKCPHa2jNMHu/qqBwzQF4OHNoYi8dMA/rYg==
+"@babel/highlight@^7.10.3":
+  version "7.10.3"
+  resolved "https://registry.yarnpkg.com/@babel/highlight/-/highlight-7.10.3.tgz#c633bb34adf07c5c13156692f5922c81ec53f28d"
+  integrity sha512-Ih9B/u7AtgEnySE2L2F0Xm0GaM729XqqLfHkalTsbjXGyqmf/6M0Cu0WpvqueUlW+xk88BHw9Nkpj49naU+vWw==
   dependencies:
-    "@babel/helper-validator-identifier" "^7.10.1"
+    "@babel/helper-validator-identifier" "^7.10.3"
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
@@ -104,6 +104,11 @@
   dependencies:
     "@types/engine.io" "*"
     "@types/node" "*"
+
+"@types/vec3@0.0.29":
+  version "0.0.29"
+  resolved "https://registry.yarnpkg.com/@types/vec3/-/vec3-0.0.29.tgz#ebcf219c488ede6ea71a155691939357b63c689f"
+  integrity sha512-U/PQ+oo2ORW02KPacSXxopRn5Bal7UvrkktRYVRX7lRe6wxPUC9B784GjfjYbtGfY4mHnsSOeCzJAs8Mwr05aQ==
 
 accepts@~1.3.4, accepts@~1.3.7:
   version "1.3.7"
@@ -935,9 +940,9 @@ eslint-utils@^1.4.2, eslint-utils@^1.4.3:
     eslint-visitor-keys "^1.1.0"
 
 eslint-visitor-keys@^1.0.0, eslint-visitor-keys@^1.1.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.2.0.tgz#74415ac884874495f78ec2a97349525344c981fa"
-  integrity sha512-WFb4ihckKil6hu3Dp798xdzSfddwKKU3+nGniKF6HfeW6OLd2OUDEPP7TcHtB5+QXOKg2s6B2DaMPE1Nn/kxKQ==
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-1.3.0.tgz#30ebd1ef7c2fdff01c3a4f151044af25fab0523e"
+  integrity sha512-6J72N8UNa462wa/KFODt/PJ3IU60SDpC3QXC1Hjc1BXXpfL2C9R5+AU7jhe0F6GREqVMh4Juu+NY7xn+6dipUQ==
 
 eslint@~4.18.0:
   version "4.18.2"
@@ -1741,14 +1746,14 @@ mimic-fn@^2.1.0:
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
 
 minecraft-data@^2.44.0, minecraft-data@^2.51.0, minecraft-data@^2.53.0, minecraft-data@^2.54.0, minecraft-data@^2.55.0:
-  version "2.55.0"
-  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.55.0.tgz#711bcd812b438d88cdc91bea441c51e62bacc439"
-  integrity sha512-+w8gfKaZ+ZpKP51nR8PSs4lMzWupXGVoKwyY10SWYrW/iEjubyYPYBF/gJQ/iFlgjkr79wb4DAQnH1iTyTGJ5A==
+  version "2.57.0"
+  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.57.0.tgz#a78fda47c0af7618efcc9734f09b03e77839ad88"
+  integrity sha512-RNJr1shSNUHJg7WeAEBcT2KQTbE+ei5tEVGJ7SUOQBYciu9VL98CFb56tGB/QcegeEKc2f/28O4XjNcW1M1oBw==
 
 minecraft-protocol@^1.12.0:
-  version "1.12.2"
-  resolved "https://registry.yarnpkg.com/minecraft-protocol/-/minecraft-protocol-1.12.2.tgz#227d913174f210db5e269b4512e75a605a56e3fe"
-  integrity sha512-+GfCR5P0P4S7V4HlmVS8osmW80BoaEj6M1aoyw9h2un54kxPLr6lEoBUoFYjX4mLWZW2SVGgQ6EfdDmOGf8k7g==
+  version "1.12.4"
+  resolved "https://registry.yarnpkg.com/minecraft-protocol/-/minecraft-protocol-1.12.4.tgz#e5ce2b2895f79729370ce8b5480d20c9ebf4c2c7"
+  integrity sha512-K/aflOEMMWegMuPAEmhxT5LKqKpw1ZpSDAOmpCMAkyoiDoIDiA2tEYX92DLYSrQaHS8t5OhgL6OOKq7TObsGuQ==
   dependencies:
     buffer-equal "^1.0.0"
     debug "^4.1.0"
@@ -1758,7 +1763,7 @@ minecraft-protocol@^1.12.0:
     minecraft-data "^2.44.0"
     node-rsa "^0.4.2"
     prismarine-nbt "^1.3.0"
-    protodef "^1.7.0"
+    protodef "^1.8.0"
     readable-stream "^3.0.6"
     uuid-1345 "^1.0.1"
     yggdrasil "^1.3.0"
@@ -1771,10 +1776,10 @@ mineflayer-pathfinder@^1.0.5:
     minecraft-data "^2.54.0"
     mineflayer "^2.19.0"
 
-mineflayer@^2.19.0, mineflayer@^2.20.0:
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/mineflayer/-/mineflayer-2.20.0.tgz#6bf6fcba54fffef45781b6a96738c53ceea0d4b5"
-  integrity sha512-0lDhuuqH4+IxxyJ9PpcOTRyOY+FKmCZh1oqHcYLIZionHJM704g+MBRjZKsmq23cDM8z6qoPPg0eCZvwrHe5lg==
+mineflayer@^2.19.0, mineflayer@^2.21.0:
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/mineflayer/-/mineflayer-2.21.0.tgz#bf84a4ebd50ac74b804ec95d9f3ee93bd3e8bfc9"
+  integrity sha512-8puAIBob/JBvujRh2DBGcxyDUR8PcqerRgDiDN3kH9FLsuX4kegfd3K+6ZPUEn7LUQ36vX5w/GD6WjXtt6a6YQ==
   dependencies:
     minecraft-data "^2.53.0"
     minecraft-protocol "^1.12.0"
@@ -1882,9 +1887,9 @@ object-component@0.0.3:
   integrity sha1-8MaapQ78lbhmwYb0AKM3acsvEpE=
 
 object-inspect@^1.7.0:
-  version "1.7.0"
-  resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.7.0.tgz#f4f6bd181ad77f006b5ece60bd0b6f398ff74a67"
-  integrity sha512-a7pEHdh1xKIAgTySUGgLMx/xwDZskN1Ud6egYYN3EdRW4ZMPNEDUTF+hwy2LUC+Bl+SyLXANnwz/jyh/qutKUw==
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/object-inspect/-/object-inspect-1.8.0.tgz#df807e5ecf53a609cc6bfe93eac3cc7be5b3a9d0"
+  integrity sha512-jLdtEOB112fORuypAyl/50VRVIBIdVQOSUUGQHzJ4xBSbit81zRarz7GThkEFZy1RceYrWYcPcBFPQwHyAc1gA==
 
 object-keys@^1.0.11, object-keys@^1.0.12, object-keys@^1.1.1:
   version "1.1.1"
@@ -2237,10 +2242,10 @@ protodef-validator@^1.2.2:
   dependencies:
     ajv "^6.5.4"
 
-protodef@^1.7.0, protodef@^1.7.1:
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/protodef/-/protodef-1.7.2.tgz#7678ebbb70176d4f590d1cf4b8d3f6306dbedb51"
-  integrity sha512-Sbv0x7rH4yJuAe979auycFZgzqlKt9kM5FGSYa4QYF8ylG+x7C23Zk0jUYTenG1d5CUNzYiKjSfYZGTVnqY8UQ==
+protodef@^1.7.0, protodef@^1.7.1, protodef@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/protodef/-/protodef-1.8.0.tgz#35b640fe08b17e8541ecee3b1bc4c289a2af6b9b"
+  integrity sha512-D0kMc6mIgkgCy2xDeDhD15N7VRfHYphZNyqZAXRMW8Qkws0jV+ouEHaZhDbJW2rdwzXq1y7AgCzUHJlgIWIIaw==
   dependencies:
     lodash.get "^4.4.2"
     lodash.reduce "^4.6.0"
@@ -2940,9 +2945,9 @@ vec3@^0.1.3, vec3@^0.1.4, vec3@^0.1.5:
   dependencies:
     standard "^14.3.4"
 
-"vec3@https://github.com/andrewrk/node-vec3.git":
+"vec3@git+https://github.com/andrewrk/node-vec3.git":
   version "0.1.5"
-  resolved "https://github.com/andrewrk/node-vec3.git#c691d274d385bfbe7c2aa05c21d5570d55e07daf"
+  resolved "git+https://github.com/andrewrk/node-vec3.git#c691d274d385bfbe7c2aa05c21d5570d55e07daf"
   dependencies:
     standard "^14.3.4"
 

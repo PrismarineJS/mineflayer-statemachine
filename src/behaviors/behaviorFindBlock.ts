@@ -2,6 +2,8 @@ import { StateBehavior, StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
 import { Block } from "prismarine-block";
 
+// TODO Add option to find blocks based on the distance the bot would have to move to reach it.
+
 /**
  * This behavior will search a configurable area around the bot in order to
  * locate a block matching the given configuration. The block will be assigned
@@ -47,11 +49,11 @@ export class BehaviorFindBlock implements StateBehavior
 
     onStateEntered(): void
     {
-        // @ts-ignore // TODO Remove when mineflayer adds findBlocks to index.d.ts
-        targets.position = this.bot.findBlock({
-            matching: block => this.matchesBlock(block),
+        this.targets.position = this.bot.findBlock({
+            matching: (block: Block) => this.matchesBlock(block),
             maxDistance: this.maxDistance,
-        });
+            point: this.bot.entity.position, // TODO Remove when mineflayer makes field optional in TS.
+        }).position;
     }
 
     private matchesBlock(block: Block): boolean
