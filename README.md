@@ -14,7 +14,7 @@
 
 <h2 align="center">A Super Special Thanks To</h2>
 <p align="center">
-  :star: Mika, Alora Brown :star:
+  :star: Mika, Alora Brown, TapirLiu :star:
 </p>
 
 <br />
