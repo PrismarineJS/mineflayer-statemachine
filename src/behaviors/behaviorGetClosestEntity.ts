@@ -59,7 +59,6 @@ export class BehaviorGetClosestEntity implements StateBehavior
             if (!this.filter(entity))
                 continue;
 
-            // @ts-ignore
             let dist = entity.position.distanceTo(this.bot.entity.position);
 
             if (closest === null || dist < distance)

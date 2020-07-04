@@ -79,7 +79,6 @@ export class BehaviorMoveTo implements StateBehavior
         // @ts-ignore
         let pathfinder = this.bot.pathfinder;
 
-        // @ts-ignore
         const goal = new goals.GoalBlock(position.x, position.y, position.z);
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal, true);

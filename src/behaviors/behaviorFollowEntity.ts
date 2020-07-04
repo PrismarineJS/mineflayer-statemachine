@@ -118,7 +118,6 @@ export class BehaviorFollowEntity implements StateBehavior
         if (!entity)
             return 0;
 
-        // @ts-ignore
         return this.bot.entity.position.distanceTo(entity.position);
     }
 }

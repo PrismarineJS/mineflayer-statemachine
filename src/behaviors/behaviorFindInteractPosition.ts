@@ -81,8 +81,6 @@ export class BehaviorFindInteractPosition implements StateBehavior
         }
 
         positions.sort((a, b) => a.cost - b.cost);
-
-        // @ts-ignore
         this.targets.position = positions[0].position.offset(0.5, 0, 0.5);
     }
 
@@ -100,13 +98,11 @@ export class BehaviorFindInteractPosition implements StateBehavior
             return;
 
         // Ignore if block can't be stood on.
-        // @ts-ignore Not sure why offset throws a TS error
         const under = this.bot.blockAt(block.position.offset(0, -1, 0));
         if (!under || under.boundingBox !== 'block')
             return;
 
         // Ignore if there is no head room.
-        // @ts-ignore Not sure why offset throws a TS error
         const over = this.bot.blockAt(block.position.offset(0, 1, 0));
         if (!over || over.boundingBox !== 'empty')
             return;

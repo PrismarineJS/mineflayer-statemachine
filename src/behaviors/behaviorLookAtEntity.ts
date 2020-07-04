@@ -22,7 +22,6 @@ export class BehaviorLookAtEntity implements StateBehavior
     {
         let entity = this.targets.entity;
         if (entity)
-            // @ts-ignore
             this.bot.lookAt(entity.position.offset(0, entity.height, 0));
     }
 
@@ -37,7 +36,6 @@ export class BehaviorLookAtEntity implements StateBehavior
         if (!entity)
             return 0;
 
-        // @ts-ignore
         return this.bot.entity.position.distanceTo(entity.position);
     }
 }
