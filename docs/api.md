@@ -230,6 +230,7 @@ In order to keep things as portable as possible, behaviors are encouraged to kee
 | targets.items     | A list of inventory items. See `targets.item`                                                                                         |
 | targets.player    | A specific player. Should be used when working with player APIs specifically. Otherwise, `targets.entity` is recommend.               |
 | targets.players   | A list of players. See `targets.player`                                                                                               |
+| targets.blockFace | A vec3 representing a block face direction. Must be axis aligned with a length of 1.                                                  |
 
 ### 1.4. Nested State Machines
 

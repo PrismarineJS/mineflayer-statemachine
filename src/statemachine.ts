@@ -238,6 +238,7 @@ export interface StateMachineTargets
     position?: Vec3;
     item?: any;
     player?: Player;
+    blockFace?: Vec3;
 
     entities?: Entity[];
     positions?: Vec3[];
