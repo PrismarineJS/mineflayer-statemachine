@@ -37,13 +37,12 @@
     "prismarine-entity": "^1.0.0",
     "prismarine-item": "^1.4.0",
     "socket.io": "^2.3.0",
-    "vec3": "git+https://github.com/andrewrk/node-vec3.git"
+    "vec3": "^0.1.5"
   },
   "devDependencies": {
     "@types/express": "4.17.6",
     "@types/node": "14.0.13",
     "@types/socket.io": "2.1.8",
-    "@types/vec3": "0.0.29",
     "typescript": "3.9.5"
   },
   "files": [
