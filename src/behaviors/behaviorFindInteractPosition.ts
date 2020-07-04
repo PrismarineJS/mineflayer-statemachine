@@ -3,6 +3,9 @@ import { Bot } from "mineflayer";
 import { Block } from "prismarine-block";
 import { Vec3 } from "vec3";
 
+/* TODO Allow for creating positions in the air, or mining out new positions,
+   if the bot if able to place blocks or mine in the area, respectively. */
+
 /**
  * If a block is defined in targets.position, this behavior will attempt to locate a
  * safe position to stand in order to interact with the block. (Breaking, placing, etc.)
@@ -57,13 +60,13 @@ export class BehaviorFindInteractPosition implements StateBehavior
         if (!this.targets.position)
             return;
 
+        this.targets.position.floor();
         const positions: StandingPosition[] = [];
 
         for (let x = -this.maxDistance; x <= this.maxDistance; x++)
             for (let y = -this.maxDistance; y <= this.maxDistance; y++)
                 for (let z = -this.maxDistance; z <= this.maxDistance; z++)
                 {
-                    // @ts-ignore Not sure why offset throws a TS error
                     const position = this.targets.position.offset(x, y, z);
                     const block = this.bot.blockAt(position);
 
@@ -146,6 +149,21 @@ class StandingPositionCosts
     avoid: number[];
 
     /**
+     * If true, movement cost is calculated based on the distance between the bot and the
+     * standing position without taking the path into consideration. This is much faster
+     * than calculating the cost and works well in most cases. In some rare scenarios,
+     * however, the position may be further away.
+     * 
+     * If this is false, an entire movement path is calculated for each potential standing
+     * position. This is slow, and should only be used when accurate results are a priority.
+     * 
+     * NOTE
+     * ====
+     * Only approximate mode is implemented!
+     */
+    approximateMoveMode: boolean = true;
+
+    /**
      * A list of tuples for defining how much blocks should cost to stand
      * inside of.
      * 
@@ -160,12 +178,22 @@ class StandingPositionCosts
     /**
      * How much cost to add for each block away from the target the position is.
      */
-    distanceMultiplyer: number = 3;
+    distanceMultiplier: number = 3;
 
     /**
      * How much cost to add for each block the bot would need to move to get here.
      */
-    moveMultiplyer: number = 1;
+    moveMultiplier: number = 1;
+
+    /**
+     * How much cost to add for standing on the block.
+     */
+    standOnCost: number = 30;
+
+    /**
+     * How much cost to add for standing under the block.
+     */
+    standUnderCost: number = 10;
 
     /**
      * Creates a new StandingPositionCosts object.
@@ -220,7 +248,11 @@ class StandingPositionCosts
      */
     calculateStandCost(block: Block, over: Block): number
     {
+        if (!this.targets.position)
+            throw "Target position not assigned!";
+
         let cost = 0;
+        let targetPos = this.targets.position.floored();
 
         for (const c of this.blockCosts)
         {
@@ -231,12 +263,33 @@ class StandingPositionCosts
                 cost += c[2] || c[1];
         }
 
-        if (this.targets.position)
-            // @ts-ignore TypeScript can't load vec3 for some reason
-            cost += block.position.manhattanDistanceTo(this.targets.position) * this.distanceMultiplyer;
+        cost += block.position.manhattanDistanceTo(this.targets.position) * this.distanceMultiplier;
+        cost += this.calculatePathCost(block) * this.moveMultiplier;
 
-        // TODO Test bot path and add cost
+        if (this.numberEquals(block.position.x, targetPos.x)
+            && this.numberEquals(block.position.z, targetPos.z))
+        {
+            if (targetPos.y < block.position.y)
+                cost += this.standOnCost;
+
+            if (targetPos.y > block.position.y)
+                cost += this.standUnderCost;
+        }
 
         return cost;
+    }
+
+    private calculatePathCost(block: Block): number
+    {
+        if (this.approximateMoveMode)
+            return block.position.distanceTo(this.bot.entity.position);
+
+        // TODO Test bot path and add cost
+        return 0;
+    }
+
+    private numberEquals(a: number, b: number): boolean
+    {
+        return Math.abs(a - b) < 0.00001;
     }
 }
