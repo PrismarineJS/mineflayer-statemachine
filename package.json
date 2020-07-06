@@ -39,7 +39,7 @@
     "vec3": "https://github.com/andrewrk/node-vec3.git"
   },
   "devDependencies": {
-    "@types/express": "4.17.6",
+    "@types/express": "4.17.7",
     "@types/node": "14.0.14",
     "@types/socket.io": "2.1.8",
     "typescript": "3.9.6"
