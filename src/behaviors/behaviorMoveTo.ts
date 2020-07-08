@@ -1,4 +1,5 @@
 import { StateBehavior, StateMachineTargets } from "../statemachine";
+import { globalSettings } from "../index";
 import { Bot } from "mineflayer";
 import { Movements, goals } from "mineflayer-pathfinder";
 import { Vec3 } from "vec3";
@@ -11,7 +12,6 @@ import { Vec3 } from "vec3";
 export class BehaviorMoveTo implements StateBehavior
 {
     private readonly bot: Bot;
-    private readonly mcData: any;
 
     readonly targets: StateMachineTargets;
     readonly movements: Movements;
@@ -22,8 +22,23 @@ export class BehaviorMoveTo implements StateBehavior
     {
         this.bot = bot;
         this.targets = targets;
-        this.mcData = require('minecraft-data')(this.bot.version);
-        this.movements = new Movements(this.bot, this.mcData);
+
+        const mcData = require('minecraft-data')(bot.version);
+        this.movements = new Movements(bot, mcData);
+
+        // @ts-ignore
+        bot.on('path_update', (r) =>
+        {
+            if (r.status === 'noPath')
+                console.log("[MoveTo] No path to target!");
+        });
+
+        // @ts-ignore
+        bot.on('goal_reached', () =>
+        {
+            if (globalSettings.debugMode)
+                console.log("[MoveTo] Target reached.");
+        });
     }
 
     onStateEntered(): void
@@ -63,7 +78,7 @@ export class BehaviorMoveTo implements StateBehavior
     private stopMoving(): void
     {
         // @ts-ignore
-        let pathfinder = this.bot.pathfinder;
+        const pathfinder = this.bot.pathfinder;
         pathfinder.setGoal(null);
     }
 
@@ -72,16 +87,24 @@ export class BehaviorMoveTo implements StateBehavior
      */
     private startMoving(): void
     {
-        let position = this.targets.position;
+        const position = this.targets.position;
         if (!position)
+        {
+            if (globalSettings.debugMode)
+                console.log("[MoveTo] Target not defined. Skipping.");
+
             return;
+        }
+
+        if (globalSettings.debugMode)
+            console.log("[MoveTo] Moving from " + this.bot.entity.position + " to " + position);
 
         // @ts-ignore
-        let pathfinder = this.bot.pathfinder;
+        const pathfinder = this.bot.pathfinder;
 
         const goal = new goals.GoalBlock(position.x, position.y, position.z);
         pathfinder.setMovements(this.movements);
-        pathfinder.setGoal(goal, true);
+        pathfinder.setGoal(goal);
     }
 
     /**
@@ -104,7 +127,20 @@ export class BehaviorMoveTo implements StateBehavior
     {
         // @ts-ignore
         const pathfinder = this.bot.pathfinder;
-
         return !pathfinder.isMoving();
+    }
+
+    /**
+     * Gets the distance to the target position.
+     * 
+     * @returns The distance, or 0 if no target position is assigned.
+     */
+    distanceToTarget(): number
+    {
+        let position = this.targets.position;
+        if (!position)
+            return 0;
+
+        return this.bot.entity.position.distanceTo(position);
     }
 }
