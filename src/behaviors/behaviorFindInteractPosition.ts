@@ -103,8 +103,8 @@ export class BehaviorFindInteractPosition implements StateBehavior
             return;
 
         // Ignore if there is no head room.
-        const over = this.bot.blockAt(block.position.offset(0, 1, 0));
-        if (!over || over.boundingBox !== 'empty')
+        const over = this.bot.blockAt(block.position.offset(0, 1, 0)) || undefined;
+        if (over && over.boundingBox !== 'empty')
             return;
 
         if (this.costs.shouldAvoid(block, over))
@@ -223,12 +223,12 @@ class StandingPositionCosts
      * 
      * @returns True if the block should be avoided. False otherwise.
      */
-    shouldAvoid(block: Block, over: Block): boolean
+    shouldAvoid(block: Block, over?: Block): boolean
     {
         if (this.avoid.indexOf(block.type) > -1)
             return true;
 
-        if (this.avoid.indexOf(over.type) > -1)
+        if (over && this.avoid.indexOf(over.type) > -1)
             return true;
 
         return false;
@@ -242,7 +242,7 @@ class StandingPositionCosts
      * 
      * @returns The estimated cost value.
      */
-    calculateStandCost(block: Block, over: Block): number
+    calculateStandCost(block: Block, over?: Block): number
     {
         if (!this.targets.position)
             throw "Target position not assigned!";
@@ -255,7 +255,7 @@ class StandingPositionCosts
             if (block.type === c[0])
                 cost += c[1];
 
-            if (over.type === c[0])
+            if (over && over.type === c[0])
                 cost += c[2] || c[1];
         }
 

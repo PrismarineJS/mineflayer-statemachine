@@ -344,7 +344,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         this.activeState.onStateEntered?.();
 
         if (globalSettings.debugMode)
-            console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+            console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`);
 
         this.emit("stateChanged");
     }
@@ -370,7 +370,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
                     this.activeState.active = true;
 
                     if (globalSettings.debugMode)
-                        console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+                        console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`);
                     this.emit("stateChanged");
 
                     this.activeState.onStateEntered?.();
@@ -402,6 +402,6 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         if (!this.exit)
             return true;
 
-        return this.activeState == this.exit;
+        return this.activeState === this.exit;
     }
 }
