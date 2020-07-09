@@ -9,10 +9,21 @@ import { Entity } from "prismarine-entity";
  */
 export class BehaviorGetClosestEntity implements StateBehavior
 {
-    private readonly bot: Bot;
-    private readonly filter: (entity: Entity) => boolean;
+    /**
+     * The bot this behavior is acting on.
+     */
+    readonly bot: Bot;
 
+    /**
+     * The targets objects for this behavior.
+     */
     readonly targets: StateMachineTargets;
+
+    /**
+     * The filter being used to find entities with.
+     */
+    filter: (entity: Entity) => boolean;
+
     stateName: string = 'getClosestEntity';
     active: boolean = false;
 
@@ -48,7 +59,6 @@ export class BehaviorGetClosestEntity implements StateBehavior
             if (!this.filter(entity))
                 continue;
 
-            // @ts-ignore
             let dist = entity.position.distanceTo(this.bot.entity.position);
 
             if (closest === null || dist < distance)

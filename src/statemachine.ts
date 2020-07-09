@@ -238,6 +238,7 @@ export interface StateMachineTargets
     position?: Vec3;
     item?: any;
     player?: Player;
+    blockFace?: Vec3;
 
     entities?: Entity[];
     positions?: Vec3[];
@@ -343,7 +344,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         this.activeState.onStateEntered?.();
 
         if (globalSettings.debugMode)
-            console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
+            console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`);
 
         this.emit("stateChanged");
     }
@@ -366,14 +367,13 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
 
                     transition.onTransition();
                     this.activeState = transition.childState;
-
                     this.activeState.active = true;
-                    this.activeState.onStateEntered?.();
 
                     if (globalSettings.debugMode)
-                        console.log(`Switched bot behavior state to ${this.activeState.stateName}.`);
-
+                        console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`);
                     this.emit("stateChanged");
+
+                    this.activeState.onStateEntered?.();
 
                     return;
                 }
@@ -402,6 +402,6 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         if (!this.exit)
             return true;
 
-        return this.activeState == this.exit;
+        return this.activeState === this.exit;
     }
 }
