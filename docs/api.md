@@ -32,6 +32,11 @@ Welcome to the *mineflayer-statemachine* API documentation page.
   - [3.5. Move To](#35-move-to)
   - [3.6. Print Server Stats](#36-print-server-stats)
   - [3.7. Equip Item](#37-equip-item)
+  - [3.8. Find Block](#38-find-block)
+  - [3.9. Find Interact Position](#39-find-interact-position)
+  - [3.10. Interact Block](#310-interact-block)
+  - [3.11. Mine Block](#311-mine-block)
+  - [3.12. Place Block](#312-place-block)
 
 ## 1. State Machine
 
@@ -475,3 +480,38 @@ Type: **Passive**
 This behavior causes the bot to equip the item as specified by ([Target `targets.item`](#13-targets)) This item can optionally be moved to the bots hand or equipped as armor.
 
 If the target item is undefined or cannot be equipped for any reason, this behavior preforms no action.
+
+### 3.8. Find Block
+
+Class Name: **BehaviorFindBlock** <br />
+Type: **Passive**
+
+This behavior can be used to find a nearby block, of a given type, around the bot and store it's location as specified by ([Target `targets.position`](#13-targets)).
+
+### 3.9. Find Interact Position
+
+Class Name: **BehaviorFindInteractPosition** <br />
+Type: **Passive**
+
+This behavior is a quick information gathering-type behavior which is used to determine the best position to stand when interacting with blocks. This is useful for determining where to stand when breaking or placing blocks, opening chests, etc.
+
+### 3.10. Interact Block
+
+Class Name: **BehaviorInteractBlock** <br />
+Type: **Passive**
+
+This behavior triggers an active block action on the target block as specified by ([Target `targets.position`](#13-targets)). This will preform actions such as opening doors or pressing buttons.
+
+### 3.11. Mine Block
+
+Class Name: **BehaviorMineBlock** <br />
+Type: **Active**
+
+This behavior will cause the bot to attempt to mine the target block as specified by ([Target `targets.position`](#13-targets)). If a specific item is required to mine the given block, the bot will try to equip that item before mining the block.
+
+### 3.12. Place Block
+
+Class Name: **BehaviorPlaceBlock** <br />
+Type: **Passive**
+
+This behavior will place a given block specified by ([Target `targets.item`](#13-targets)), against the block specified location ([Target `targets.position`](#13-targets)), with the given block face to place against ([Target `targets.blockFace`](#13-targets)).
