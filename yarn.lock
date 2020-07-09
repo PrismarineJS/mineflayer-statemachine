@@ -2920,7 +2920,7 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typed-emitter@^1.2.0:
+typed-emitter@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/typed-emitter/-/typed-emitter-1.2.0.tgz#2b2b42ba78b3986ed0f37cc17b14d393022bc1e5"
   integrity sha512-lfkPbyK+/ZasvvSur2bSJ2Wb7GLUcXDMw+UhvkHUH+yd5/bKWkYOaizboa6xCRA3I7Q+97jkQDJgOVWqPJy3Gw==
