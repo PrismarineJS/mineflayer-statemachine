@@ -14,3 +14,4 @@ export * from "./behaviorFindInteractPosition";
 export * from "./behaviorMineBlock";
 export * from "./behaviorInteractBlock";
 export * from "./behaviorPlaceBlock";
+export * from "./behaviorMoveToInteract";
