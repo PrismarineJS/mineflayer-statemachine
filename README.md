@@ -47,7 +47,10 @@ Writing a complex bot AI can be difficult, especially if it has to be convincing
 ### Showcase
 
 **Videos**
+
 [Webserver Demo](https://www.youtube.com/watch?v=ZWMrJJ_RKu8)
+
+[Mining Demo](https://www.youtube.com/watch?v=aC-l0Buy0MY)
 
 ### Getting Started
 
