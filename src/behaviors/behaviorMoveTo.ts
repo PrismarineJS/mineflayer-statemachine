@@ -18,6 +18,13 @@ export class BehaviorMoveTo implements StateBehavior
     stateName: string = 'moveTo';
     active: boolean = false;
 
+    /**
+     * How close the bot should attempt to get to this location before
+     * considering the goal reached. A value of 0 will mean the bot must
+     * be inside the target position.
+     */
+    distance: number = 0;
+
     constructor(bot: Bot, targets: StateMachineTargets)
     {
         this.bot = bot;
@@ -102,7 +109,13 @@ export class BehaviorMoveTo implements StateBehavior
         // @ts-ignore
         const pathfinder = this.bot.pathfinder;
 
-        const goal = new goals.GoalBlock(position.x, position.y, position.z);
+        let goal;
+
+        if (this.distance === 0)
+            goal = new goals.GoalBlock(position.x, position.y, position.z);
+        else
+            goal = new goals.GoalNear(position.x, position.y, position.z, this.distance);
+
         pathfinder.setMovements(this.movements);
         pathfinder.setGoal(goal);
     }
