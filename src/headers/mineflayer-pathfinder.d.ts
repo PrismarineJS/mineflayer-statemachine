@@ -1,4 +1,4 @@
-import { Entity } from "prismarine-entity";
+/// <reference types="prismarine-entity" />
 
 declare module 'mineflayer-pathfinder'
 {
@@ -10,19 +10,42 @@ declare module 'mineflayer-pathfinder'
 
     export class PathNode
     {
-        data: any;
+        data: Move;
         g: number;
         h: number;
         f: number;
         parent?: PathNode;
 
-        set(data: any, g: number, h: number, parent?): void;
+        set(data: Move, g: number, h: number, parent?): void;
+    }
+
+    export interface MoveBlockChange
+    {
+        x: number;
+        y: number;
+        z: number;
+        dx: number;
+        dy: number;
+        dz: number;
+    }
+
+    export class Move
+    {
+        x: number;
+        y: number;
+        z: number;
+        remainingBlocks: number;
+        cost: number;
+        toBreak: MoveBlockChange[];
+        toPlace: MoveBlockChange[];
+        parkour: boolean;
+        hash: string;
     }
 
     export class Goal
     {
-        heuristic(node: PathNode): number;
-        isEnd(node: PathNode): boolean;
+        heuristic(node: Move): number;
+        isEnd(node: Move): boolean;
         hasChanged(): boolean;
     }
 
@@ -71,5 +94,27 @@ declare module 'mineflayer-pathfinder'
     export class GoalFollow extends Goal
     {
         constructor(entity: Entity, range: number);
+    }
+
+    export class Result
+    {
+        status: string;
+        cost: number;
+        time: number;
+        visitedNodes: number;
+        generatedNodes: number;
+        path: Move[];
+    }
+
+    export class Pathfinder
+    {
+        bestHarvestTool(block: Block): Item | null;
+        getPathTo(movements: Movements, goal: Goal, done: (Result) => void, timeout: number);
+        setGoal(goal: Goal): void;
+        setMovements(movements: Movements): void;
+        isMoving(): boolean;
+        isMining(): boolean;
+        isBuilding(): boolean;
+        isThinking(): boolean;
     }
 }
