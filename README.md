@@ -137,9 +137,11 @@ bot.once("spawn", () =>
 **Implemented**
 * Web View
 * Look at Entity Behavior
-* Follow Entity Behavior
-* Move to Position Behavior
 * Nested State Machines
+* Movement Behaviors
+* Mining/Placing Behaviors
+* Get Nearby Entities
+* Equip Items and Armor
 
 **To Do**
 * Show Targets in Web View
