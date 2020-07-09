@@ -1,14 +1,13 @@
 {
   "name": "mineflayer-statemachine",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "A state machine plugin for Mineflayer to aid in designing more complex behavior trees.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf lib",
-    "test": "test",
-    "postinstall": "tsc"
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -41,13 +40,13 @@
     "vec3": "^0.1.5"
   },
   "devDependencies": {
-    "@types/express": "4.17.6",
-    "@types/node": "14.0.13",
+    "@types/express": "4.17.7",
+    "@types/node": "14.0.19",
     "@types/socket.io": "2.1.8",
-    "typescript": "3.9.5"
+    "typescript": "3.9.6"
   },
   "files": [
     "lib/**/*",
-    "dist/**/*"
+    "web/**/*"
   ]
 }

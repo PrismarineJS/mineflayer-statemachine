@@ -11,10 +11,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@master
       with:
-        node-version: 12.18.1
+        node-version: 14.5.0
         
     - name: Compile TypeScript
-      run: npm install && tsc
+      run: yarn install && tsc
 
   deploy:
     runs-on: ubuntu-latest
@@ -26,10 +26,10 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@master
       with:
-        node-version: 12.18.1
+        node-version: 14.5.0
         
     - name: Compile TypeScript
-      run: npm install && tsc
+      run: yarn install && tsc
 
     - name: Publish if version has been updated
       uses: pascalgn/npm-publish-action@1.2.0
