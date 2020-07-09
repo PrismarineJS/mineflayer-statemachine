@@ -5,4 +5,9 @@ declare module 'mineflayer-pathfinder'
     {
         constructor(bot: Bot, mcData: any);
     }
+
+    export class Goal
+    {
+
+    }
 }

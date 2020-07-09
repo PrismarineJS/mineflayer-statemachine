@@ -1,5 +1,6 @@
 
 export * from "./abstractBehaviorInventory";
+export * from "./abstractBehaviorMovement";
 
 export * from "./behaviorFollowEntity";
 export * from "./behaviorIdle";

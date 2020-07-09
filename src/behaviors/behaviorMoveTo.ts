@@ -1,22 +1,20 @@
-import { StateBehavior, StateMachineTargets } from "../statemachine";
-import { globalSettings } from "../index";
+import { StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
-import { Movements, goals } from "mineflayer-pathfinder";
+import { goals, Goal } from "mineflayer-pathfinder";
 import { Vec3 } from "vec3";
+import { AbstractBehaviorMovement } from "./abstractBehaviorMovement";
 
 /**
  * Causes the bot to move to the target position.
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
-export class BehaviorMoveTo implements StateBehavior
+export class BehaviorMoveTo extends AbstractBehaviorMovement
 {
-    private readonly bot: Bot;
-
-    readonly targets: StateMachineTargets;
-    readonly movements: Movements;
+    /**
+     * @inheritdoc
+     */
     stateName: string = 'moveTo';
-    active: boolean = false;
 
     /**
      * How close the bot should attempt to get to this location before
@@ -25,37 +23,15 @@ export class BehaviorMoveTo implements StateBehavior
      */
     distance: number = 0;
 
+    /**
+     * Creates a new MoveTo behavior.
+     * 
+     * @param bot - The bot being handled.
+     * @param targets - The bot targets container.
+     */
     constructor(bot: Bot, targets: StateMachineTargets)
     {
-        this.bot = bot;
-        this.targets = targets;
-
-        const mcData = require('minecraft-data')(bot.version);
-        this.movements = new Movements(bot, mcData);
-
-        // @ts-ignore
-        bot.on('path_update', (r) =>
-        {
-            if (r.status === 'noPath')
-                console.log("[MoveTo] No path to target!");
-        });
-
-        // @ts-ignore
-        bot.on('goal_reached', () =>
-        {
-            if (globalSettings.debugMode)
-                console.log("[MoveTo] Target reached.");
-        });
-    }
-
-    onStateEntered(): void
-    {
-        this.startMoving();
-    }
-
-    onStateExited(): void
-    {
-        this.stopMoving();
+        super(bot, targets);
     }
 
     /**
@@ -80,67 +56,18 @@ export class BehaviorMoveTo implements StateBehavior
     }
 
     /**
-     * Cancels the current path finding operation.
+     * @inheritdoc
      */
-    private stopMoving(): void
-    {
-        // @ts-ignore
-        const pathfinder = this.bot.pathfinder;
-        pathfinder.setGoal(null);
-    }
-
-    /**
-     * Starts a new path finding operation.
-     */
-    private startMoving(): void
+    getGoal(): [Goal | undefined, boolean]
     {
         const position = this.targets.position;
         if (!position)
-        {
-            if (globalSettings.debugMode)
-                console.log("[MoveTo] Target not defined. Skipping.");
-
-            return;
-        }
-
-        if (globalSettings.debugMode)
-            console.log("[MoveTo] Moving from " + this.bot.entity.position + " to " + position);
-
-        // @ts-ignore
-        const pathfinder = this.bot.pathfinder;
-
-        let goal;
+            return [undefined, false];
 
         if (this.distance === 0)
-            goal = new goals.GoalBlock(position.x, position.y, position.z);
+            return [new goals.GoalBlock(position.x, position.y, position.z), false];
         else
-            goal = new goals.GoalNear(position.x, position.y, position.z, this.distance);
-
-        pathfinder.setMovements(this.movements);
-        pathfinder.setGoal(goal);
-    }
-
-    /**
-     * Stops and restarts this movement behavior. Does nothing if
-     * this behavior is not active.
-     */
-    restart(): void
-    {
-        if (!this.active)
-            return;
-
-        this.stopMoving();
-        this.startMoving();
-    }
-
-    /**
-     * Checks if the bot has finished moving or not.
-     */
-    isFinished(): boolean
-    {
-        // @ts-ignore
-        const pathfinder = this.bot.pathfinder;
-        return !pathfinder.isMoving();
+            return [new goals.GoalNear(position.x, position.y, position.z, this.distance), false];
     }
 
     /**

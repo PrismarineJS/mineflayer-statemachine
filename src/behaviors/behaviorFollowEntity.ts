@@ -1,23 +1,20 @@
-import { StateBehavior, StateMachineTargets } from "../statemachine";
+import { StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
 import { Entity } from "prismarine-entity";
-import { Movements, goals } from "mineflayer-pathfinder";
+import { goals, Goal } from "mineflayer-pathfinder";
+import { AbstractBehaviorMovement } from "./abstractBehaviorMovement";
 
 /**
  * Causes the bot to follow the target entity.
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
-export class BehaviorFollowEntity implements StateBehavior
+export class BehaviorFollowEntity extends AbstractBehaviorMovement
 {
-    private readonly mcData: any;
-
-    readonly bot: Bot;
-    readonly targets: StateMachineTargets;
-    readonly movements: Movements;
-
+    /**
+     * @inheritdoc
+     */
     stateName: string = 'followEntity';
-    active: boolean = false;
 
     /**
      * How close to the entity should the bot attempt to get?
@@ -26,20 +23,7 @@ export class BehaviorFollowEntity implements StateBehavior
 
     constructor(bot: Bot, targets: StateMachineTargets)
     {
-        this.bot = bot;
-        this.targets = targets;
-        this.mcData = require('minecraft-data')(this.bot.version);
-        this.movements = new Movements(this.bot, this.mcData);
-    }
-
-    onStateEntered(): void
-    {
-        this.startMoving();
-    }
-
-    onStateExited(): void
-    {
-        this.stopMoving();
+        super(bot, targets);
     }
 
     /**
@@ -65,46 +49,15 @@ export class BehaviorFollowEntity implements StateBehavior
     }
 
     /**
-     * Cancels the current path finding operation.
+     * @inheritdoc
      */
-    private stopMoving(): void
-    {
-        // @ts-ignore
-        let pathfinder = this.bot.pathfinder;
-        pathfinder.setGoal(null);
-    }
-
-    /**
-     * Starts a new path finding operation.
-     */
-    private startMoving(): void
+    getGoal(): [Goal | undefined, boolean]
     {
         let entity = this.targets.entity;
         if (!entity)
-            return;
+            return [undefined, false];
 
-        // @ts-ignore
-        let pathfinder = this.bot.pathfinder;
-
-        const goal = new goals.GoalFollow(entity, this.followDistance);
-        pathfinder.setMovements(this.movements);
-        pathfinder.setGoal(goal, true);
-    }
-
-    /**
-     * Stops and restarts this movement behavior. Does nothing if
-     * this behavior is not active.
-     * 
-     * Useful if the target entity is updated while this behavior
-     * is still active.
-     */
-    restart(): void
-    {
-        if (!this.active)
-            return;
-
-        this.stopMoving();
-        this.startMoving();
+        return [new goals.GoalFollow(entity, this.followDistance), true];
     }
 
     /**
