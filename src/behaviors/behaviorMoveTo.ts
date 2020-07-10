@@ -1,6 +1,6 @@
 import { StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
-import { goals, Goal } from "mineflayer-pathfinder";
+import { goals } from "mineflayer-pathfinder";
 import { Vec3 } from "vec3";
 import { AbstractBehaviorMovement } from "./abstractBehaviorMovement";
 
@@ -58,7 +58,7 @@ export class BehaviorMoveTo extends AbstractBehaviorMovement
     /**
      * @inheritdoc
      */
-    getGoal(): [Goal | undefined, boolean]
+    getGoal(): [goals.Goal | undefined, boolean]
     {
         const position = this.targets.position;
         if (!position)

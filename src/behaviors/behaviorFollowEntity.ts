@@ -1,7 +1,7 @@
 import { StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
 import { Entity } from "prismarine-entity";
-import { goals, Goal } from "mineflayer-pathfinder";
+import { goals } from "mineflayer-pathfinder";
 import { AbstractBehaviorMovement } from "./abstractBehaviorMovement";
 
 /**
@@ -51,7 +51,7 @@ export class BehaviorFollowEntity extends AbstractBehaviorMovement
     /**
      * @inheritdoc
      */
-    getGoal(): [Goal | undefined, boolean]
+    getGoal(): [goals.Goal | undefined, boolean]
     {
         let entity = this.targets.entity;
         if (!entity)

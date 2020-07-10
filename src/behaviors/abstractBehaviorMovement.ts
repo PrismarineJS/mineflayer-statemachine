@@ -1,7 +1,7 @@
 import { StateBehavior, StateMachineTargets } from "../statemachine";
 import { globalSettings } from "../index";
 import { Bot } from "mineflayer";
-import { Movements, Goal } from "mineflayer-pathfinder";
+import { Movements, goals } from "mineflayer-pathfinder";
 
 /**
  * Causes the bot to move to the target position.
@@ -98,7 +98,7 @@ export abstract class AbstractBehaviorMovement implements StateBehavior
      *      goal is defined,
      *      with the second argument being whether the goal is dynamic or not.
      */
-    abstract getGoal(): [Goal | undefined, boolean];
+    abstract getGoal(): [goals.Goal | undefined, boolean];
 
     /**
      * Cancels the current path finding operation.

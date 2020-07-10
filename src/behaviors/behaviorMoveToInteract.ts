@@ -1,6 +1,6 @@
 import { StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
-import { Goal, Move, GoalBlock } from "mineflayer-pathfinder";
+import { Move, goals } from "mineflayer-pathfinder";
 import { BehaviorMoveTo } from ".";
 import { Vec3 } from "vec3";
 import { Block } from "prismarine-block";
@@ -31,7 +31,7 @@ export class BehaviorMoveToInteract extends BehaviorMoveTo
     /**
      * @inheritdoc
      */
-    getGoal(): [Goal | undefined, boolean]
+    getGoal(): [goals.Goal | undefined, boolean]
     {
         const position = this.targets.position;
         if (!position)
@@ -45,7 +45,7 @@ export class BehaviorMoveToInteract extends BehaviorMoveTo
  * A simple pathfinder check which determines if the bot can interact with the
  * target block from the given position or not.
  */
-class CanInteractGoal extends GoalBlock
+class CanInteractGoal extends goals.GoalBlock
 {
     readonly bot: Bot;
 
