@@ -1,6 +1,6 @@
 import { StateMachineTargets } from "../statemachine";
 import { Bot } from "mineflayer";
-import { Goal, Move } from "mineflayer-pathfinder";
+import { Goal, Move, GoalBlock } from "mineflayer-pathfinder";
 import { BehaviorMoveTo } from ".";
 import { Vec3 } from "vec3";
 import { Block } from "prismarine-block";
@@ -45,33 +45,14 @@ export class BehaviorMoveToInteract extends BehaviorMoveTo
  * A simple pathfinder check which determines if the bot can interact with the
  * target block from the given position or not.
  */
-class CanInteractGoal extends Goal
+class CanInteractGoal extends GoalBlock
 {
     readonly bot: Bot;
-    readonly x: number;
-    readonly y: number;
-    readonly z: number;
 
     constructor(bot: Bot, x: number, y: number, z: number)
     {
-        super();
-
+        super(x, y, z);
         this.bot = bot;
-        this.x = Math.floor(x)
-        this.y = Math.floor(y)
-        this.z = Math.floor(z)
-    }
-
-    /**
-     * @inheritdoc
-     */
-    heuristic(node: Move): number
-    {
-        const dx = this.x - node.x
-        const dy = this.y - node.y
-        const dz = this.z - node.z
-
-        return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
 
     /**
