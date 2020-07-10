@@ -1750,15 +1750,15 @@ mimic-fn@^2.1.0:
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-2.1.0.tgz#7ed2c2ccccaf84d3ffcb7a69b57711fc2083401b"
   integrity sha512-OqbOk5oEQeAZ8WXWydlu9HJjz9WVdEIvamMCcXmuqUYjTknH/sqsWvhQ3vgwKFRR1HpjvNBKQ37nbJgYzGqGcg==
 
-minecraft-data@^2.54.0, minecraft-data@^2.55.0:
-  version "2.61.0"
-  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.61.0.tgz#b0c9f5494e640ebb9d0a77adc6c12119b4f3209e"
-  integrity sha512-+EP4JdqRsq9LkuLeU+wYiVO9/GZEpG0m8y/3fC8CZjiJoTPXDtVET4BYFMDdfJI/Wtn92cfXwL/PYbXBXvTWrg==
-
-minecraft-data@^2.58.0, minecraft-data@^2.61.0, minecraft-data@^2.62.1:
+minecraft-data@^2.54.0, minecraft-data@^2.58.0, minecraft-data@^2.61.0, minecraft-data@^2.62.1:
   version "2.62.1"
   resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.62.1.tgz#6b955649aa0abd826721adbc0d4e1720675dab0f"
   integrity sha512-fJ3oMZSIVSVHTJJFAkAfnXJQI+ovGc4AkUWnNQjp4irDP++rpXmlS0R+mFTVjeGCIzmApfw7LRnAFMP9vzpdMQ==
+
+minecraft-data@^2.55.0:
+  version "2.61.0"
+  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.61.0.tgz#b0c9f5494e640ebb9d0a77adc6c12119b4f3209e"
+  integrity sha512-+EP4JdqRsq9LkuLeU+wYiVO9/GZEpG0m8y/3fC8CZjiJoTPXDtVET4BYFMDdfJI/Wtn92cfXwL/PYbXBXvTWrg==
 
 minecraft-protocol@^1.13.0:
   version "1.13.0"
@@ -1779,33 +1779,16 @@ minecraft-protocol@^1.13.0:
     yggdrasil "^1.3.0"
 
 mineflayer-pathfinder@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/mineflayer-pathfinder/-/mineflayer-pathfinder-1.0.5.tgz#cb84b98dbf58ca4845e1178b0178837d391901cf"
-  integrity sha512-S+8RbGjAbf5e8wkX3v/vNUYWXFq+r/p8O//nF+m/ypO/5eOCfY50TW9Dt9HUzHKCeOSm8//Q9C5ztpBF5UxlsQ==
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/mineflayer-pathfinder/-/mineflayer-pathfinder-1.0.6.tgz#a4750abdbb8bcf01264e1bb018699a59a9c5b310"
+  integrity sha512-kbz4HEaIAICdcIuBrQWGpd2V35Ml5l/zCUlxv5Swqc1FonyG8Y7f11WnrzzvuWQMJdAG0dtQVI6hg6q5WZ2cCQ==
   dependencies:
     minecraft-data "^2.54.0"
-    mineflayer "^2.19.0"
-
-mineflayer@^2.19.0:
-  version "2.22.0"
-  resolved "https://registry.yarnpkg.com/mineflayer/-/mineflayer-2.22.0.tgz#67434bd9a98f1c27ba3c17c39947e252a17ff5f6"
-  integrity sha512-qRahSrgDF4HHPmuZOib7GbwAHSTwf3LrHe6mZNqHVxeIQUTGnwOyDXn/JhjlcBTNlsLKpHf8hjvJAP1kP0ioiw==
-  dependencies:
-    minecraft-data "^2.58.0"
-    minecraft-protocol "^1.13.0"
-    mojangson "^0.2.4"
-    prismarine-biome "^1.1.0"
-    prismarine-block "^1.6.0"
-    prismarine-chunk "^1.18.1"
-    prismarine-entity "^1.0.0"
-    prismarine-item "^1.4.0"
-    prismarine-recipe "^1.1.0"
-    prismarine-windows "^1.4.0"
-    protodef "^1.8.0"
-    sprintf-js "^1.1.1"
+    mineflayer "^2.22.0"
+    prismarine-nbt "^1.3.0"
     vec3 "^0.1.5"
 
-mineflayer@^2.21.0:
+mineflayer@^2.21.0, mineflayer@^2.22.0:
   version "2.23.0"
   resolved "https://registry.yarnpkg.com/mineflayer/-/mineflayer-2.23.0.tgz#091a46ac23d92f4c3affd94935abf86d3ab55c44"
   integrity sha512-DshunKsled1nXvNdezKFf7eSlm8Zlo3PJo3wTupim3UjVIb7F/yP87UAF7Mz4oyBrTHwKFpA+vnko/VEp4wY9w==
@@ -2216,7 +2199,7 @@ prismarine-block@^1.2.0, prismarine-block@^1.5.1, prismarine-block@^1.6.0:
   dependencies:
     prismarine-biome "^1.1.0"
 
-prismarine-chunk@^1.18.1, prismarine-chunk@^1.20.0:
+prismarine-chunk@^1.20.0:
   version "1.20.0"
   resolved "https://registry.yarnpkg.com/prismarine-chunk/-/prismarine-chunk-1.20.0.tgz#613a89bcacc39b26a78f28fa57f8ae6edae6d064"
   integrity sha512-yjE4jDrQTcL83NJXeBOEPOTqH8yrXRH9GQePHcOF4e6WWbF9Xmh2pGSQXvvQX4GyTer/09K5DhGWUdqk2nRnzQ==
@@ -2263,7 +2246,7 @@ prismarine-recipe@^1.1.0:
   resolved "https://registry.yarnpkg.com/prismarine-recipe/-/prismarine-recipe-1.1.0.tgz#ba83fea0d6f5ad3be83398a20f85f7e800665732"
   integrity sha512-eFmriEWoe6S6OSVbOJnsXpaBuzeIzjaGymDUTCtrOu80734NWKI7outdLI6R2ztJ+f2PFIkFmpkazAdScStGNA==
 
-prismarine-windows@^1.4.0, prismarine-windows@^1.5.0:
+prismarine-windows@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/prismarine-windows/-/prismarine-windows-1.5.0.tgz#590a1b1bffe3dfc8ef1d9a6838950fd85f961c8d"
   integrity sha512-t5O7KZ9VMAsVU5X2eIXspmKV1q1DEh2UC20m7/9v9oISiHr7w+Yww8VLR3rv6SsFk7nqYMyn+5Qm5zByMVdliA==
