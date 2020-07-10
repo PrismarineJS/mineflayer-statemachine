@@ -107,17 +107,19 @@ class CanInteractGoal extends goals.GoalBlock
 
         const pos = block.position;
 
-        for (const toBreak of node.toBreak)
-        {
-            if (toBreak.x === pos.x && toBreak.y == pos.y && toBreak.z == pos.z)
-                return false;
-        }
+        if (node.toBreak)
+            for (const b of node.toBreak)
+            {
+                if (b.x === pos.x && b.y == pos.y && b.z == pos.z)
+                    return false;
+            }
 
-        for (const toPlace of node.toPlace)
-        {
-            if (toPlace.x === pos.x && toPlace.y == pos.y && toPlace.z == pos.z)
-                return true;
-        }
+        if (node.toPlace)
+            for (const b of node.toPlace)
+            {
+                if (b.x === pos.x && b.y == pos.y && b.z == pos.z)
+                    return true;
+            }
 
         return block.boundingBox === 'empty';
     }
