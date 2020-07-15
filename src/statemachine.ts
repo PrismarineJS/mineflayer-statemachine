@@ -400,7 +400,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
             return true;
 
         if (!this.exit)
-            return true;
+            return false;
 
         return this.activeState === this.exit;
     }
