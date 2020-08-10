@@ -12,32 +12,6 @@
 
 ---
 
-<h2 align="center">A Super Special Thanks To</h2>
-<p align="center">
-  :star: Mika, Alora Brown, TapirLiu :star:
-</p>
-
-<br />
-
-<h3 align="center">And a Warm Thank You To</h3>
-<p align="center">
-  :rocket: chezhead
- :rocket:
-</p>
-
-<br />
-<br />
-
-Thank you all for supporting me and helping this project to continue being developed.
-
-<br />
-
-<p>Want to support this project?</p>
-<a href="https://www.patreon.com/thedudefromci"><img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="150px" /></a>
-<a href='https://ko-fi.com/P5P31SKR9' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://cdn.ko-fi.com/cdn/kofi2.png?v=2' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-
----
-
 ### What is it?
 
 Mineflayer-StateMachine is a plugin for Mineflayer. It aims to add a flexible and customizable state machine API on top of Mineflayer to make it easier to write and scale bots.
