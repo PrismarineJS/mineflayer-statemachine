@@ -148,7 +148,7 @@ shouldTransition: () => getDistanceBetween(bot, player) < 5;
 
 shouldTransition: () => bot.health <= 3;
 
-shouldTransition: () => bot.position.y > 8 && bot.position.y < 16;
+shouldTransition: () => bot.entity.position.y > 8 && bot.entity.position.y < 16;
 
 shouldTransition: () => true; // Run transition on next tick.
 
@@ -399,7 +399,7 @@ Example which only checks entities that was within 5 blocks of the bot.
 ```js
 function distanceFilter(entity)
 {
-    return bot.position.distanceTo(entity.position) <= 5;
+    return bot.entity.position.distanceTo(entity.position) <= 5;
 }
 
 const getClosestEntity = new BehaviorGetClosestEntity(bot, targets, distanceFilter);
@@ -417,7 +417,7 @@ You can even use these filters in combination with your own to make more customi
 ```js
 function distanceFilter(entity)
 {
-    return bot.position.distanceTo(entity.position) <= 5
+    return bot.entity.position.distanceTo(entity.position) <= 5
         && (EntityFilters().MobsOnly || EntityFilters().PlayersOnly);
 }
 
