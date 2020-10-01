@@ -1,18 +1,16 @@
 const mineflayer = require("mineflayer");
-const args = require("minimist")(process.argv.slice(2));
 
-const login = args.login;
-const password = args.password;
-const host = args.host || "localhost";
-const port = args.port || 25565;
+if (process.argv.length < 4 || process.argv.length > 6) {
+  console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
+  process.exit(1)
+}
 
-console.log(`Starting bot '${login}' on ${host}:${port}`);
 const bot = mineflayer.createBot({
-    username: login,
-    password: password,
-    host: host,
-    port: port,
-});
+  host: process.argv[2],
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
+  password: process.argv[5]
+})
 
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
 
