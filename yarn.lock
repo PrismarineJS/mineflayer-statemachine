@@ -1317,15 +1317,10 @@ mimic-fn@^1.0.0:
   resolved "https://registry.yarnpkg.com/mimic-fn/-/mimic-fn-1.2.0.tgz#820c86a39334640e99516928bd03fca88057d022"
   integrity sha512-jf84uxzwiuiIVKiOLpfYk7N46TSy8ubTonmneY9vrpHNAnp0QBt2BxWV9dO3/j+BoVAb+a5G6YDPW3M5HOdMWQ==
 
-minecraft-data@^2.54.0, minecraft-data@^2.55.0:
-  version "2.61.0"
-  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.61.0.tgz#b0c9f5494e640ebb9d0a77adc6c12119b4f3209e"
-  integrity sha512-+EP4JdqRsq9LkuLeU+wYiVO9/GZEpG0m8y/3fC8CZjiJoTPXDtVET4BYFMDdfJI/Wtn92cfXwL/PYbXBXvTWrg==
-
-minecraft-data@^2.58.0, minecraft-data@^2.61.0, minecraft-data@^2.62.1:
-  version "2.62.1"
-  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.62.1.tgz#6b955649aa0abd826721adbc0d4e1720675dab0f"
-  integrity sha512-fJ3oMZSIVSVHTJJFAkAfnXJQI+ovGc4AkUWnNQjp4irDP++rpXmlS0R+mFTVjeGCIzmApfw7LRnAFMP9vzpdMQ==
+minecraft-data@^2.54.0, minecraft-data@^2.55.0, minecraft-data@^2.58.0, minecraft-data@^2.61.0, minecraft-data@^2.62.1:
+  version "2.70.0"
+  resolved "https://registry.yarnpkg.com/minecraft-data/-/minecraft-data-2.70.0.tgz#f1756b0aa8a0614c3817bf109d758a641059c172"
+  integrity sha512-h+rFwXDEQwEmrbxMqzp29ZAmjxki12zzfAQsgVVImjeNuAy84SBonHyYp9V6ONP5CpGOJmmhdnhnp12Oo8VGyQ==
 
 minecraft-protocol@^1.13.0:
   version "1.13.0"
