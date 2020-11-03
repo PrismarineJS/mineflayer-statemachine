@@ -120,9 +120,10 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      */
     craftItem(item: Item, amount: number = 1, cb: (err?: Error) => void): number
     {
+        const mcData = require('minecraft-data')(this.bot.version)
         const table = this.bot.findBlock({
             point: this.bot.entity.position,
-            matching: () => 58,
+            matching: mcData.blocksByName.crafting_table.id,
             maxDistance: 3.5,
         });
 
