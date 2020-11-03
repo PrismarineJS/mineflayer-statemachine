@@ -1711,12 +1711,7 @@ prismarine-entity@^1.0.0:
   dependencies:
     vec3 "^0.1.4"
 
-prismarine-item@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/prismarine-item/-/prismarine-item-1.4.0.tgz#7e7c1821bafb51687bf4c0a283bd9d0577fdbd59"
-  integrity sha512-VAs5tdOgqwH9k9Oxb825hLjxFvJutVToSuyZZCvRaeFM/9FaB1VPslYNRDwzFNlUMSbTkuyS1i5K4xxWbhifCA==
-
-prismarine-item@^1.5.0:
+prismarine-item@^1.4.0, prismarine-item@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/prismarine-item/-/prismarine-item-1.5.0.tgz#2e58da4014402bb4ba85e0d14360c5a46d2f7c56"
   integrity sha512-O0Rpxn0kqHhkJAVJJK7SvkVyoNkBU7tRh7FrGJipg23B6j1cw8GtkSY10keupI2p0AcygA9TrlHBwomVLl7uYw==
