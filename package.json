@@ -7,8 +7,7 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf lib",
-    "test": "test",
-    "start": "tsc examples/webserver.js 127.0.0.1 56115"
+    "test": "test"
   },
   "repository": {
     "type": "git",
