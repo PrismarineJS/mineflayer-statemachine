@@ -7,8 +7,7 @@ import { Entity } from "prismarine-entity";
  * target. This behavior executes once right when the behavior
  * is entered, and should transition out immediately.
  */
-export class BehaviorGetClosestEntity implements StateBehavior
-{
+export class BehaviorGetClosestEntity implements StateBehavior {
     /**
      * The bot this behavior is acting on.
      */
@@ -27,15 +26,13 @@ export class BehaviorGetClosestEntity implements StateBehavior
     stateName: string = 'getClosestEntity';
     active: boolean = false;
 
-    constructor(bot: Bot, targets: StateMachineTargets, filter: (entity: Entity) => boolean)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets, filter: (entity: Entity) => boolean) {
         this.bot = bot;
         this.targets = targets;
         this.filter = filter;
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         this.targets.entity = this.getClosestEntity() || undefined;
     }
 
@@ -44,13 +41,11 @@ export class BehaviorGetClosestEntity implements StateBehavior
      * 
      * @returns The closest entity, or null if there are none.
      */
-    private getClosestEntity(): Entity | null
-    {
+    private getClosestEntity(): Entity | null {
         let closest = null;
         let distance = 0;
 
-        for (let entityName of Object.keys(this.bot.entities))
-        {
+        for (let entityName of Object.keys(this.bot.entities)) {
             let entity = this.bot.entities[entityName];
 
             if (entity === this.bot.entity)
@@ -61,8 +56,7 @@ export class BehaviorGetClosestEntity implements StateBehavior
 
             let dist = entity.position.distanceTo(this.bot.entity.position);
 
-            if (closest === null || dist < distance)
-            {
+            if (closest === null || dist < distance) {
                 closest = entity;
                 distance = dist;
             }
@@ -75,8 +69,7 @@ export class BehaviorGetClosestEntity implements StateBehavior
 /**
  * The header for the EntityFilters() function.
  */
-export interface EntityFiltersHeader
-{
+export interface EntityFiltersHeader {
     /**
      * Returns true for all entities.
      *
@@ -111,31 +104,25 @@ export interface EntityFiltersHeader
  * Gets a list of many default entity filters which can be applied to
  * default state behaviors.
  */
-export function EntityFilters(): object
-{
+export function EntityFilters(): object {
     return {
-        AllEntities: function (): boolean
-        {
+        AllEntities: function (): boolean {
             return true;
         },
 
-        PlayersOnly: function (entity: Entity): boolean
-        {
+        PlayersOnly: function (entity: Entity): boolean {
             return entity.type === 'player';
         },
 
-        MobsOnly: function (entity: Entity): boolean
-        {
+        MobsOnly: function (entity: Entity): boolean {
             return entity.type === 'mob';
         },
 
-        ItemDrops: function (entity: Entity): boolean
-        {
+        ItemDrops: function (entity: Entity): boolean {
             if (entity.objectType === 'Item')
                 return true;
 
-            if (entity.objectType === 'Arrow')
-            {
+            if (entity.objectType === 'Arrow') {
                 // TODO Check if arrow can be picked up
                 // Current NBT parsing is too limited to effectively check.
 

@@ -8,8 +8,7 @@ import { Movements, goals } from "mineflayer-pathfinder";
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
-export class BehaviorFollowEntity implements StateBehavior
-{
+export class BehaviorFollowEntity implements StateBehavior {
     private readonly mcData: any;
 
     readonly bot: Bot;
@@ -24,21 +23,18 @@ export class BehaviorFollowEntity implements StateBehavior
      */
     followDistance: number = 0;
 
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
         this.mcData = require('minecraft-data')(this.bot.version);
         this.movements = new Movements(this.bot, this.mcData);
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         this.startMoving();
     }
 
-    onStateExited(): void
-    {
+    onStateExited(): void {
         this.stopMoving();
     }
 
@@ -55,8 +51,7 @@ export class BehaviorFollowEntity implements StateBehavior
      * 
      * @param entity - The entity to follow.
      */
-    setFollowTarget(entity: Entity): void
-    {
+    setFollowTarget(entity: Entity): void {
         if (this.targets.entity === entity)
             return;
 
@@ -67,8 +62,7 @@ export class BehaviorFollowEntity implements StateBehavior
     /**
      * Cancels the current path finding operation.
      */
-    private stopMoving(): void
-    {
+    private stopMoving(): void {
         // @ts-ignore
         let pathfinder = this.bot.pathfinder;
         pathfinder.setGoal(null);
@@ -77,8 +71,7 @@ export class BehaviorFollowEntity implements StateBehavior
     /**
      * Starts a new path finding operation.
      */
-    private startMoving(): void
-    {
+    private startMoving(): void {
         let entity = this.targets.entity;
         if (!entity)
             return;
@@ -98,8 +91,7 @@ export class BehaviorFollowEntity implements StateBehavior
      * Useful if the target entity is updated while this behavior
      * is still active.
      */
-    restart(): void
-    {
+    restart(): void {
         if (!this.active)
             return;
 
@@ -112,8 +104,7 @@ export class BehaviorFollowEntity implements StateBehavior
      * 
      * @returns The distance, or 0 if no target entity is assigned.
      */
-    distanceToTarget(): number
-    {
+    distanceToTarget(): number {
         let entity = this.targets.entity;
         if (!entity)
             return 0;

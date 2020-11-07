@@ -8,8 +8,7 @@ import { Bot } from "mineflayer";
  * 
  * Even if the block could not be placed, the target item is still equipped if possible.
  */
-export class BehaviorPlaceBlock implements StateBehavior
-{
+export class BehaviorPlaceBlock implements StateBehavior {
     readonly bot: Bot;
     readonly targets: StateMachineTargets;
 
@@ -22,20 +21,17 @@ export class BehaviorPlaceBlock implements StateBehavior
      * @param bot - The bot preforming the mining function.
      * @param targets - The bot targets objects.
      */
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         if (!this.targets.item)
             return;
 
         let success = true;
-        this.bot.equip(this.targets.item, "hand", (err) =>
-        {
+        this.bot.equip(this.targets.item, "hand", (err) => {
             if (err)
                 success = false;
         });

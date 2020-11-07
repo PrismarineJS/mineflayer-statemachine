@@ -8,8 +8,7 @@ import { Block } from "prismarine-block";
  * This behavior will attempt to break the target block. If the target block
  * could not be mined for any reason, this behavior fails silently.
  */
-export class BehaviorMineBlock implements StateBehavior
-{
+export class BehaviorMineBlock implements StateBehavior {
     readonly bot: Bot;
     readonly targets: StateMachineTargets;
 
@@ -27,25 +26,21 @@ export class BehaviorMineBlock implements StateBehavior
      * @param bot - The bot preforming the mining function.
      * @param targets - The bot targets objects.
      */
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         this.isFinished = false;
 
-        if (!this.targets.position)
-        {
+        if (!this.targets.position) {
             this.isFinished = true;
             return;
         }
 
         const block = this.bot.blockAt(this.targets.position);
-        if (!block || !this.bot.canDigBlock(block))
-        {
+        if (!block || !this.bot.canDigBlock(block)) {
             if (globalSettings.debugMode)
                 console.log("[MineBlock] Cannot mine target block '" + block?.displayName + "'!. Skipping.");
 
@@ -57,10 +52,8 @@ export class BehaviorMineBlock implements StateBehavior
             console.log("[MineBlock] Breaking block '" + block.displayName + "' at " + this.targets.position);
 
         const tool = this.getBestTool(block);
-        if (tool)
-        {
-            this.bot.equip(tool, 'hand', () =>
-            {
+        if (tool) {
+            this.bot.equip(tool, 'hand', () => {
                 this.bot.dig(block, () => this.isFinished = true);
             });
         }
@@ -68,14 +61,11 @@ export class BehaviorMineBlock implements StateBehavior
             this.bot.dig(block, () => this.isFinished = true);
     }
 
-    private getBestTool(block: Block): Item | undefined
-    {
+    private getBestTool(block: Block): Item | undefined {
         const items = this.bot.inventory.items()
-        for (const i in block.harvestTools)
-        {
+        for (const i in block.harvestTools) {
             const id = parseInt(i, 10)
-            for (const j in items)
-            {
+            for (const j in items) {
                 const item = items[j]
                 if (item.type === id) return item
             }

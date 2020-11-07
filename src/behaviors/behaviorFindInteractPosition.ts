@@ -13,8 +13,7 @@ import { Vec3 } from "vec3";
  * If there are multiple safe standing positions around the block, the position with the
  * lowest cost is selected. Cost constraints can be configured to adjust the optimal position.
  */
-export class BehaviorFindInteractPosition implements StateBehavior
-{
+export class BehaviorFindInteractPosition implements StateBehavior {
     /**
      * The bot this behavior is acting on.
      */
@@ -47,16 +46,14 @@ export class BehaviorFindInteractPosition implements StateBehavior
      * @param bot - The bot preforming the search function.
      * @param targets - The bot targets objects.
      */
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
         this.costs = new StandingPositionCosts(bot, targets);
     }
 
     /** @inheritDoc */
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         if (!this.targets.position)
             return;
 
@@ -65,8 +62,7 @@ export class BehaviorFindInteractPosition implements StateBehavior
 
         for (let x = -this.maxDistance; x <= this.maxDistance; x++)
             for (let y = -this.maxDistance; y <= this.maxDistance; y++)
-                for (let z = -this.maxDistance; z <= this.maxDistance; z++)
-                {
+                for (let z = -this.maxDistance; z <= this.maxDistance; z++) {
                     const position = this.targets.position.offset(x, y, z);
                     const block = this.bot.blockAt(position);
 
@@ -74,8 +70,7 @@ export class BehaviorFindInteractPosition implements StateBehavior
                         this.checkPosition(block, positions);
                 }
 
-        if (positions.length === 0)
-        {
+        if (positions.length === 0) {
             this.targets.position = undefined;
             return;
         }
@@ -91,8 +86,7 @@ export class BehaviorFindInteractPosition implements StateBehavior
      * @param block - The block to check.
      * @param positions - The position list to add valid standing positions to.
      */
-    private checkPosition(block: Block, positions: StandingPosition[]): void
-    {
+    private checkPosition(block: Block, positions: StandingPosition[]): void {
         // Ignore if block is not empty
         if (block.boundingBox !== 'empty')
             return;
@@ -121,8 +115,7 @@ export class BehaviorFindInteractPosition implements StateBehavior
  * A temporary object interface for deciding the best place to stand of
  * all available options.
  */
-interface StandingPosition
-{
+interface StandingPosition {
     /**
      * The block position to stand in.
      */
@@ -134,8 +127,7 @@ interface StandingPosition
     cost: number;
 }
 
-class StandingPositionCosts
-{
+class StandingPositionCosts {
     private readonly bot: Bot;
     private readonly targets: StateMachineTargets;
 
@@ -197,8 +189,7 @@ class StandingPositionCosts
      * @param bot - TRhe bot to use when preforming calculations.
      * @param targets - The behavior targets information.
      */
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
 
@@ -223,8 +214,7 @@ class StandingPositionCosts
      * 
      * @returns True if the block should be avoided. False otherwise.
      */
-    shouldAvoid(block: Block, over?: Block): boolean
-    {
+    shouldAvoid(block: Block, over?: Block): boolean {
         if (this.avoid.indexOf(block.type) > -1)
             return true;
 
@@ -242,16 +232,14 @@ class StandingPositionCosts
      * 
      * @returns The estimated cost value.
      */
-    calculateStandCost(block: Block, over?: Block): number
-    {
+    calculateStandCost(block: Block, over?: Block): number {
         if (!this.targets.position)
             throw "Target position not assigned!";
 
         let cost = 0;
         let targetPos = this.targets.position.floored();
 
-        for (const c of this.blockCosts)
-        {
+        for (const c of this.blockCosts) {
             if (block.type === c[0])
                 cost += c[1];
 
@@ -263,8 +251,7 @@ class StandingPositionCosts
         cost += this.calculatePathCost(block) * this.moveMultiplier;
 
         if (this.numberEquals(block.position.x, targetPos.x)
-            && this.numberEquals(block.position.z, targetPos.z))
-        {
+            && this.numberEquals(block.position.z, targetPos.z)) {
             if (targetPos.y < block.position.y)
                 cost += this.standOnCost;
 
@@ -275,8 +262,7 @@ class StandingPositionCosts
         return cost;
     }
 
-    private calculatePathCost(block: Block): number
-    {
+    private calculatePathCost(block: Block): number {
         if (this.approximateMoveMode)
             return block.position.distanceTo(this.bot.entity.position);
 
@@ -284,8 +270,7 @@ class StandingPositionCosts
         return 0;
     }
 
-    private numberEquals(a: number, b: number): boolean
-    {
+    private numberEquals(a: number, b: number): boolean {
         return Math.abs(a - b) < 0.00001;
     }
 }

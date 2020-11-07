@@ -9,8 +9,7 @@ import { Vec3 } from "vec3";
  * 
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
-export class BehaviorMoveTo implements StateBehavior
-{
+export class BehaviorMoveTo implements StateBehavior {
     private readonly bot: Bot;
 
     readonly targets: StateMachineTargets;
@@ -25,8 +24,7 @@ export class BehaviorMoveTo implements StateBehavior
      */
     distance: number = 0;
 
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
 
@@ -34,27 +32,23 @@ export class BehaviorMoveTo implements StateBehavior
         this.movements = new Movements(bot, mcData);
 
         // @ts-ignore
-        bot.on('path_update', (r) =>
-        {
+        bot.on('path_update', (r) => {
             if (r.status === 'noPath')
                 console.log("[MoveTo] No path to target!");
         });
 
         // @ts-ignore
-        bot.on('goal_reached', () =>
-        {
+        bot.on('goal_reached', () => {
             if (globalSettings.debugMode)
                 console.log("[MoveTo] Target reached.");
         });
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         this.startMoving();
     }
 
-    onStateExited(): void
-    {
+    onStateExited(): void {
         this.stopMoving();
     }
 
@@ -70,8 +64,7 @@ export class BehaviorMoveTo implements StateBehavior
      * 
      * @param position - The position to move to.
      */
-    setMoveTarget(position: Vec3): void
-    {
+    setMoveTarget(position: Vec3): void {
         if (this.targets.position == position)
             return;
 
@@ -82,8 +75,7 @@ export class BehaviorMoveTo implements StateBehavior
     /**
      * Cancels the current path finding operation.
      */
-    private stopMoving(): void
-    {
+    private stopMoving(): void {
         // @ts-ignore
         const pathfinder = this.bot.pathfinder;
         pathfinder.setGoal(null);
@@ -92,11 +84,9 @@ export class BehaviorMoveTo implements StateBehavior
     /**
      * Starts a new path finding operation.
      */
-    private startMoving(): void
-    {
+    private startMoving(): void {
         const position = this.targets.position;
-        if (!position)
-        {
+        if (!position) {
             if (globalSettings.debugMode)
                 console.log("[MoveTo] Target not defined. Skipping.");
 
@@ -124,8 +114,7 @@ export class BehaviorMoveTo implements StateBehavior
      * Stops and restarts this movement behavior. Does nothing if
      * this behavior is not active.
      */
-    restart(): void
-    {
+    restart(): void {
         if (!this.active)
             return;
 
@@ -136,8 +125,7 @@ export class BehaviorMoveTo implements StateBehavior
     /**
      * Checks if the bot has finished moving or not.
      */
-    isFinished(): boolean
-    {
+    isFinished(): boolean {
         // @ts-ignore
         const pathfinder = this.bot.pathfinder;
         return !pathfinder.isMoving();
@@ -148,8 +136,7 @@ export class BehaviorMoveTo implements StateBehavior
      * 
      * @returns The distance, or 0 if no target position is assigned.
      */
-    distanceToTarget(): number
-    {
+    distanceToTarget(): number {
         let position = this.targets.position;
         if (!position)
             return 0;
