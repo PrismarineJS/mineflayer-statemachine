@@ -15,6 +15,16 @@ export interface StateBehavior {
     stateName: string;
 
     /**
+     * The x position of this behavior state for webservice.
+     */
+    x: number;
+
+    /**
+    * The y position of this behavior state for webservice.
+    */
+    y: number;
+
+    /**
      * Gets whether or not this state is currently active.
      */
     active: boolean;
@@ -266,6 +276,16 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
      * The name of this state behavior.
      */
     stateName: string = 'nestedStateMachine';
+
+    /**
+     * The x position of this behavior state for webservice.
+     */
+    x: number = 0;
+
+    /**
+     * The y position of this behavior state for webservice.
+     */
+    y: number = 0;
 
     /**
      * Whether or not this state machine layer is active.

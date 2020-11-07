@@ -40,6 +40,12 @@ export class BehaviorFindInteractPosition implements StateBehavior {
     /** @inheritDoc */
     active: boolean = false;
 
+    /** @inheritDoc */
+    x: number = 0;
+
+    /** @inheritDoc */
+    y: number = 0;
+
     /**
      * Creates a new find block behavior.
      * 

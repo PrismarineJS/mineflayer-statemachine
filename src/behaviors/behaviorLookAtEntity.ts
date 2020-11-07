@@ -10,6 +10,8 @@ export class BehaviorLookAtEntity implements StateBehavior {
     readonly targets: StateMachineTargets;
     stateName: string = 'lookAtEntity';
     active: boolean = false;
+    x: number = 0;
+    y: number = 0;
 
     constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;

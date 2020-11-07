@@ -33,11 +33,28 @@ bot.once("spawn", () => {
     const targets = {};
 
     const printServerStates = new BehaviorPrintServerStats(bot);
+    printServerStates.x = 1000
+    printServerStates.y = 500
+
     const idleState = new BehaviorIdle();
+    idleState.x = 1000
+    idleState.y = 100
+
     const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets);
+    lookAtPlayersState.x = 600
+    lookAtPlayersState.y = 300
+
     const followPlayer = new BehaviorFollowEntity(bot, targets);
+    followPlayer.x = 150
+    followPlayer.y = 100
+
     const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly);
+    getClosestPlayer.x = 600
+    getClosestPlayer.y = 200
+
     const lookAtFollowTarget = new BehaviorLookAtEntity(bot, targets);
+    lookAtFollowTarget.x = 600
+    lookAtFollowTarget.y = 500
 
     const transitions = [
 

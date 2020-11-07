@@ -8,7 +8,7 @@
     "build": "tsc",
     "clean": "rm -rf lib",
     "test": "test",
-    "start": "nodemon examples/webserver.js 127.0.0.1 56115"
+    "start": "tsc examples/webserver.js 127.0.0.1 56115"
   },
   "repository": {
     "type": "git",

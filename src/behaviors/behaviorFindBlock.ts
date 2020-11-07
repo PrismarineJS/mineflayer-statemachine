@@ -11,13 +11,14 @@ import { Block } from "prismarine-block";
  * 
  * If no block could be found, targets.position is set to undefined.
  */
-export class BehaviorFindBlock implements StateBehavior
-{
+export class BehaviorFindBlock implements StateBehavior {
     readonly bot: Bot;
     readonly targets: StateMachineTargets;
 
     stateName: string = 'findBlock';
     active: boolean = false;
+    x: number = 0;
+    y: number = 0;
 
     /**
      * The list of block ids to search for.
@@ -41,27 +42,23 @@ export class BehaviorFindBlock implements StateBehavior
      * @param bot - The bot preforming the search function.
      * @param targets - The bot targets objects.
      */
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         this.targets.position = this.bot.findBlock({
             matching: (block: Block) => this.matchesBlock(block),
             maxDistance: this.maxDistance
         })?.position;
     }
 
-    private matchesBlock(block: Block): boolean
-    {
+    private matchesBlock(block: Block): boolean {
         if (this.blocks.indexOf(block.type) === -1)
             return false;
 
-        if (this.preventXRay)
-        {
+        if (this.preventXRay) {
             if (!this.bot.canSeeBlock(block))
                 return false;
         }

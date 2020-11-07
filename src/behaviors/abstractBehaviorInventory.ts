@@ -8,17 +8,17 @@ import { Item } from "prismarine-item";
  * Credits to: https://github.com/PrismarineJS/mineflayer/blob/master/examples/inventory.js
  * for most of the code in this class was created from.
  */
-export abstract class AbstractBehaviorInventory implements StateBehavior
-{
+export abstract class AbstractBehaviorInventory implements StateBehavior {
     protected readonly bot: Bot;
     protected readonly mcData: any;
 
     readonly targets: StateMachineTargets;
     stateName: string = 'inventory';
     active: boolean = false;
+    x: number = 0;
+    y: number = 0;
 
-    constructor(bot: Bot, targets: StateMachineTargets)
-    {
+    constructor(bot: Bot, targets: StateMachineTargets) {
         this.bot = bot;
         this.targets = targets;
         this.mcData = require('minecraft-data')(this.bot.version);
@@ -27,8 +27,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
     /**
      * Gets a list of all items in the bots inventory.
      */
-    listItems(): string[]
-    {
+    listItems(): string[] {
         return this.bot.inventory.items().map(this.itemToString);
     }
 
@@ -46,11 +45,9 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns The number of items actually dropped.
      */
-    throwItem(item: Item, amount: number = -1): number
-    {
+    throwItem(item: Item, amount: number = -1): number {
         let failed = false;
-        if (amount == -1)
-        {
+        if (amount == -1) {
             this.bot.tossStack(item, (err) => { if (err) failed = true });
 
             if (failed)
@@ -73,8 +70,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @param item - The item.
      */
-    itemToString(item: Item): string
-    {
+    itemToString(item: Item): string {
         if (item)
             return `${item.name} x ${item.count}`;
         else
@@ -87,8 +83,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns The item, or undefined if none were found.
      */
-    findItem(name: string): Item | undefined
-    {
+    findItem(name: string): Item | undefined {
         return this.bot.inventory.items().filter(item => item.name === name)[0];
     }
 
@@ -96,12 +91,10 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * Gets the number of items in the bots inventory with the given name.
      * @param name - The item name.
      */
-    itemCount(name: string): number
-    {
+    itemCount(name: string): number {
         let amount = 0;
 
-        for (let item of this.bot.inventory.items())
-        {
+        for (let item of this.bot.inventory.items()) {
             if (item.name === name)
                 amount += item.count;
         }
@@ -118,8 +111,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns The number of items the bot was able to craft with the given inventory.
      */
-    craftItem(item: Item, amount: number = 1, cb: (err?: Error) => void): number
-    {
+    craftItem(item: Item, amount: number = 1, cb: (err?: Error) => void): number {
         const mcData = require('minecraft-data')(this.bot.version)
         const table = this.bot.findBlock({
             point: this.bot.entity.position,
@@ -128,8 +120,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
         });
 
         const recipe = this.bot.recipesFor(item.type, null, 1, table)[0]
-        if (recipe)
-        {
+        if (recipe) {
             this.bot.craft(recipe, amount, table, cb);
             return amount;
         }
@@ -148,8 +139,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns The equipment destination for this item.
      */
-    getEquipDestination(item: Item): EquipmentDestination
-    {
+    getEquipDestination(item: Item): EquipmentDestination {
         if (this.isHelmet(item))
             return "head";
 
@@ -176,8 +166,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item is a helmet. False otherwise.
      */
-    isHelmet(item: Item): boolean
-    {
+    isHelmet(item: Item): boolean {
         const id = item.type;
 
         if (id === this.mcData.itemsByName.leather_helmet.id) return true;
@@ -196,8 +185,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item is a chestplate. False otherwise.
      */
-    isChestplate(item: Item): boolean
-    {
+    isChestplate(item: Item): boolean {
         const id = item.type;
 
         if (id === this.mcData.itemsByName.leather_chestplate.id) return true;
@@ -215,8 +203,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item is a pair of leggings. False otherwise.
      */
-    isLeggings(item: Item): boolean
-    {
+    isLeggings(item: Item): boolean {
         const id = item.type;
 
         if (id === this.mcData.itemsByName.leather_leggings.id) return true;
@@ -234,8 +221,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item is a pair of boots. False otherwise.
      */
-    isBoots(item: Item): boolean
-    {
+    isBoots(item: Item): boolean {
         const id = item.type;
 
         if (id === this.mcData.itemsByName.leather_boots.id) return true;
@@ -253,8 +239,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item can be used in the offhand. False otherwise.
      */
-    isOffhandUsable(item: Item): boolean
-    {
+    isOffhandUsable(item: Item): boolean {
         if (this.isBlock(item)) return true;
         if (this.isFood(item)) return true;
 
@@ -314,8 +299,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item is a block. False otherwise.
      */
-    isBlock(item: Item): boolean
-    {
+    isBlock(item: Item): boolean {
         // TODO Check if item is a block.
         return false;
     }
@@ -333,8 +317,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior
      * 
      * @returns True if the item is food. False otherwise.
      */
-    isFood(item: Item): boolean
-    {
+    isFood(item: Item): boolean {
         // TODO Check if item is food.
         return false;
     }

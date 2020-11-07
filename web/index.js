@@ -147,10 +147,10 @@ class Graph {
     updateDrag(x, y) {
         if (!this.drag)
             return;
-
         this.drag.target.rect.x = x - this.drag.mouseX + this.drag.startX;
         this.drag.target.rect.y = y - this.drag.mouseY + this.drag.startY;
         this.repaint = true;
+        console.log(x, y)
     }
 
     updateHover(x, y) {
@@ -550,12 +550,24 @@ function loadStates(packet) {
         const angle = (index / packet.states.length) * Math.PI * 2;
         index++;
 
+        console.log(state)
+
+        let startX = centerX + Math.cos(angle) * radiusX;
+        let startY = centerY + Math.sin(angle) * radiusY;
+
+        if (state.x !== 0 || state.y !== 0) {
+            startX = state.x
+            startY = state.y
+        }
+
         const rect = new Rect(
-            centerX + Math.cos(angle) * radiusX,
-            centerY + Math.sin(angle) * radiusY,
+            startX,
+            startY,
             NODE_WIDTH,
             NODE_HEIGHT
         );
+
+        console.log(rect)
 
         const stateNode = new State(state.id, state.name, rect, state.nestGroup);
         stateNode.activeState = false;
