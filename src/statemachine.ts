@@ -8,8 +8,7 @@ import { Vec3 } from 'vec3';
  * A simple behavior state plugin for handling AI state machine
  * changes.
  */
-export interface StateBehavior
-{
+export interface StateBehavior {
     /**
      * The name of this behavior state.
      */
@@ -39,8 +38,7 @@ export interface StateBehavior
 /**
  * The parameters for initializing a state transition.
  */
-export interface StateTransitionParameters
-{
+export interface StateTransitionParameters {
     parent: StateBehavior;
     child: StateBehavior;
     name?: string;
@@ -52,8 +50,7 @@ export interface StateTransitionParameters
  * A transition that links when one state (the parent) should transition
  * to another state (the child).
  */
-export class StateTransition
-{
+export class StateTransition {
     readonly parentState: StateBehavior;
     readonly childState: StateBehavior;
     private triggerState: boolean = false;
@@ -78,8 +75,7 @@ export class StateTransition
         name,
         shouldTransition = () => false,
         onTransition = () => { }
-    }: StateTransitionParameters)
-    {
+    }: StateTransitionParameters) {
         this.parentState = parent;
         this.childState = child;
 
@@ -95,8 +91,7 @@ export class StateTransition
      * @throws Exception if this transition is not yet bound to a
      * state machine.
      */
-    trigger(): void
-    {
+    trigger(): void {
         if (!this.parentState.active)
             return;
 
@@ -109,16 +104,14 @@ export class StateTransition
      * 
      * @returns True if this transition was triggered to occur.
      */
-    isTriggered(): boolean
-    {
+    isTriggered(): boolean {
         return this.triggerState;
     }
 
     /**
      * Resets the triggered state to false.
      */
-    resetTrigger(): void
-    {
+    resetTrigger(): void {
         this.triggerState = false;
     }
 }
@@ -127,8 +120,7 @@ export class StateTransition
  * An AI state machine which runs on a bot to help simplify complex
  * behavior trees.
  */
-export class BotStateMachine extends EventEmitter
-{
+export class BotStateMachine extends EventEmitter {
     /**
      * The bot this state machine is operating on.
      */
@@ -161,8 +153,7 @@ export class BotStateMachine extends EventEmitter
      * @param bot - The bot being acted on.
      * @param rootStateMachine - The root level state machine.
      */
-    constructor(bot: Bot, rootStateMachine: NestedStateMachine)
-    {
+    constructor(bot: Bot, rootStateMachine: NestedStateMachine) {
         super();
 
         this.bot = bot;
@@ -181,24 +172,20 @@ export class BotStateMachine extends EventEmitter
         this.rootStateMachine.onStateEntered();
     }
 
-    private findNestedStateMachines(nested: NestedStateMachine, depth: number = 0): void
-    {
+    private findNestedStateMachines(nested: NestedStateMachine, depth: number = 0): void {
         this.nestedStateMachines.push(nested);
         nested.depth = depth;
 
         nested.on("stateChanged", () => this.emit("stateChanged"));
 
-        for (const state of nested.states)
-        {
+        for (const state of nested.states) {
             if (state instanceof NestedStateMachine)
                 this.findNestedStateMachines(state, depth + 1);
         }
     }
 
-    private findStatesRecursive(nested: NestedStateMachine): void
-    {
-        for (const state of nested.states)
-        {
+    private findStatesRecursive(nested: NestedStateMachine): void {
+        for (const state of nested.states) {
             this.states.push(state);
 
             if (state instanceof NestedStateMachine)
@@ -206,13 +193,11 @@ export class BotStateMachine extends EventEmitter
         }
     }
 
-    private findTransitionsRecursive(nested: NestedStateMachine): void
-    {
+    private findTransitionsRecursive(nested: NestedStateMachine): void {
         for (const trans of nested.transitions)
             this.transitions.push(trans);
 
-        for (const state of nested.states)
-        {
+        for (const state of nested.states) {
             if (state instanceof NestedStateMachine)
                 this.findTransitionsRecursive(state);
         }
@@ -221,8 +206,7 @@ export class BotStateMachine extends EventEmitter
     /**
      * Called each tick to update the root state machine.
      */
-    private update(): void
-    {
+    private update(): void {
         this.rootStateMachine.update();
     }
 }
@@ -232,8 +216,7 @@ export class BotStateMachine extends EventEmitter
  * storing in memory. These are primarily used to allow
  * states to communicate with each other more effectively.
  */
-export interface StateMachineTargets
-{
+export interface StateMachineTargets {
     entity?: Entity;
     position?: Vec3;
     item?: any;
@@ -253,8 +236,7 @@ export interface StateMachineTargets
  * This can be treated as a state behavior, allowing users to transition into
  * and out of this state machine without knowing it's internal components.
  */
-export class NestedStateMachine extends EventEmitter implements StateBehavior
-{
+export class NestedStateMachine extends EventEmitter implements StateBehavior {
     /**
      * A list of all states within this state machine layer.
      */
@@ -301,8 +283,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
      * @param enter - The state to activate when entering this state.
      * @param exit - The state used to symbolize this layer has completed.
      */
-    constructor(transitions: StateTransition[], enter: StateBehavior, exit?: StateBehavior)
-    {
+    constructor(transitions: StateTransition[], enter: StateBehavior, exit?: StateBehavior) {
         super();
 
         this.transitions = transitions;
@@ -312,19 +293,16 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         this.states = this.findStates();
     }
 
-    private findStates(): StateBehavior[]
-    {
+    private findStates(): StateBehavior[] {
         const states = [];
         states.push(this.enter);
 
-        if (this.exit)
-        {
+        if (this.exit) {
             if (states.indexOf(this.exit) == -1)
                 states.push(this.exit);
         }
 
-        for (let i = 0; i < this.transitions.length; i++)
-        {
+        for (let i = 0; i < this.transitions.length; i++) {
             const trans = this.transitions[i];
 
             if (states.indexOf(trans.parentState) == -1)
@@ -337,8 +315,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         return states;
     }
 
-    onStateEntered(): void
-    {
+    onStateEntered(): void {
         this.activeState = this.enter;
         this.activeState.active = true;
         this.activeState.onStateEntered?.();
@@ -349,17 +326,13 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         this.emit("stateChanged");
     }
 
-    update(): void
-    {
+    update(): void {
         this.activeState?.update?.();
 
-        for (let i = 0; i < this.transitions.length; i++)
-        {
+        for (let i = 0; i < this.transitions.length; i++) {
             let transition = this.transitions[i];
-            if (transition.parentState === this.activeState)
-            {
-                if (transition.isTriggered() || transition.shouldTransition())
-                {
+            if (transition.parentState === this.activeState) {
+                if (transition.isTriggered() || transition.shouldTransition()) {
                     transition.resetTrigger();
 
                     this.activeState.active = false;
@@ -381,8 +354,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
         }
     }
 
-    onStateExited(): void
-    {
+    onStateExited(): void {
         if (!this.activeState)
             return;
 
@@ -394,8 +366,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior
     /**
      * Checks whether or not this state machine layer has finished running.
      */
-    isFinished(): boolean
-    {
+    isFinished(): boolean {
         if (!this.active)
             return true;
 

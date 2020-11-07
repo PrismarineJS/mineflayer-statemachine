@@ -4,15 +4,15 @@
 const mineflayer = require("mineflayer");
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
-  process.exit(1)
+	console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
+	process.exit(1)
 }
 
 const bot = mineflayer.createBot({
-  host: process.argv[2],
-  port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
-  password: process.argv[5]
+	host: process.argv[2],
+	port: parseInt(process.argv[3]),
+	username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
+	password: process.argv[5]
 })
 
 
@@ -22,12 +22,12 @@ const bot = mineflayer.createBot({
 
 // Imports
 const {
-    StateTransition,
-    BotStateMachine,
-    BehaviorIdle,
-    BehaviorLookAtEntity,
-    EntityFilters,
-    NestedStateMachine } = require("mineflayer-statemachine");
+	StateTransition,
+	BotStateMachine,
+	BehaviorIdle,
+	BehaviorLookAtEntity,
+	EntityFilters,
+	NestedStateMachine } = require("mineflayer-statemachine");
 
 // Wait until we spawn
 bot.on('spawn', () => {
@@ -43,29 +43,28 @@ bot.on('spawn', () => {
 		// This transitions from the idleState to the lookAtPlayersState when
 		// someone says hi in chat.
 		new StateTransition({
-		    parent: idleState,
-		    child: lookAtPlayersState,
-		    onTransition: () => bot.chat("hello")
+			parent: idleState,
+			child: lookAtPlayersState,
+			onTransition: () => bot.chat("hello")
 		}),
 
 		// This transitions from the lookAtPlayersState to the idleState when
 		// someone says bye in chat. We also want to say bye to the player.
 		new StateTransition({
-		    parent: lookAtPlayersState,
-		    child: idleState,
-		    onTransition: () => bot.chat("goodbye")
+			parent: lookAtPlayersState,
+			child: idleState,
+			onTransition: () => bot.chat("goodbye")
 		})
 
 	];
 
 	// Set up some quick events to trigger transitions.
-	bot.on("chat", (username, message) =>
-	{
+	bot.on("chat", (username, message) => {
 		if (message === "hi")
-		    transitions[0].trigger();
+			transitions[0].trigger();
 
 		if (message === "bye")
-		    transitions[1].trigger();
+			transitions[1].trigger();
 	});
 
 	// A state machine is made from a series of layers, so let's create the root

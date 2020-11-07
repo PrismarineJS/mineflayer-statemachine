@@ -12,8 +12,7 @@ const publicFolder = "./../web";
  * A web server which allows users to view the current state of the
  * bot behavior state machine.
  */
-export class StateMachineWebserver
-{
+export class StateMachineWebserver {
     private serverRunning: boolean = false;
 
     readonly bot: Bot;
@@ -26,8 +25,7 @@ export class StateMachineWebserver
      * @param stateMachine - The state machine being observed.
      * @param port - The port to open this server on.
      */
-    constructor(bot: Bot, stateMachine: BotStateMachine, port: number = 8934)
-    {
+    constructor(bot: Bot, stateMachine: BotStateMachine, port: number = 8934) {
         this.bot = bot;
         this.stateMachine = stateMachine;
         this.port = port;
@@ -36,16 +34,14 @@ export class StateMachineWebserver
     /**
      * Checks whether or not this server is currently running.
      */
-    isServerRunning(): boolean
-    {
+    isServerRunning(): boolean {
         return this.serverRunning;
     }
 
     /**
      * Configures and starts a basic static web server.
      */
-    startServer(): void
-    {
+    startServer(): void {
         if (this.serverRunning)
             throw "Server already running!";
 
@@ -65,16 +61,14 @@ export class StateMachineWebserver
     /**
      * Called when the web server is started.
      */
-    private onStarted(): void
-    {
+    private onStarted(): void {
         console.log(`Started state machine web server at http://localhost:${this.port}.`);
     }
 
     /**
      * Called when a web socket connects to this server.
      */
-    private onConnected(socket: Socket): void
-    {
+    private onConnected(socket: Socket): void {
         console.log(`Client ${socket.handshake.address} connected to webserver.`);
 
         this.sendStatemachineStructure(socket);
@@ -83,15 +77,13 @@ export class StateMachineWebserver
         const updateClient = () => this.updateClient(socket);
         this.stateMachine.on("stateChanged", updateClient);
 
-        socket.on('disconnect', () =>
-        {
+        socket.on('disconnect', () => {
             this.stateMachine.removeListener("stateChanged", updateClient)
             console.log(`Client ${socket.handshake.address} disconnected from webserver.`);
         });
     }
 
-    private sendStatemachineStructure(socket: Socket): void
-    {
+    private sendStatemachineStructure(socket: Socket): void {
         const states = this.getStates();
         const transitions = this.getTransitions();
         const nestGroups = this.getNestGroups();
@@ -105,13 +97,11 @@ export class StateMachineWebserver
         socket.emit("connected", packet);
     }
 
-    private updateClient(socket: Socket): void
-    {
+    private updateClient(socket: Socket): void {
         let states = this.stateMachine.states;
         const activeStates: number[] = [];
 
-        for (const layer of this.stateMachine.nestedStateMachines)
-        {
+        for (const layer of this.stateMachine.nestedStateMachines) {
             if (!layer.activeState) continue;
 
             const index = states.indexOf(layer.activeState);
@@ -127,12 +117,10 @@ export class StateMachineWebserver
         socket.emit("stateChanged", packet);
     }
 
-    private getStates(): StateMachineStatePacket[]
-    {
+    private getStates(): StateMachineStatePacket[] {
         const states: StateMachineStatePacket[] = [];
 
-        for (let i = 0; i < this.stateMachine.states.length; i++)
-        {
+        for (let i = 0; i < this.stateMachine.states.length; i++) {
             const state = this.stateMachine.states[i];
             states.push({
                 id: i,
@@ -144,10 +132,8 @@ export class StateMachineWebserver
         return states;
     }
 
-    private getNestGroup(state: StateBehavior): number
-    {
-        for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++)
-        {
+    private getNestGroup(state: StateBehavior): number {
+        for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++) {
             const n = this.stateMachine.nestedStateMachines[i];
 
             if (!n.states)
@@ -160,12 +146,10 @@ export class StateMachineWebserver
         throw "Unexpected state!";
     }
 
-    private getTransitions(): StateMachineTransitionPacket[]
-    {
+    private getTransitions(): StateMachineTransitionPacket[] {
         const transitions: StateMachineTransitionPacket[] = [];
 
-        for (let i = 0; i < this.stateMachine.transitions.length; i++)
-        {
+        for (let i = 0; i < this.stateMachine.transitions.length; i++) {
             const transition = this.stateMachine.transitions[i];
             transitions.push({
                 id: i,
@@ -178,12 +162,10 @@ export class StateMachineWebserver
         return transitions;
     }
 
-    private getNestGroups(): NestedStateMachinePacket[]
-    {
+    private getNestGroups(): NestedStateMachinePacket[] {
         const nestGroups: NestedStateMachinePacket[] = [];
 
-        for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++)
-        {
+        for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++) {
             const nest = this.stateMachine.nestedStateMachines[i];
             nestGroups.push({
                 id: i,
@@ -198,15 +180,13 @@ export class StateMachineWebserver
     }
 }
 
-interface StateMachineStructurePacket
-{
+interface StateMachineStructurePacket {
     states: StateMachineStatePacket[];
     transitions: StateMachineTransitionPacket[];
     nestGroups: NestedStateMachinePacket[];
 }
 
-interface NestedStateMachinePacket
-{
+interface NestedStateMachinePacket {
     id: number;
     enter: number;
     exit?: number;
@@ -214,22 +194,19 @@ interface NestedStateMachinePacket
     name?: string;
 }
 
-interface StateMachineStatePacket
-{
+interface StateMachineStatePacket {
     id: number;
     name: string;
     nestGroup: number;
 }
 
-interface StateMachineTransitionPacket
-{
+interface StateMachineTransitionPacket {
     id: number;
     name?: string;
     parentState: number;
     childState: number;
 }
 
-interface StateMachineUpdatePacket
-{
+interface StateMachineUpdatePacket {
     activeStates: number[];
 }

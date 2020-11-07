@@ -1,15 +1,15 @@
 const mineflayer = require("mineflayer");
 
 if (process.argv.length < 4 || process.argv.length > 6) {
-  console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
-  process.exit(1)
+    console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
+    process.exit(1)
 }
 
 const bot = mineflayer.createBot({
-  host: process.argv[2],
-  port: parseInt(process.argv[3]),
-  username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
-  password: process.argv[5]
+    host: process.argv[2],
+    port: parseInt(process.argv[3]),
+    username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
+    password: process.argv[5]
 })
 
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
@@ -29,8 +29,7 @@ const {
 
 globalSettings.debugMode = true;
 
-bot.once("spawn", () =>
-{
+bot.once("spawn", () => {
     const targets = {};
 
     const printServerStates = new BehaviorPrintServerStats(bot);
@@ -121,13 +120,11 @@ bot.once("spawn", () =>
     const root = new NestedStateMachine(transitions, printServerStates);
     root.name = "main";
 
-    bot.on("chat", (username, message) =>
-    {
+    bot.on("chat", (username, message) => {
         if (message === "hi")
             transitions[1].trigger();
 
-        if (message === "bye")
-        {
+        if (message === "bye") {
             transitions[3].trigger();
             transitions[6].trigger();
             transitions[9].trigger();
@@ -136,8 +133,7 @@ bot.once("spawn", () =>
         if (message === "come")
             transitions[4].trigger();
 
-        if (message === "stay")
-        {
+        if (message === "stay") {
             transitions[5].trigger();
             transitions[10].trigger();
         }

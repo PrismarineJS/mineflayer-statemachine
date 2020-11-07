@@ -17,10 +17,8 @@ const LAYER_EXIT_COLOR = '#996655';
 
 let graph;
 
-class Graph
-{
-    constructor(canvas)
-    {
+class Graph {
+    constructor(canvas) {
         this.canvas = canvas;
         this.width = canvas.width;
         this.height = canvas.height;
@@ -37,22 +35,19 @@ class Graph
         requestAnimationFrame(() => this.animation());
     }
 
-    clear()
-    {
+    clear() {
         this.states = [];
         this.transitions = [];
         this.repaint = true;
     }
 
-    subscribeEvents()
-    {
+    subscribeEvents() {
         this.canvas.addEventListener('mousemove', e => this.onMouseMove(e));
         this.canvas.addEventListener('mouseup', e => this.onMouseUp(e));
         this.canvas.addEventListener('mousedown', e => this.onMouseDown(e));
     }
 
-    needsRepaint()
-    {
+    needsRepaint() {
         if (this.repaint)
             return true;
 
@@ -63,10 +58,8 @@ class Graph
         return false;
     }
 
-    animation()
-    {
-        if (this.needsRepaint())
-        {
+    animation() {
+        if (this.needsRepaint()) {
             this.repaint = false;
             this.drawScene();
         }
@@ -74,8 +67,7 @@ class Graph
         requestAnimationFrame(() => this.animation());
     }
 
-    drawScene()
-    {
+    drawScene() {
         this.width = this.canvas.width = this.canvas.clientWidth;
         this.height = this.canvas.height = this.canvas.clientHeight;
 
@@ -95,8 +87,7 @@ class Graph
             trans.drawHover(ctx);
     }
 
-    drawBackground(ctx)
-    {
+    drawBackground(ctx) {
         ctx.fillStyle = '#121212';
         ctx.fillRect(0, 0, this.width, this.height);
 
@@ -108,14 +99,12 @@ class Graph
         this.renderGrid(ctx, 100);
     }
 
-    eventPos(event)
-    {
+    eventPos(event) {
         let elem = this.canvas;
         let top = 0;
         let left = 0;
 
-        if (elem.getClientRects().length)
-        {
+        if (elem.getClientRects().length) {
             let rect = elem.getBoundingClientRect();
             let win = elem.ownerDocument.defaultView;
 
@@ -129,10 +118,8 @@ class Graph
         };
     }
 
-    renderGrid(ctx, step)
-    {
-        for (let x = 0; x < this.width; x += step)
-        {
+    renderGrid(ctx, step) {
+        for (let x = 0; x < this.width; x += step) {
             ctx.beginPath();
             ctx.moveTo(x, 0);
             ctx.lineTo(x, this.height);
@@ -140,8 +127,7 @@ class Graph
             ctx.stroke();
         }
 
-        for (let y = 0; y < this.height; y += step)
-        {
+        for (let y = 0; y < this.height; y += step) {
             ctx.beginPath();
             ctx.moveTo(0, y);
             ctx.lineTo(this.width, y);
@@ -150,8 +136,7 @@ class Graph
         }
     }
 
-    onMouseMove(event)
-    {
+    onMouseMove(event) {
         event.preventDefault();
         const { x, y } = this.eventPos(event);
 
@@ -159,8 +144,7 @@ class Graph
         this.updateHover(x, y);
     }
 
-    updateDrag(x, y)
-    {
+    updateDrag(x, y) {
         if (!this.drag)
             return;
 
@@ -169,47 +153,39 @@ class Graph
         this.repaint = true;
     }
 
-    updateHover(x, y)
-    {
+    updateHover(x, y) {
         const mousePos = { x: x, y: y };
 
-        for (let state of this.states)
-        {
+        for (let state of this.states) {
             let mousedOver = state.isInBounds(x, y);
 
-            if (mousedOver != state.highlight)
-            {
+            if (mousedOver != state.highlight) {
                 state.highlight = mousedOver;
                 this.repaint = true;
             }
         }
 
-        for (let trans of this.transitions)
-        {
+        for (let trans of this.transitions) {
             let mousedOver = trans.isInBounds(x, y);
 
-            if (mousedOver != trans.highlight)
-            {
+            if (mousedOver != trans.highlight) {
                 trans.highlight = mousedOver;
                 this.repaint = true;
             }
 
-            if (mousedOver)
-            {
+            if (mousedOver) {
                 trans.mousePos = mousePos;
                 this.repaint = true;
             }
         }
     }
 
-    onMouseDown(event)
-    {
+    onMouseDown(event) {
         event.preventDefault();
         const { x, y } = this.eventPos(event);
 
         let targetState;
-        for (let state of this.states)
-        {
+        for (let state of this.states) {
             if (state.isInBounds(x, y))
                 targetState = state;
         }
@@ -226,38 +202,31 @@ class Graph
         };
     }
 
-    onMouseUp(event)
-    {
+    onMouseUp(event) {
         event.preventDefault();
         this.drag = null;
     }
 }
 
-class Rect
-{
-    constructor(x, y, w, h)
-    {
+class Rect {
+    constructor(x, y, w, h) {
         this.x = x;
         this.y = y;
         this.w = w;
         this.h = h;
     }
 
-    cx()
-    {
+    cx() {
         return this.x + this.w / 2;
     }
 
-    cy()
-    {
+    cy() {
         return this.y + this.h / 2;
     }
 }
 
-class State
-{
-    constructor(id, name, rect, layer)
-    {
+class State {
+    constructor(id, name, rect, layer) {
         this.id = id;
         this.name = name;
         this.rect = rect;
@@ -268,8 +237,7 @@ class State
         this.exitState = false;
     }
 
-    draw(ctx)
-    {
+    draw(ctx) {
         if (this.layer != graph.activeLayer)
             return;
 
@@ -289,8 +257,7 @@ class State
         ctx.fillText(this.name, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2);
     }
 
-    drawActive(ctx)
-    {
+    drawActive(ctx) {
         if (this.layer != graph.activeLayer)
             return;
 
@@ -303,8 +270,7 @@ class State
         ctx.stroke();
     }
 
-    fillNodePath(ctx, buffer = 0)
-    {
+    fillNodePath(ctx, buffer = 0) {
         const x = this.rect.x - buffer;
         const y = this.rect.y - buffer;
         const w = this.rect.w + buffer * 2;
@@ -324,8 +290,7 @@ class State
         ctx.closePath();
     }
 
-    isInBounds(x, y)
-    {
+    isInBounds(x, y) {
         if (this.layer != graph.activeLayer)
             return false;
 
@@ -336,17 +301,14 @@ class State
     }
 }
 
-class TransitionGroup
-{
-    constructor(parent, child)
-    {
+class TransitionGroup {
+    constructor(parent, child) {
         this.parent = parent;
         this.child = child;
         this.transitions = [];
     }
 
-    offset(transition)
-    {
+    offset(transition) {
         let index = this.transitions.indexOf(transition);
 
         const dir =
@@ -368,8 +330,7 @@ class TransitionGroup
         };
     }
 
-    rotateDir(p, angle)
-    {
+    rotateDir(p, angle) {
         const s = Math.sin(angle);
         const c = Math.cos(angle);
 
@@ -380,18 +341,15 @@ class TransitionGroup
         p.y = y;
     }
 
-    normalizeDir(dir)
-    {
+    normalizeDir(dir) {
         const mag = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
         dir.x /= mag;
         dir.y /= mag;
     }
 }
 
-class Transition
-{
-    constructor(id, name, parent, child, group)
-    {
+class Transition {
+    constructor(id, name, parent, child, group) {
         this.id = id;
         this.name = name;
         this.parent = parent;
@@ -402,8 +360,7 @@ class Transition
         group.transitions.push(this);
     }
 
-    draw(ctx)
-    {
+    draw(ctx) {
         if (this.parent.layer != graph.activeLayer
             || this.child.layer != graph.activeLayer)
             return;
@@ -445,8 +402,7 @@ class Transition
         ctx.fill();
     }
 
-    drawHover(ctx)
-    {
+    drawHover(ctx) {
         if (this.parent.layer != graph.activeLayer
             || this.child.layer != graph.activeLayer)
             return;
@@ -461,16 +417,14 @@ class Transition
         ctx.fillText(this.name, this.mousePos.x, this.mousePos.y - 10);
     }
 
-    isInBounds(x, y)
-    {
+    isInBounds(x, y) {
         if (this.parent.layer != graph.activeLayer
             || this.child.layer != graph.activeLayer)
             return false;
 
         function sqr(x) { return x * x; }
         function dist2(v, w) { return sqr(v.x - w.x) + sqr(v.y - w.y); }
-        function distToSegmentSquared(p, v, w)
-        {
+        function distToSegmentSquared(p, v, w) {
             var l2 = dist2(v, w);
             if (l2 == 0) return dist2(p, v);
             var t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
@@ -501,8 +455,7 @@ class Transition
         return distToSegment({ x: x, y: y }, a, b) <= LINE_THICKNESS;
     }
 
-    arrowBase(a, b)
-    {
+    arrowBase(a, b) {
         const dir = { x: b.x - a.x, y: b.y - a.y };
         const mag = Math.sqrt(dir.x * dir.x + dir.y * dir.y);
         dir.x /= mag;
@@ -517,8 +470,7 @@ class Transition
         };
     }
 
-    clipArrow(rect, a, b)
-    {
+    clipArrow(rect, a, b) {
         let intersect = this.liang_barsky_clipper(
             rect.x, rect.y, rect.x + rect.w, rect.y + rect.h,
             a.x, a.y,
@@ -528,8 +480,7 @@ class Transition
         b.y = intersect.y;
     }
 
-    liang_barsky_clipper(xmin, ymin, xmax, ymax, x1, y1, x2, y2)
-    {
+    liang_barsky_clipper(xmin, ymin, xmax, ymax, x1, y1, x2, y2) {
         let p1 = -(x2 - x1);
         let p2 = -p1;
         let p3 = -(y2 - y1);
@@ -538,16 +489,14 @@ class Transition
         let n1 = 0;
         let n2 = 0;
 
-        if (p1 != 0)
-        {
+        if (p1 != 0) {
             if (p1 < 0)
                 n1 = (x1 - xmin) / p1;
             else
                 n1 = (xmax - x1) / p2;
         }
 
-        if (p3 != 0)
-        {
+        if (p3 != 0) {
             if (p3 < 0)
                 n2 = (y1 - ymin) / p3;
             else
@@ -562,10 +511,8 @@ class Transition
     }
 }
 
-class NestedGroup
-{
-    constructor(id, indent, enter, exit)
-    {
+class NestedGroup {
+    constructor(id, indent, enter, exit) {
         this.id = id;
         this.indent = indent;
         this.enter = enter;
@@ -573,8 +520,7 @@ class NestedGroup
     }
 }
 
-function init()
-{
+function init() {
     const canvas = document.getElementById('graph');
     graph = new Graph(canvas);
 
@@ -583,8 +529,7 @@ function init()
     socket.on("stateChanged", packet => onStateChanged(packet));
 }
 
-function onConnected(packet)
-{
+function onConnected(packet) {
     console.log("Bot connected.");
 
     graph.clear();
@@ -594,16 +539,14 @@ function onConnected(packet)
     graph.repaint = true;
 }
 
-function loadStates(packet)
-{
+function loadStates(packet) {
     const centerX = graph.width / 2 - NODE_WIDTH / 2;
     const centerY = graph.height / 2 - NODE_HEIGHT / 2;
     const radiusX = graph.width / 3;
     const radiusY = graph.height / 3;
 
     let index = 0;
-    for (let state of packet.states)
-    {
+    for (let state of packet.states) {
         const angle = (index / packet.states.length) * Math.PI * 2;
         index++;
 
@@ -623,12 +566,10 @@ function loadStates(packet)
     }
 }
 
-function loadTransitions(packet)
-{
+function loadTransitions(packet) {
     const groups = [];
 
-    for (let transition of packet.transitions)
-    {
+    for (let transition of packet.transitions) {
         const parent = graph.states[transition.parentState];
         const child = graph.states[transition.childState];
         const group = getTransitionGroup(groups, parent, child);
@@ -638,12 +579,10 @@ function loadTransitions(packet)
     }
 }
 
-function loadNestedGroups(packet)
-{
+function loadNestedGroups(packet) {
     const buttonGroup = document.getElementById('layerButtons');
 
-    for (let n of packet.nestGroups)
-    {
+    for (let n of packet.nestGroups) {
         const g = new NestedGroup(n.id, n.indent, n.enter, n.exit);
         graph.nestedGroups.push(g);
 
@@ -661,13 +600,11 @@ function loadNestedGroups(packet)
     }
 }
 
-function getTransitionGroup(groups, parent, child)
-{
+function getTransitionGroup(groups, parent, child) {
     if (parent.id < child.id) // To make group order ambiguous
         return getTransitionGroup(groups, child, parent);
 
-    for (let group of groups)
-    {
+    for (let group of groups) {
         if (group.parent === parent && group.child === child)
             return group;
     }
@@ -678,8 +615,7 @@ function getTransitionGroup(groups, parent, child)
     return group;
 }
 
-function onStateChanged(packet)
-{
+function onStateChanged(packet) {
     console.log(`Bot behavior states changed to ${packet.activeStates}.`);
 
     for (let state of graph.states)
@@ -688,8 +624,7 @@ function onStateChanged(packet)
     graph.repaint = true;
 }
 
-function selectLayer(layer, newLayerButton)
-{
+function selectLayer(layer, newLayerButton) {
     const oldLayerButton = document.getElementById(`nestedLayer${graph.activeLayer}`);
     oldLayerButton.classList.remove("selected");
 
