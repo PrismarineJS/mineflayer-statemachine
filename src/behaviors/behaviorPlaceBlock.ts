@@ -27,7 +27,7 @@ export class BehaviorPlaceBlock implements StateBehavior {
   }
 
   onStateEntered (): void {
-    if (!this.targets.item) { return }
+    if (this.targets.item == null) return
 
     let success = true
     this.bot.equip(this.targets.item, 'hand', (err) => {

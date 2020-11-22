@@ -1,8 +1,9 @@
 import { Bot } from 'mineflayer'
 import { BotStateMachine, StateBehavior } from './statemachine'
-import { Socket } from 'socket.io'
+import socketLoader, { Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
+import httpLoader from 'http'
 
 const publicFolder = './../web'
 
@@ -52,8 +53,11 @@ export class StateMachineWebserver {
     app.use('/web', express.static(path.join(__dirname, publicFolder)))
     app.get('/', (req, res) => res.sendFile(path.join(__dirname, publicFolder, 'index.html')))
 
-    const http = require('http').createServer(app)
-    const io = require('socket.io')(http)
+    const http = httpLoader.createServer(app)
+
+    // @ts-expect-error ; Why? Not sure. Probably a type-def loading issue. Either way, it's safe.
+    const io = socketLoader(http)
+
     io.on('connection', (socket: Socket) => this.onConnected(socket))
 
     http.listen(this.port, () => this.onStarted())

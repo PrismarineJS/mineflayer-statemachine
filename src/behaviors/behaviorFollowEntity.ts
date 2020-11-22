@@ -2,6 +2,7 @@ import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot } from 'mineflayer'
 import { Entity } from 'prismarine-entity'
 import { Movements, goals } from 'mineflayer-pathfinder'
+import mcDataLoader from 'minecraft-data'
 
 /**
  * Causes the bot to follow the target entity.
@@ -26,7 +27,7 @@ export class BehaviorFollowEntity implements StateBehavior {
   constructor (bot: Bot, targets: StateMachineTargets) {
     this.bot = bot
     this.targets = targets
-    this.mcData = require('minecraft-data')(this.bot.version)
+    this.mcData = mcDataLoader(this.bot.version)
     this.movements = new Movements(this.bot, this.mcData)
   }
 
@@ -72,7 +73,7 @@ export class BehaviorFollowEntity implements StateBehavior {
      */
   private startMoving (): void {
     const entity = this.targets.entity
-    if (!entity) { return }
+    if (entity == null) return
 
     // @ts-expect-error
     const pathfinder = this.bot.pathfinder
@@ -103,7 +104,7 @@ export class BehaviorFollowEntity implements StateBehavior {
      */
   distanceToTarget (): number {
     const entity = this.targets.entity
-    if (!entity) { return 0 }
+    if (entity == null) return 0
 
     return this.bot.entity.position.distanceTo(entity.position)
   }

@@ -1,8 +1,9 @@
 import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { globalSettings } from '../index'
 import { Bot } from 'mineflayer'
-import { Movements, goals } from 'mineflayer-pathfinder'
+import { Movements, goals, Pathfinder } from 'mineflayer-pathfinder'
 import { Vec3 } from 'vec3'
+
 import mcDataLoader from 'minecraft-data'
 
 /**
@@ -93,7 +94,7 @@ export class BehaviorMoveTo implements StateBehavior {
     }
 
     if (globalSettings.debugMode) {
-      console.log('[MoveTo] Moving from ' + this.bot.entity.position + ' to ' + position)
+      console.log(`'[MoveTo] Moving from ${this.bot.entity.position.toString()} to ${position.toString()}`)
     }
 
     // @ts-expect-error
@@ -123,7 +124,7 @@ export class BehaviorMoveTo implements StateBehavior {
      */
   isFinished (): boolean {
     // @ts-expect-error
-    const pathfinder = this.bot.pathfinder
+    const pathfinder: Pathfinder = this.bot.pathfinder
     return !pathfinder.isMoving()
   }
 
@@ -134,7 +135,7 @@ export class BehaviorMoveTo implements StateBehavior {
      */
   distanceToTarget (): number {
     const position = this.targets.position
-    if (!position) { return 0 }
+    if (position == null) return 0
 
     return this.bot.entity.position.distanceTo(position)
   }

@@ -24,10 +24,10 @@ export class BehaviorInteractBlock implements StateBehavior {
   }
 
   onStateEntered (): void {
-    if (!this.targets.position) { return }
+    if (this.targets.position == null) return
 
     const block = this.bot.blockAt(this.targets.position)
-    if (!block || !this.bot.canSeeBlock(block)) { return }
+    if (block == null || !this.bot.canSeeBlock(block)) return
 
     this.bot.activateBlock(block)
   }

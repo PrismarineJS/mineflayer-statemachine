@@ -70,11 +70,11 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
   }
 
   /**
-     * Converts an item into the string format: "itemName x itemCount"
-     *
-     *
-     * @param item - The item.
-     */
+   * Converts an item into the string format: "itemName x itemCount"
+   *
+   *
+   * @param item - The item.
+   */
   itemToString (item: Item): string {
     if (item != null) {
       return `${item.name} x ${item.count}`
@@ -84,19 +84,19 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
   }
 
   /**
-     * Searches all items in the bots inventory for an item with the given name.
-     * @param name - The name of the item.
-     *
-     * @returns The item, or undefined if none were found.
-     */
+   * Searches all items in the bots inventory for an item with the given name.
+   * @param name - The name of the item.
+   *
+   * @returns The item, or undefined if none were found.
+   */
   findItem (name: string): Item | undefined {
     return this.bot.inventory.items().filter(item => item.name === name)[0]
   }
 
   /**
-     * Gets the number of items in the bots inventory with the given name.
-     * @param name - The item name.
-     */
+   * Gets the number of items in the bots inventory with the given name.
+   * @param name - The item name.
+   */
   itemCount (name: string): number {
     let amount = 0
 
@@ -116,28 +116,24 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
      *
      * @returns The number of items the bot was able to craft with the given inventory.
      */
-    craftItem(item: Item, amount: number = 1, cb: (err?: Error) => void): number
-    {
-        const mcData = require('minecraft-data')(this.bot.version)
-        const table = this.bot.findBlock({
-            point: this.bot.entity.position,
-            matching: mcData.blocksByName.crafting_table.id,
-            maxDistance: 3.5,
-        });
+  craftItem (item: Item, amount: number = 1, cb: (err?: Error) => void = () => {}): number {
+    const mcData = mcDataLoader(this.bot.version)
+    const table = this.bot.findBlock({
+      point: this.bot.entity.position,
+      matching: mcData.blocksByName.crafting_table.id,
+      maxDistance: 3.5
+    })
 
-        const recipe = this.bot.recipesFor(item.type, null, 1, table)[0]
-        if (recipe)
-        {
-            this.bot.craft(recipe, amount, table, cb);
-            return amount;
-        }
-        else
-            cb(new Error("Recipe not available!"));
+    const recipe = this.bot.recipesFor(item.type, null, 1, table)[0]
+    if (recipe != null) {
+      this.bot.craft(recipe, amount, table, cb)
+      return amount
+    } else { cb(new Error('Recipe not available!')) }
 
-        return 0;
-    }
+    return 0
+  }
 
-    /**
+  /**
      * Gets the intended equipment destination for the item. If the item is an
      * armor piece, this will return the correct armor slot. Otherwise, the hand
      * is returned.

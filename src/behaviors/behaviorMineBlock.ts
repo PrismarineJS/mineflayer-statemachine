@@ -34,35 +34,44 @@ export class BehaviorMineBlock implements StateBehavior {
   onStateEntered (): void {
     this.isFinished = false
 
-    if (!this.targets.position) {
+    if (this.targets.position == null) {
       this.isFinished = true
       return
     }
 
     const block = this.bot.blockAt(this.targets.position)
-    if (!block || !this.bot.canDigBlock(block)) {
-      if (globalSettings.debugMode) { console.log("[MineBlock] Cannot mine target block '" + block?.displayName + "'!. Skipping.") }
+    if (block == null || !this.bot.canDigBlock(block)) {
+      if (globalSettings.debugMode) {
+        console.log(`[MineBlock] Cannot mine target block '${block?.displayName ?? 'undefined'}'!. Skipping.`)
+      }
 
       this.isFinished = true
       return
     }
 
-    if (globalSettings.debugMode) { console.log("[MineBlock] Breaking block '" + block.displayName + "' at " + this.targets.position) }
+    if (globalSettings.debugMode) {
+      console.log(`[MineBlock] Breaking block '${block.displayName}' at ${this.targets.position.toString()}`)
+    }
 
     const tool = this.getBestTool(block)
-    if (tool) {
+    if (tool != null) {
       this.bot.equip(tool, 'hand', () => {
-        this.bot.dig(block, () => this.isFinished = true)
+        this.bot.dig(block, () => {
+          this.isFinished = true
+        })
       })
-    } else { this.bot.dig(block, () => this.isFinished = true) }
+    } else {
+      this.bot.dig(block, () => {
+        this.isFinished = true
+      })
+    }
   }
 
   private getBestTool (block: Block): Item | undefined {
     const items = this.bot.inventory.items()
     for (const i in block.harvestTools) {
       const id = parseInt(i, 10)
-      for (const j in items) {
-        const item = items[j]
+      for (const item of items) {
         if (item.type === id) return item
       }
     }

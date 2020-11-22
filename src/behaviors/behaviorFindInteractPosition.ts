@@ -2,6 +2,7 @@ import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot } from 'mineflayer'
 import { Block } from 'prismarine-block'
 import { Vec3 } from 'vec3'
+import mcDataLoader from 'minecraft-data'
 
 /* TODO Allow for creating positions in the air, or mining out new positions,
    if the bot if able to place blocks or mine in the area, respectively. */
@@ -90,17 +91,16 @@ export class BehaviorFindInteractPosition implements StateBehavior {
      */
   private checkPosition (block: Block, positions: StandingPosition[]): void {
     // Ignore if block is not empty
-    if (block.boundingBox !== 'empty') { return }
+    if (block.boundingBox !== 'empty') return
 
     // Ignore if block can't be stood on.
     const under = this.bot.blockAt(block.position.offset(0, -1, 0))
     if (under == null || under.boundingBox !== 'block') return
 
     // Ignore if there is no head room.
-    const over = this.bot.blockAt(block.position.offset(0, 1, 0)) || undefined
-    if (over && over.boundingBox !== 'empty') { return }
-
-    if (this.costs.shouldAvoid(block, over)) { return }
+    const over = this.bot.blockAt(block.position.offset(0, 1, 0)) ?? undefined
+    if (over != null && over.boundingBox !== 'empty') return
+    if (this.costs.shouldAvoid(block, over)) return
 
     positions.push({
       position: block.position,
@@ -191,7 +191,7 @@ class StandingPositionCosts {
     this.bot = bot
     this.targets = targets
 
-    const mcData = require('minecraft-data')(this.bot.version)
+    const mcData = mcDataLoader(this.bot.version)
 
     this.avoid = [
       mcData.blocksByName.lava.id,
@@ -213,9 +213,8 @@ class StandingPositionCosts {
      * @returns True if the block should be avoided. False otherwise.
      */
   shouldAvoid (block: Block, over?: Block): boolean {
-    if (this.avoid.includes(block.type)) { return true }
-
-    if (over && this.avoid.includes(over.type)) { return true }
+    if (this.avoid.includes(block.type)) return true
+    if (over != null && this.avoid.includes(over.type)) return true
 
     return false
   }
@@ -229,32 +228,30 @@ class StandingPositionCosts {
      * @returns The estimated cost value.
      */
   calculateStandCost (block: Block, over?: Block): number {
-    if (!this.targets.position) { throw 'Target position not assigned!' }
+    if (this.targets.position == null) throw new Error('Target position not assigned!')
 
     let cost = 0
     const targetPos = this.targets.position.floored()
 
     for (const c of this.blockCosts) {
-      if (block.type === c[0]) { cost += c[1] }
-
-      if (over && over.type === c[0]) { cost += c[2] || c[1] }
+      if (block.type === c[0]) cost += c[1]
+      if (over != null && over.type === c[0]) cost += c[2] ?? c[1]
     }
 
     cost += block.position.manhattanDistanceTo(this.targets.position) * this.distanceMultiplier
     cost += this.calculatePathCost(block) * this.moveMultiplier
 
     if (this.numberEquals(block.position.x, targetPos.x) &&
-            this.numberEquals(block.position.z, targetPos.z)) {
-      if (targetPos.y < block.position.y) { cost += this.standOnCost }
-
-      if (targetPos.y > block.position.y) { cost += this.standUnderCost }
+        this.numberEquals(block.position.z, targetPos.z)) {
+      if (targetPos.y < block.position.y) cost += this.standOnCost
+      if (targetPos.y > block.position.y) cost += this.standUnderCost
     }
 
     return cost
   }
 
   private calculatePathCost (block: Block): number {
-    if (this.approximateMoveMode) { return block.position.distanceTo(this.bot.entity.position) }
+    if (this.approximateMoveMode) return block.position.distanceTo(this.bot.entity.position)
 
     // TODO Test bot path and add cost
     return 0

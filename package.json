@@ -50,5 +50,11 @@
   "files": [
     "lib/**/*",
     "web/**/*"
-  ]
+  ],
+  "ts-standard": {
+    "ignore": [
+      "web",
+      "lib"
+    ]
+  }
 }

@@ -18,7 +18,9 @@ export class BehaviorLookAtEntity implements StateBehavior {
 
   update (): void {
     const entity = this.targets.entity
-    if (entity) { this.bot.lookAt(entity.position.offset(0, entity.height, 0)) }
+    if (entity != null) {
+      this.bot.lookAt(entity.position.offset(0, entity.height, 0))
+    }
   }
 
   /**
@@ -28,7 +30,7 @@ export class BehaviorLookAtEntity implements StateBehavior {
      */
   distanceToTarget (): number {
     const entity = this.targets.entity
-    if (!entity) { return 0 }
+    if (entity == null) return 0
 
     return this.bot.entity.position.distanceTo(entity.position)
   }

@@ -33,7 +33,7 @@ export class BehaviorGetClosestEntity implements StateBehavior {
   }
 
   onStateEntered (): void {
-    this.targets.entity = this.getClosestEntity() || undefined
+    this.targets.entity = this.getClosestEntity() ?? undefined
   }
 
   /**
