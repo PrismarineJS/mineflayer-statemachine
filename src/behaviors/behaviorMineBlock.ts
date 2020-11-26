@@ -77,7 +77,15 @@ export class BehaviorMineBlock implements StateBehavior
             for (const j in items)
             {
                 const item = items[j]
-                if (item.type === id) return item
+                if (item.type === id) {
+                    
+                     // Ready select
+                    if (this.bot.heldItem && this.bot.heldItem.type == item.type) {
+                        return undefined;
+                    }
+                    
+                    return item;
+                }
             }
         }
 
