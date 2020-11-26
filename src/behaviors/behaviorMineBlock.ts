@@ -77,9 +77,10 @@ export class BehaviorMineBlock implements StateBehavior
             for (const j in items)
             {
                 const item = items[j]
-                if (item.type === id) {
-                    
-                     // Ready select
+                if (item.type === id)
+                {
+                    // Ready select
+                    // @ts-expect-error ; bot.heldItem not yet in Mineflayer ts header.
                     if (this.bot.heldItem && this.bot.heldItem.type == item.type) {
                         return undefined;
                     }
