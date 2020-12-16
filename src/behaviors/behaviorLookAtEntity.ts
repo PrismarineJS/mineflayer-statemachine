@@ -19,7 +19,9 @@ export class BehaviorLookAtEntity implements StateBehavior {
   update (): void {
     const entity = this.targets.entity
     if (entity != null) {
-      this.bot.lookAt(entity.position.offset(0, entity.height, 0))
+      this.bot.lookAt(entity.position.offset(0, entity.height, 0)).catch(err => {
+        console.log(err)
+      })
     }
   }
 

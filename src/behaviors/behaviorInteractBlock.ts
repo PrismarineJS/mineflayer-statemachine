@@ -29,6 +29,8 @@ export class BehaviorInteractBlock implements StateBehavior {
     const block = this.bot.blockAt(this.targets.position)
     if (block == null || !this.bot.canSeeBlock(block)) return
 
-    this.bot.activateBlock(block)
+    this.bot.activateBlock(block).catch(err => {
+      console.log(err)
+    })
   }
 }

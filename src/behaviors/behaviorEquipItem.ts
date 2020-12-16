@@ -35,7 +35,11 @@ export class BehaviorEquipItem extends AbstractBehaviorInventory {
         destination = this.getEquipDestination(this.targets.item)
       }
 
-      this.bot.equip(this.targets.item, destination, err => this.equipItemCallback(err))
+      this.bot.equip(this.targets.item, destination).then(() => {
+        this.equipItemCallback()
+      }).catch(err => {
+        this.equipItemCallback(err)
+      })
     }
   }
 

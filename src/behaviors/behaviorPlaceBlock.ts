@@ -29,18 +29,19 @@ export class BehaviorPlaceBlock implements StateBehavior {
   onStateEntered (): void {
     if (this.targets.item == null) return
 
-    let success = true
-    this.bot.equip(this.targets.item, 'hand', (err) => {
-      if (err != null) success = false
+    this.bot.equip(this.targets.item, 'hand').catch(err => {
+      console.log(err)
     })
 
-    if (!success) return
     if (this.targets.position == null) return
     if (this.targets.blockFace == null) return
 
     const block = this.bot.blockAt(this.targets.position)
     if (block == null || !this.bot.canSeeBlock(block)) return
 
-    this.bot.placeBlock(block, this.targets.blockFace, () => { })
+    // @ts-expect-error ; Callback should be marked as optional
+    this.bot.placeBlock(block, this.targets.blockFace).catch(err => {
+      console.log(err)
+    })
   }
 }

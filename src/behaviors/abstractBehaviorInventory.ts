@@ -45,26 +45,17 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
      * @returns The number of items actually dropped.
      */
   throwItem (item: Item, amount: number = -1): number {
-    let failed = false
     if (amount === -1) {
-      this.bot.tossStack(item, (err) => {
-        if (err != null) {
-          failed = true
-        }
+      this.bot.tossStack(item).catch(err => {
+        console.log(err)
       })
-
-      if (failed) {
-        return 0
-      }
 
       return item.count
     }
 
-    this.bot.toss(item.type, null, amount, (err) => {
-      if (err != null) failed = true
+    this.bot.toss(item.type, null, amount).catch(err => {
+      console.log(err)
     })
-
-    if (failed) return 0
 
     return Math.min(amount, item.count)
   }
@@ -126,7 +117,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
 
     const recipe = this.bot.recipesFor(item.type, null, 1, table)[0]
     if (recipe != null) {
-      this.bot.craft(recipe, amount, table, cb)
+      this.bot.craft(recipe, amount, table).then(() => cb()).catch(cb)
       return amount
     } else { cb(new Error('Recipe not available!')) }
 
