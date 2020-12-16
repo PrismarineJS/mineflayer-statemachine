@@ -1,4 +1,4 @@
-const mineflayer = require("mineflayer");
+const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
@@ -12,138 +12,133 @@ const bot = mineflayer.createBot({
   password: process.argv[5]
 })
 
-bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
+bot.loadPlugin(require('mineflayer-pathfinder').pathfinder)
 
 const {
-    globalSettings,
-    StateTransition,
-    BotStateMachine,
-    StateMachineWebserver,
-    EntityFilters,
-    BehaviorIdle,
-    BehaviorPrintServerStats,
-    BehaviorFollowEntity,
-    BehaviorLookAtEntity,
-    BehaviorGetClosestEntity,
-    NestedStateMachine } = require("./../lib");
+  globalSettings,
+  StateTransition,
+  BotStateMachine,
+  StateMachineWebserver,
+  EntityFilters,
+  BehaviorIdle,
+  BehaviorPrintServerStats,
+  BehaviorFollowEntity,
+  BehaviorLookAtEntity,
+  BehaviorGetClosestEntity,
+  NestedStateMachine
+} = require('./../lib')
 
-globalSettings.debugMode = true;
+globalSettings.debugMode = true
 
-bot.once("spawn", () =>
-{
-    const targets = {};
+bot.once('spawn', () => {
+  const targets = {}
 
-    const printServerStates = new BehaviorPrintServerStats(bot);
-    const idleState = new BehaviorIdle();
-    const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets);
-    const followPlayer = new BehaviorFollowEntity(bot, targets);
-    const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly);
-    const lookAtFollowTarget = new BehaviorLookAtEntity(bot, targets);
+  const printServerStates = new BehaviorPrintServerStats(bot)
+  const idleState = new BehaviorIdle()
+  const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets)
+  const followPlayer = new BehaviorFollowEntity(bot, targets)
+  const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly)
+  const lookAtFollowTarget = new BehaviorLookAtEntity(bot, targets)
 
-    const transitions = [
+  const transitions = [
 
-        new StateTransition({ // 0
-            parent: printServerStates,
-            child: idleState,
-            shouldTransition: () => true,
-        }),
+    new StateTransition({ // 0
+      parent: printServerStates,
+      child: idleState,
+      shouldTransition: () => true
+    }),
 
-        new StateTransition({ // 1
-            parent: idleState,
-            child: getClosestPlayer,
-            name: 'player says "hi"',
-            onTransition: () => bot.chat("hello")
-        }),
+    new StateTransition({ // 1
+      parent: idleState,
+      child: getClosestPlayer,
+      name: 'player says "hi"',
+      onTransition: () => bot.chat('hello')
+    }),
 
-        new StateTransition({ // 2
-            parent: getClosestPlayer,
-            child: lookAtPlayersState,
-            shouldTransition: () => true,
-        }),
+    new StateTransition({ // 2
+      parent: getClosestPlayer,
+      child: lookAtPlayersState,
+      shouldTransition: () => true
+    }),
 
-        new StateTransition({ // 3
-            parent: lookAtPlayersState,
-            child: idleState,
-            name: 'player says "bye"',
-            onTransition: () => bot.chat("goodbye")
-        }),
+    new StateTransition({ // 3
+      parent: lookAtPlayersState,
+      child: idleState,
+      name: 'player says "bye"',
+      onTransition: () => bot.chat('goodbye')
+    }),
 
-        new StateTransition({ // 4
-            parent: lookAtPlayersState,
-            child: followPlayer,
-            name: 'player says "come"',
-            onTransition: () => bot.chat("coming")
-        }),
+    new StateTransition({ // 4
+      parent: lookAtPlayersState,
+      child: followPlayer,
+      name: 'player says "come"',
+      onTransition: () => bot.chat('coming')
+    }),
 
-        new StateTransition({ // 5
-            parent: followPlayer,
-            child: lookAtPlayersState,
-            name: 'player says "stay"',
-            onTransition: () => bot.chat("staying")
-        }),
+    new StateTransition({ // 5
+      parent: followPlayer,
+      child: lookAtPlayersState,
+      name: 'player says "stay"',
+      onTransition: () => bot.chat('staying')
+    }),
 
-        new StateTransition({ //  6
-            parent: followPlayer,
-            child: idleState,
-            name: 'player says "bye"',
-            onTransition: () => bot.chat("goodbye")
-        }),
+    new StateTransition({ //  6
+      parent: followPlayer,
+      child: idleState,
+      name: 'player says "bye"',
+      onTransition: () => bot.chat('goodbye')
+    }),
 
-        new StateTransition({ // 7
-            parent: followPlayer,
-            child: lookAtFollowTarget,
-            name: 'closeToTarget',
-            shouldTransition: () => followPlayer.distanceToTarget() < 2,
-        }),
+    new StateTransition({ // 7
+      parent: followPlayer,
+      child: lookAtFollowTarget,
+      name: 'closeToTarget',
+      shouldTransition: () => followPlayer.distanceToTarget() < 2
+    }),
 
-        new StateTransition({ // 8
-            parent: lookAtFollowTarget,
-            child: followPlayer,
-            name: 'farFromTarget',
-            shouldTransition: () => lookAtFollowTarget.distanceToTarget() >= 2,
-        }),
+    new StateTransition({ // 8
+      parent: lookAtFollowTarget,
+      child: followPlayer,
+      name: 'farFromTarget',
+      shouldTransition: () => lookAtFollowTarget.distanceToTarget() >= 2
+    }),
 
-        new StateTransition({ // 9
-            parent: lookAtFollowTarget,
-            child: idleState,
-            name: 'player says "bye"',
-            onTransition: () => bot.chat("goodbye")
-        }),
+    new StateTransition({ // 9
+      parent: lookAtFollowTarget,
+      child: idleState,
+      name: 'player says "bye"',
+      onTransition: () => bot.chat('goodbye')
+    }),
 
-        new StateTransition({ // 10
-            parent: lookAtFollowTarget,
-            child: lookAtPlayersState,
-            name: 'player says "stay"',
-        }),
+    new StateTransition({ // 10
+      parent: lookAtFollowTarget,
+      child: lookAtPlayersState,
+      name: 'player says "stay"'
+    })
 
-    ];
+  ]
 
-    const root = new NestedStateMachine(transitions, printServerStates);
-    root.name = "main";
+  const root = new NestedStateMachine(transitions, printServerStates)
+  root.name = 'main'
 
-    bot.on("chat", (username, message) =>
-    {
-        if (message === "hi")
-            transitions[1].trigger();
+  bot.on('chat', (username, message) => {
+    if (message === 'hi') { transitions[1].trigger() }
 
-        if (message === "bye")
-        {
-            transitions[3].trigger();
-            transitions[6].trigger();
-            transitions[9].trigger();
-        }
+    if (message === 'bye') {
+      transitions[3].trigger()
+      transitions[6].trigger()
+      transitions[9].trigger()
+    }
 
-        if (message === "come")
-            transitions[4].trigger();
+    if (message === 'come') { transitions[4].trigger() }
 
-        if (message === "stay")
-        {
-            transitions[5].trigger();
-            transitions[10].trigger();
-        }
-    });
+    if (message === 'stay') {
+      transitions[5].trigger()
+      transitions[10].trigger()
+    }
+  })
 
-    const stateMachine = new BotStateMachine(bot, root);
-    const webserver = new StateMachineWebserver(bot, stateMachine);
-    webserver.startServer();
-});
+  const stateMachine = new BotStateMachine(bot, root)
+  const webserver = new StateMachineWebserver(bot, stateMachine)
+  webserver.startServer()
+})
