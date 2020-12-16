@@ -72,7 +72,14 @@ export class BehaviorMineBlock implements StateBehavior {
     for (const i in block.harvestTools) {
       const id = parseInt(i, 10)
       for (const item of items) {
-        if (item.type === id) return item
+        if (item.type === id) {
+          // Ready select
+          if (this.bot.heldItem && this.bot.heldItem.type == item.type) {
+            return undefined
+          }
+
+          return item
+        }
       }
     }
 
