@@ -30,7 +30,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "minecraft-data": "^2.55.0",
-    "mineflayer": "^2.21.0",
+    "mineflayer": "^2.37.1",
     "mineflayer-pathfinder": "^1.0.5",
     "node": "^15.0.1",
     "prismarine-block": "^1.5.1",

@@ -55,14 +55,20 @@ export class BehaviorMineBlock implements StateBehavior {
 
     const tool = this.getBestTool(block)
     if (tool != null) {
-      this.bot.equip(tool, 'hand', () => {
-        this.bot.dig(block, () => {
+      this.bot.equip(tool, 'hand').then(() => {
+        this.bot.dig(block).then(() => {
           this.isFinished = true
+        }).catch(err => {
+          console.log(err)
         })
+      }).catch(err => {
+        console.log(err)
       })
     } else {
-      this.bot.dig(block, () => {
+      this.bot.dig(block).then(() => {
         this.isFinished = true
+      }).catch(err => {
+        console.log(err)
       })
     }
   }
@@ -74,7 +80,7 @@ export class BehaviorMineBlock implements StateBehavior {
       for (const item of items) {
         if (item.type === id) {
           // Ready select
-          if (this.bot.heldItem && this.bot.heldItem.type == item.type) {
+          if (this.bot.heldItem != null && this.bot.heldItem.type === item.type) {
             return undefined
           }
 
