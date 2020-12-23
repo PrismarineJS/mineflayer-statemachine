@@ -312,46 +312,46 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   onStateEntered (): void {
     this.activeState = this.enter
     this.activeState.active = true
-        this.activeState.onStateEntered?.()
+    this.activeState.onStateEntered?.()
 
-        if (globalSettings.debugMode) { console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`) }
+    if (globalSettings.debugMode) { console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`) }
 
-        this.emit('stateChanged')
+    this.emit('stateChanged')
   }
 
   update (): void {
-        this.activeState?.update?.()
+    this.activeState?.update?.()
 
-        for (let i = 0; i < this.transitions.length; i++) {
-          const transition = this.transitions[i]
-          if (transition.parentState === this.activeState) {
-            if (transition.isTriggered() || transition.shouldTransition()) {
-              transition.resetTrigger()
+    for (let i = 0; i < this.transitions.length; i++) {
+      const transition = this.transitions[i]
+      if (transition.parentState === this.activeState) {
+        if (transition.isTriggered() || transition.shouldTransition()) {
+          transition.resetTrigger()
 
-              this.activeState.active = false
-                    this.activeState.onStateExited?.()
+          this.activeState.active = false
+          this.activeState.onStateExited?.()
 
-                    transition.onTransition()
-                    this.activeState = transition.childState
-                    this.activeState.active = true
+          transition.onTransition()
+          this.activeState = transition.childState
+          this.activeState.active = true
 
-                    if (globalSettings.debugMode) { console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`) }
-                    this.emit('stateChanged')
+          if (globalSettings.debugMode) { console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`) }
+          this.emit('stateChanged')
 
-                    this.activeState.onStateEntered?.()
+          this.activeState.onStateEntered?.()
 
-                    return
-            }
-          }
+          return
         }
+      }
+    }
   }
 
   onStateExited (): void {
     if (this.activeState == null) return
 
     this.activeState.active = false
-        this.activeState.onStateExited?.()
-        this.activeState = undefined
+    this.activeState.onStateExited?.()
+    this.activeState = undefined
   }
 
   /**
