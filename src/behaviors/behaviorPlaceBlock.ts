@@ -39,7 +39,6 @@ export class BehaviorPlaceBlock implements StateBehavior {
     const block = this.bot.blockAt(this.targets.position)
     if (block == null || !this.bot.canSeeBlock(block)) return
 
-    // @ts-expect-error ; Callback should be marked as optional
     this.bot.placeBlock(block, this.targets.blockFace).catch(err => {
       console.log(err)
     })
