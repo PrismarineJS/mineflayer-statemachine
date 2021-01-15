@@ -71,5 +71,5 @@ bot.on('spawn', () => {
   const rootLayer = new NestedStateMachine(transitions, idleState)
 
   // Let's add these settings to the state machine and start it!
-  new BotStateMachine(bot, rootLayer)
+  BotStateMachine(bot, rootLayer)
 })

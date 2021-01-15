@@ -13,7 +13,6 @@ const LINE_SEPARATION = 16
 const LINE_HIGHLIGHT = '#888888'
 const LINE_TEXT_FONT = '12px Calibri'
 const LAYER_ENTER_COLOR = '#559966'
-const LAYER_EXIT_COLOR = '#996655'
 
 let graph
 
@@ -50,8 +49,8 @@ class Graph {
   needsRepaint () {
     if (this.repaint) { return true }
 
-    if (this.canvas.clientWidth != this.width ||
-            this.canvas.clientHeight != this.height) { return true }
+    if (this.canvas.clientWidth !== this.width ||
+            this.canvas.clientHeight !== this.height) { return true }
 
     return false
   }
@@ -140,10 +139,10 @@ class Graph {
 
   updateDrag (x, y) {
     if (!this.drag) { return }
+
     this.drag.target.rect.x = x - this.drag.mouseX + this.drag.startX
     this.drag.target.rect.y = y - this.drag.mouseY + this.drag.startY
     this.repaint = true
-    console.log(x, y)
   }
 
   updateHover (x, y) {
@@ -152,7 +151,7 @@ class Graph {
     for (const state of this.states) {
       const mousedOver = state.isInBounds(x, y)
 
-      if (mousedOver != state.highlight) {
+      if (mousedOver !== state.highlight) {
         state.highlight = mousedOver
         this.repaint = true
       }
@@ -161,7 +160,7 @@ class Graph {
     for (const trans of this.transitions) {
       const mousedOver = trans.isInBounds(x, y)
 
-      if (mousedOver != trans.highlight) {
+      if (mousedOver !== trans.highlight) {
         trans.highlight = mousedOver
         this.repaint = true
       }
@@ -229,7 +228,7 @@ class State {
   }
 
   draw (ctx) {
-    if (this.layer != graph.activeLayer) { return }
+    if (this.layer !== graph.activeLayer) { return }
 
     this.fillNodePath(ctx)
 
@@ -248,7 +247,7 @@ class State {
   }
 
   drawActive (ctx) {
-    if (this.layer != graph.activeLayer) { return }
+    if (this.layer !== graph.activeLayer) { return }
 
     if (!this.activeState) { return }
 
@@ -279,7 +278,9 @@ class State {
   }
 
   isInBounds (x, y) {
-    if (this.layer != graph.activeLayer) { return false }
+    if (this.layer !== graph.activeLayer) {
+      return false
+    }
 
     const r = NODE_CORNER_RADIUS
 
@@ -348,8 +349,8 @@ class Transition {
   }
 
   draw (ctx) {
-    if (this.parent.layer != graph.activeLayer ||
-            this.child.layer != graph.activeLayer) { return }
+    if (this.parent.layer !== graph.activeLayer ||
+            this.child.layer !== graph.activeLayer) { return }
 
     const offset = this.group.offset(this)
 
@@ -389,8 +390,8 @@ class Transition {
   }
 
   drawHover (ctx) {
-    if (this.parent.layer != graph.activeLayer ||
-            this.child.layer != graph.activeLayer) { return }
+    if (this.parent.layer !== graph.activeLayer ||
+            this.child.layer !== graph.activeLayer) { return }
 
     if (!this.highlight || !this.name) { return }
 
@@ -402,14 +403,14 @@ class Transition {
   }
 
   isInBounds (x, y) {
-    if (this.parent.layer != graph.activeLayer ||
-            this.child.layer != graph.activeLayer) { return false }
+    if (this.parent.layer !== graph.activeLayer ||
+            this.child.layer !== graph.activeLayer) { return false }
 
     function sqr (x) { return x * x }
     function dist2 (v, w) { return sqr(v.x - w.x) + sqr(v.y - w.y) }
     function distToSegmentSquared (p, v, w) {
       const l2 = dist2(v, w)
-      if (l2 == 0) return dist2(p, v)
+      if (l2 === 0) return dist2(p, v)
       let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2
       t = Math.max(0, Math.min(1, t))
       return dist2(p, {
@@ -454,7 +455,7 @@ class Transition {
   }
 
   clipArrow (rect, a, b) {
-    const intersect = this.liang_barsky_clipper(
+    const intersect = this.liangBarskyClipper(
       rect.x, rect.y, rect.x + rect.w, rect.y + rect.h,
       a.x, a.y,
       b.x, b.y)
@@ -463,7 +464,7 @@ class Transition {
     b.y = intersect.y
   }
 
-  liang_barsky_clipper (xmin, ymin, xmax, ymax, x1, y1, x2, y2) {
+  liangBarskyClipper (xmin, ymin, xmax, ymax, x1, y1, x2, y2) {
     const p1 = -(x2 - x1)
     const p2 = -p1
     const p3 = -(y2 - y1)
@@ -472,11 +473,11 @@ class Transition {
     let n1 = 0
     let n2 = 0
 
-    if (p1 != 0) {
+    if (p1 !== 0) {
       if (p1 < 0) { n1 = (x1 - xmin) / p1 } else { n1 = (xmax - x1) / p2 }
     }
 
-    if (p3 != 0) {
+    if (p3 !== 0) {
       if (p3 < 0) { n2 = (y1 - ymin) / p3 } else { n2 = (ymax - y1) / p4 }
     }
 
@@ -527,24 +528,12 @@ function loadStates (packet) {
     const angle = (index / packet.states.length) * Math.PI * 2
     index++
 
-    console.log(state)
-
-    let startX = centerX + Math.cos(angle) * radiusX
-    let startY = centerY + Math.sin(angle) * radiusY
-
-    if (state.x !== 0 || state.y !== 0) {
-      startX = state.x
-      startY = state.y
-    }
-
     const rect = new Rect(
-      startX,
-      startY,
+      centerX + Math.cos(angle) * radiusX,
+      centerY + Math.sin(angle) * radiusY,
       NODE_WIDTH,
       NODE_HEIGHT
     )
-
-    console.log(rect)
 
     const stateNode = new State(state.id, state.name, rect, state.nestGroup)
     stateNode.activeState = false
@@ -587,8 +576,10 @@ function loadNestedGroups (packet) {
 }
 
 function getTransitionGroup (groups, parent, child) {
-  if (parent.id < child.id) // To make group order ambiguous
-  { return getTransitionGroup(groups, child, parent) }
+  // To make group order ambiguous
+  if (parent.id < child.id) {
+    return getTransitionGroup(groups, child, parent)
+  }
 
   for (const group of groups) {
     if (group.parent === parent && group.child === child) { return group }
