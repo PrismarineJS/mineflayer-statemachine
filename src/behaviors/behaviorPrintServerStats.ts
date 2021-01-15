@@ -10,6 +10,8 @@ export class BehaviorPrintServerStats implements StateBehavior {
 
   stateName: string = 'printServerStats'
   active: boolean = false
+  x: number = 0
+  y: number = 0
 
   /**
      * Creates a new login behavior state.

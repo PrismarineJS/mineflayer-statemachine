@@ -37,6 +37,8 @@ export class BehaviorFindInteractPosition implements StateBehavior {
 
   /** @inheritDoc */
   stateName: string = 'findInteractPosition'
+  x: number = 0
+  y: number = 0
 
   /** @inheritDoc */
   active: boolean = false

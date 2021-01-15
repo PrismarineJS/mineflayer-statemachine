@@ -17,6 +17,8 @@ export class BehaviorFindBlock implements StateBehavior {
 
   stateName: string = 'findBlock'
   active: boolean = false
+  x: number = 0
+  y: number = 0
 
   /**
      * The list of block ids to search for.
