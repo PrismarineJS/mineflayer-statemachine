@@ -131,6 +131,8 @@ export class StateMachineWebserver {
       states.push({
         id: i,
         name: state.stateName,
+        x: state.x,
+        y: state.y,
         nestGroup: this.getNestGroup(state)
       })
     }
@@ -200,6 +202,8 @@ interface NestedStateMachinePacket {
 interface StateMachineStatePacket {
   id: number
   name: string
+  x: number
+  y: number
   nestGroup: number
 }
 
