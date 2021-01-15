@@ -531,7 +531,7 @@ function loadStates (packet) {
     let startX
     let startY
 
-    if (state.x !== 0 || state.y !== 0) {
+    if (state.x !== 0 && state.y !== 0) {
         startX = state.x
         startY = state.y
     } else {
