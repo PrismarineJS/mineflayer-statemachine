@@ -34,12 +34,12 @@ bot.once('spawn', () => {
   const targets = {}
 
   const printServerStates = new BehaviorPrintServerStats(bot)
-  printServerStates.x = 1000
-  printServerStates.y = 500
+  printServerStates.x = 10
+  printServerStates.y = 5
 
   const idleState = new BehaviorIdle()
-  idleState.x = 1000
-  idleState.y = 100
+  idleState.x = 10
+  idleState.y = 10
 
   const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets)
   lookAtPlayersState.x = 600
