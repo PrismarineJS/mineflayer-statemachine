@@ -20,6 +20,16 @@ export interface StateBehavior {
   active: boolean
 
   /**
+     * The x position of this behavior state for webservice.
+     */
+  x: number
+
+  /**
+    * The y position of this behavior state for webservice.
+    */
+  y: number
+
+  /**
      * Called when the bot enters this behavior state.
      */
   onStateEntered?: () => void
@@ -261,6 +271,16 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
      * The name of this state behavior.
      */
   stateName: string = 'nestedStateMachine'
+
+  /**
+     * The x position of this behavior state for webservice.
+     */
+  x: number = 0
+
+  /**
+     * The y position of this behavior state for webservice.
+     */
+  y: number = 0
 
   /**
      * Whether or not this state machine layer is active.

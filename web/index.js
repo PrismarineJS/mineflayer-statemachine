@@ -528,9 +528,20 @@ function loadStates (packet) {
     const angle = (index / packet.states.length) * Math.PI * 2
     index++
 
+    let startX
+    let startY
+
+    if (state.x !== 0 && state.y !== 0) {
+        startX = state.x
+        startY = state.y
+    } else {
+        startX = centerX + Math.cos(angle) * radiusX
+        startY = centerY + Math.sin(angle) * radiusY
+    }
+
     const rect = new Rect(
-      centerX + Math.cos(angle) * radiusX,
-      centerY + Math.sin(angle) * radiusY,
+      startX,
+      startY,
       NODE_WIDTH,
       NODE_HEIGHT
     )
