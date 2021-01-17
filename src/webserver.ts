@@ -202,8 +202,8 @@ interface NestedStateMachinePacket {
 interface StateMachineStatePacket {
   id: number
   name: string
-  x: number
-  y: number
+  x?: number
+  y?: number
   nestGroup: number
 }
 
