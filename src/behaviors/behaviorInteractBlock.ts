@@ -11,8 +11,6 @@ export class BehaviorInteractBlock implements StateBehavior {
 
   stateName: string = 'interactBlock'
   active: boolean = false
-  x: number = 0
-  y: number = 0
 
   /**
      * Creates a new mine block behavior.
