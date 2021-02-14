@@ -94,7 +94,7 @@ export class BehaviorMoveTo implements StateBehavior {
     }
 
     if (globalSettings.debugMode) {
-      console.log(`'[MoveTo] Moving from ${this.bot.entity.position.toString()} to ${position.toString()}`)
+      console.log(`[MoveTo] Moving from ${this.bot.entity.position.toString()} to ${position.toString()}`)
     }
 
     // @ts-expect-error
