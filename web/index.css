@@ -21,6 +21,7 @@ html, body {
 	display: inline-block;
 	vertical-align: top;
 	height: 100%;
+	overflow-x: hidden;
 }
 
 #properties-panel {
