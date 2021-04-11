@@ -34,7 +34,7 @@ export class BehaviorMoveTo implements StateBehavior {
     this.movements = new Movements(bot, mcData)
   }
 
-  onStateEntered(): void {
+  onStateEntered (): void {
     // @ts-expect-error
     this.bot.on('path_update', this.path_update)
     // @ts-expect-error
@@ -42,7 +42,7 @@ export class BehaviorMoveTo implements StateBehavior {
     this.startMoving()
   }
 
-  onStateExited(): void {
+  onStateExited (): void {
     // @ts-expect-error
     this.bot.removeListener('path_update', this.path_update)
     // @ts-expect-error
@@ -51,11 +51,11 @@ export class BehaviorMoveTo implements StateBehavior {
   }
 
   // @ts-expect-error
-  path_update(r) {
+  path_update (r): void {
     if (r.status === 'noPath') { console.log('[MoveTo] No path to target!') }
   }
 
-  goal_reached() {
+  goal_reached (): void {
     if (globalSettings.debugMode) { console.log('[MoveTo] Target reached.') }
   }
 
