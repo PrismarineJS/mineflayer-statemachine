@@ -115,6 +115,11 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
       maxDistance: 3.5
     })
 
+    if (table === null) {
+      cb(new Error('Crafting table not found!'))
+      return 0
+    }
+
     const recipe = this.bot.recipesFor(item.type, null, 1, table)[0]
     if (recipe != null) {
       this.bot.craft(recipe, amount, table).then(() => cb()).catch(cb)
