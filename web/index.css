@@ -50,6 +50,10 @@ canvas {
 	background-color: #666666;
 }
 
+#layerButtons .running {
+	color: #e45f5f;
+}
+
 #properties-panel .nested1 {
 	margin-left: 20px;
 	width: calc(100% - 24px);
