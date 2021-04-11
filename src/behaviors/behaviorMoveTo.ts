@@ -1,7 +1,7 @@
 import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { globalSettings } from '../index'
 import { Bot } from 'mineflayer'
-import { Movements, goals, Pathfinder } from 'mineflayer-pathfinder'
+import { Movements, goals, Pathfinder, ComputedPath } from 'mineflayer-pathfinder'
 import { Vec3 } from 'vec3'
 
 import mcDataLoader from 'minecraft-data'
@@ -50,8 +50,7 @@ export class BehaviorMoveTo implements StateBehavior {
     this.stopMoving()
   }
 
-  // @ts-expect-error
-  path_update (r): void {
+  path_update (r: ComputedPath): void {
     if (r.status === 'noPath') { console.log('[MoveTo] No path to target!') }
   }
 
