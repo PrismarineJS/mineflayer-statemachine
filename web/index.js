@@ -15,6 +15,7 @@ const LINE_TEXT_FONT = '12px Calibri'
 const LAYER_ENTER_COLOR = '#559966'
 
 let graph
+let nestedGroups
 
 class Graph {
   constructor (canvas) {
@@ -501,6 +502,7 @@ class NestedGroup {
 function init () {
   const canvas = document.getElementById('graph')
   graph = new Graph(canvas)
+  nestedGroups = []
 
   const socket = io()
   socket.on('connected', packet => onConnected(packet))
@@ -550,6 +552,7 @@ function loadStates (packet) {
     stateNode.activeState = false
     stateNode.enterState = graph.nestedGroups[state.nestGroup].enter === state.id
     stateNode.exitState = graph.nestedGroups[state.nestGroup].exit === state.id
+    stateNode.nestedGroup = state.nestGroup
 
     graph.states.push(stateNode)
   }
@@ -578,11 +581,13 @@ function loadNestedGroups (packet) {
     const button = document.createElement('button')
     button.innerHTML = n.name || 'unnamed layer'
     button.id = `nestedLayer${n.id}`
+    button.setAttribute('idnested', n.id)
     button.addEventListener('click', () => selectLayer(n.id, button))
 
     if (n.indent > 0) { button.classList.add(`nested${n.indent}`) } else { button.classList.add('selected') }
 
     buttonGroup.appendChild(button)
+    nestedGroups.push(button)
   }
 }
 
@@ -606,8 +611,20 @@ function onStateChanged (packet) {
   console.log(`Bot behavior states changed to ${packet.activeStates}.`)
 
   for (const state of graph.states) { state.activeState = packet.activeStates.includes(state.id) }
+  const activeNestedGroups = graph.states.filter(state => packet.activeStates.includes(state.id)).map(i => i.nestedGroup)
+  reprintNestedGroups(activeNestedGroups)
 
   graph.repaint = true
+}
+
+function reprintNestedGroups(activeNestedGroups){
+  nestedGroups.forEach(button => {
+    if(activeNestedGroups.includes(parseInt(button.getAttribute('idnested')))){
+      button.classList.add('running')
+    }else{
+      button.classList.remove('running')
+    }
+  })
 }
 
 function selectLayer (layer, newLayerButton) {
