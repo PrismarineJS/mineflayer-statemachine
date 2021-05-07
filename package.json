@@ -37,7 +37,7 @@
     "prismarine-block": "^1.5.1",
     "prismarine-entity": "^1.0.0",
     "prismarine-item": "^1.4.0",
-    "socket.io": "^3.0.0",
+    "socket.io": "^4.0.2",
     "vec3": "^0.1.5"
   },
   "devDependencies": {
