@@ -102,7 +102,7 @@ export interface EntityFiltersHeader {
  * Gets a list of many default entity filters which can be applied to
  * default state behaviors.
  */
-export function EntityFilters (): object {
+export function EntityFilters (): EntityFiltersHeader {
   return {
     AllEntities: function (): boolean {
       return true
