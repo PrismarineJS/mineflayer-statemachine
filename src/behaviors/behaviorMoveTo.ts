@@ -81,7 +81,6 @@ export class BehaviorMoveTo implements StateBehavior {
      * Cancels the current path finding operation.
      */
   private stopMoving (): void {
-    // @ts-expect-error
     const pathfinder = this.bot.pathfinder
     pathfinder.setGoal(null)
   }
@@ -103,7 +102,6 @@ export class BehaviorMoveTo implements StateBehavior {
       console.log(`[MoveTo] Moving from ${this.bot.entity.position.toString()} to ${position.toString()}`)
     }
 
-    // @ts-expect-error
     const pathfinder = this.bot.pathfinder
 
     let goal
@@ -129,7 +127,6 @@ export class BehaviorMoveTo implements StateBehavior {
      * Checks if the bot has finished moving or not.
      */
   isFinished (): boolean {
-    // @ts-expect-error
     const pathfinder: Pathfinder = this.bot.pathfinder
     return !pathfinder.isMoving()
   }

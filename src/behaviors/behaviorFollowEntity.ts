@@ -63,7 +63,6 @@ export class BehaviorFollowEntity implements StateBehavior {
      * Cancels the current path finding operation.
      */
   private stopMoving (): void {
-    // @ts-expect-error
     const pathfinder = this.bot.pathfinder
     pathfinder.setGoal(null)
   }
@@ -75,7 +74,6 @@ export class BehaviorFollowEntity implements StateBehavior {
     const entity = this.targets.entity
     if (entity == null) return
 
-    // @ts-expect-error
     const pathfinder = this.bot.pathfinder
 
     const goal = new goals.GoalFollow(entity, this.followDistance)
