@@ -304,7 +304,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
      * @returns True if the item is food. False otherwise.
      */
   isFood (item: Item): boolean {
-    if (this.mcData.foodsArray.find(itemToCheck => itemToCheck.name === item.name)) {
+    if (this.mcData.foodsArray.find((itemToCheck: Item) => itemToCheck.name === item.name)) {
       return true
     } else {
       return false
