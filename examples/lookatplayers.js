@@ -24,6 +24,7 @@ const {
   StateTransition,
   BotStateMachine,
   BehaviorIdle,
+  BehaviorGetClosestEntity,
   BehaviorLookAtEntity,
   EntityFilters,
   NestedStateMachine
@@ -31,21 +32,34 @@ const {
 
 // Wait until we spawn
 bot.on('spawn', () => {
+  // This targets object is used to pass data between different states. It can be left empty.
+  const targets = {};
   // The idle state makes the bot well, idle.
   const idleState = new BehaviorIdle(bot)
 
-  // This state will allow the bot to look at nearby players.
-  const lookAtPlayersState = new BehaviorLookAtEntity(bot, EntityFilters().PlayersOnly)
+  // This state will set targets.entity value to be the closest player.
+  const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly);
+  
+  // This state will allow the bot to look at said player.
+  const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets)
 
   // Now we create a list of all the transitions that can occur between states.
   const transitions = [
 
-    // This transitions from the idleState to the lookAtPlayersState when
-    // someone says hi in chat.
+    // This transitions from the idleState to the getClosestPlayer state
+    // when someone says hi in chat.
     new StateTransition({
       parent: idleState,
-      child: lookAtPlayersState,
+      child: getClosestPlayer,
       onTransition: () => bot.chat('hello')
+    }),
+	
+    // We want to start looking at the player immediately after finding them.
+    // Since getClosestPlayer finishes instantly, shouldTransition() should always return true.    
+    new StateTransition({
+      parent: getClosestPlayer,
+      child: lookAtPlayersState,
+      shouldTransition: () => true
     }),
 
     // This transitions from the lookAtPlayersState to the idleState when
@@ -62,7 +76,7 @@ bot.on('spawn', () => {
   bot.on('chat', (username, message) => {
     if (message === 'hi') { transitions[0].trigger() }
 
-    if (message === 'bye') { transitions[1].trigger() }
+    if (message === 'bye') { transitions[2].trigger() }
   })
 
   // A state machine is made from a series of layers, so let's create the root
@@ -71,5 +85,5 @@ bot.on('spawn', () => {
   const rootLayer = new NestedStateMachine(transitions, idleState)
 
   // Let's add these settings to the state machine and start it!
-  BotStateMachine(bot, rootLayer)
+  new BotStateMachine(bot, rootLayer)
 })
