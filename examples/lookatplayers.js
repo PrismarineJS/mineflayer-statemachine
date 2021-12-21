@@ -33,13 +33,13 @@ const {
 // Wait until we spawn
 bot.on('spawn', () => {
   // This targets object is used to pass data between different states. It can be left empty.
-  const targets = {};
+  const targets = {}
   // The idle state makes the bot well, idle.
   const idleState = new BehaviorIdle(bot)
 
   // This state will set targets.entity value to be the closest player.
-  const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly);
-  
+  const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly)
+
   // This state will allow the bot to look at said player.
   const lookAtPlayersState = new BehaviorLookAtEntity(bot, targets)
 
@@ -53,9 +53,9 @@ bot.on('spawn', () => {
       child: getClosestPlayer,
       onTransition: () => bot.chat('hello')
     }),
-	
+
     // We want to start looking at the player immediately after finding them.
-    // Since getClosestPlayer finishes instantly, shouldTransition() should always return true.    
+    // Since getClosestPlayer finishes instantly, shouldTransition() should always return true.
     new StateTransition({
       parent: getClosestPlayer,
       child: lookAtPlayersState,
