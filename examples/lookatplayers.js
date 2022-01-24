@@ -16,8 +16,8 @@ const bot = mineflayer.createBot({
 })
 
 /**
-  * Setting up the state machine is pretty straightforward.
-  */
+ * Setting up the state machine is pretty straightforward.
+ */
 
 // Imports
 const {
