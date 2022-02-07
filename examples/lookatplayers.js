@@ -35,7 +35,7 @@ bot.on('spawn', () => {
   // This targets object is used to pass data between different states. It can be left empty.
   const targets = {}
   // The idle state makes the bot well, idle.
-  const idleState = new BehaviorIdle(bot)
+  const idleState = new BehaviorIdle()
 
   // This state will set targets.entity value to be the closest player.
   const getClosestPlayer = new BehaviorGetClosestEntity(bot, targets, EntityFilters().PlayersOnly)
