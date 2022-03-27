@@ -32,7 +32,7 @@
     "express": "^4.17.1",
     "minecraft-data": "^2.55.0",
     "mineflayer": "^4.0.0",
-    "mineflayer-pathfinder": "^1.0.5",
+    "mineflayer-pathfinder": "^2.0.0",
     "node": "^16.0.0",
     "prismarine-block": "^1.5.1",
     "prismarine-entity": "^2.0.0",
