@@ -4,6 +4,7 @@ import socketLoader, { Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
 import httpLoader from 'http'
+import { globalSettings } from '.'
 
 const publicFolder = './../web'
 
@@ -67,14 +68,14 @@ export class StateMachineWebserver {
      * Called when the web server is started.
      */
   private onStarted (): void {
-    console.log(`Started state machine web server at http://localhost:${this.port}.`)
+    if (globalSettings.debugMode) { console.log(`Started state machine web server at http://localhost:${this.port}.`) }
   }
 
   /**
      * Called when a web socket connects to this server.
      */
   private onConnected (socket: Socket): void {
-    console.log(`Client ${socket.handshake.address} connected to webserver.`)
+    if (globalSettings.debugMode) { console.log(`Client ${socket.handshake.address} connected to webserver.`) }
 
     this.sendStatemachineStructure(socket)
     this.updateClient(socket)
@@ -84,7 +85,7 @@ export class StateMachineWebserver {
 
     socket.on('disconnect', () => {
       this.stateMachine.removeListener('stateChanged', updateClient)
-      console.log(`Client ${socket.handshake.address} disconnected from webserver.`)
+      if (globalSettings.debugMode) { console.log(`Client ${socket.handshake.address} disconnected from webserver.`) }
     })
   }
 
