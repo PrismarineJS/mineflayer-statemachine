@@ -30,7 +30,7 @@
   "homepage": "https://github.com/TheDudeFromCI/mineflayer-statemachine#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "minecraft-data": "^2.55.0",
+    "minecraft-data": "^3.0.0",
     "mineflayer": "^4.0.0",
     "mineflayer-pathfinder": "^2.0.0",
     "node": "^16.0.0",
