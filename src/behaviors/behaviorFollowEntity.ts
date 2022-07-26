@@ -14,7 +14,7 @@ export class BehaviorFollowEntity implements StateBehavior {
 
   readonly bot: Bot
   readonly targets: StateMachineTargets
-  readonly movements: Movements
+  movements: Movements
 
   stateName: string = 'followEntity'
   active: boolean = false
