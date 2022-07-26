@@ -27,6 +27,9 @@ export class BehaviorEquipItem extends AbstractBehaviorInventory {
      */
   wasEquipped: boolean = false
 
+  x?: number
+  y?: number
+
   onStateEntered (): void {
     if (this.targets.item != null) {
       let destination: EquipmentDestination = 'hand'

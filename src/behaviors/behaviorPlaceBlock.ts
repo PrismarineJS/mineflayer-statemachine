@@ -14,6 +14,8 @@ export class BehaviorPlaceBlock implements StateBehavior {
 
   stateName: string = 'placeBlock'
   active: boolean = false
+  x?: number
+  y?: number
 
   /**
      * Creates a new mine block behavior.

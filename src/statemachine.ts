@@ -278,6 +278,16 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   active: boolean = false
 
   /**
+     * The x position of this behavior state for webservice.
+     */
+  x?: number
+
+  /**
+    * The y position of this behavior state for webservice.
+    */
+  y?: number
+
+  /**
      * The depth of this layer within the entire state machine.
      */
   depth: number = 0

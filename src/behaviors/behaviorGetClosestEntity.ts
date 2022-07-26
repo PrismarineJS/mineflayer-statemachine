@@ -25,6 +25,8 @@ export class BehaviorGetClosestEntity implements StateBehavior {
 
   stateName: string = 'getClosestEntity'
   active: boolean = false
+  x?: number
+  y?: number
 
   constructor (bot: Bot, targets: StateMachineTargets, filter: (entity: Entity) => boolean) {
     this.bot = bot
