@@ -33,11 +33,11 @@ This plugin is built using Node and can be installed using:
 npm install --save mineflayer-statemachine
 ```
 
-This plugin has a relies on [mineflayer-pathfinder](https://github.com/Karang/mineflayer-pathfinder) for movement related behaviors. If these behaviors are used, this plugin must be loaded before starting the state machine object.
+This plugin relies on [mineflayer-pathfinder](https://github.com/Karang/mineflayer-pathfinder) for movement related behaviors. If these behaviors are used, this plugin must be loaded before starting the state machine object.
 
 ### Simple Bot
 
-The API for Mineflayer-StateMachine aims to be simple and intuitive, requiring minimal effort to setup a working state machine. The example below creates a three-state finite state machine which find and follow the nearest player, stopping and looking at them when they are close.
+The API for Mineflayer-StateMachine aims to be simple and intuitive, requiring minimal effort to setup a working state machine. The example below creates a three-state finite state machine which finds and follows the nearest player, stopping and looking at them when they are close.
 
 ```js
 // Create your bot
@@ -57,7 +57,7 @@ const {
     BehaviorGetClosestEntity,
     NestedStateMachine } = require("mineflayer-statemachine");
     
-// wait for our bot to login.
+// Wait for our bot to login.
 bot.once("spawn", () =>
 {
     // This targets object is used to pass data between different states. It can be left empty.
