@@ -37,7 +37,6 @@ export class BehaviorMoveTo implements StateBehavior {
   onStateEntered (): void {
     // @ts-expect-error
     this.bot.on('path_update', this.path_update)
-    // @ts-expect-error
     this.bot.on('goal_reached', this.goal_reached)
     this.startMoving()
   }
@@ -45,7 +44,6 @@ export class BehaviorMoveTo implements StateBehavior {
   onStateExited (): void {
     // @ts-expect-error
     this.bot.removeListener('path_update', this.path_update)
-    // @ts-expect-error
     this.bot.removeListener('goal_reached', this.goal_reached)
     this.stopMoving()
   }
