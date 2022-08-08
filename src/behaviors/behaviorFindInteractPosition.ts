@@ -42,6 +42,16 @@ export class BehaviorFindInteractPosition implements StateBehavior {
   active: boolean = false
 
   /**
+     * The x position of this behavior state for webservice.
+     */
+  x?: number
+
+  /**
+    * The y position of this behavior state for webservice.
+    */
+  y?: number
+
+  /**
      * Creates a new find block behavior.
      *
      * @param bot - The bot preforming the search function.
@@ -242,7 +252,7 @@ class StandingPositionCosts {
     cost += this.calculatePathCost(block) * this.moveMultiplier
 
     if (this.numberEquals(block.position.x, targetPos.x) &&
-        this.numberEquals(block.position.z, targetPos.z)) {
+      this.numberEquals(block.position.z, targetPos.z)) {
       if (targetPos.y < block.position.y) cost += this.standOnCost
       if (targetPos.y > block.position.y) cost += this.standUnderCost
     }

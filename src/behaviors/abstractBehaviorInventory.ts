@@ -16,6 +16,8 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
   readonly targets: StateMachineTargets
   stateName: string = 'inventory'
   active: boolean = false
+  x?: number
+  y?: number
 
   constructor (bot: Bot, targets: StateMachineTargets) {
     this.bot = bot

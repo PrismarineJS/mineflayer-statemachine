@@ -14,6 +14,8 @@ export class BehaviorMineBlock implements StateBehavior {
 
   stateName: string = 'mineBlock'
   active: boolean = false
+  x?: number
+  y?: number
 
   /**
      * Checks if the bot has finished mining the block or not.

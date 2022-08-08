@@ -18,6 +18,8 @@ export class BehaviorFollowEntity implements StateBehavior {
 
   stateName: string = 'followEntity'
   active: boolean = false
+  x?: number
+  y?: number
 
   /**
      * How close to the entity should the bot attempt to get?

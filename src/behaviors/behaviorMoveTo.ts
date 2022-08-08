@@ -18,6 +18,8 @@ export class BehaviorMoveTo implements StateBehavior {
   readonly movements: Movements
   stateName: string = 'moveTo'
   active: boolean = false
+  x?: number
+  y?: number
 
   /**
      * How close the bot should attempt to get to this location before
