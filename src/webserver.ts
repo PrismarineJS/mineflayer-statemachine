@@ -95,9 +95,9 @@ export class StateMachineWebserver {
     const nestGroups = this.getNestGroups()
 
     const packet: StateMachineStructurePacket = {
-      states: states,
-      transitions: transitions,
-      nestGroups: nestGroups
+      states,
+      transitions,
+      nestGroups
     }
 
     socket.emit('connected', packet)
@@ -118,7 +118,7 @@ export class StateMachineWebserver {
     }
 
     const packet: StateMachineUpdatePacket = {
-      activeStates: activeStates
+      activeStates
     }
 
     socket.emit('stateChanged', packet)
