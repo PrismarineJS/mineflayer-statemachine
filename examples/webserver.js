@@ -1,13 +1,13 @@
 const mineflayer = require('mineflayer')
 
-if (process.argv.length < 4 || process.argv.length > 6) {
+if (process.argv.length < 3 || process.argv.length > 6) {
   console.log('Usage : node webserver.js <host> <port> [<name>] [<password>]')
   process.exit(1)
 }
 
 const bot = mineflayer.createBot({
   host: process.argv[2],
-  port: parseInt(process.argv[3]),
+  port: process.argv[3] ? parseInt(process.argv[3]) : 25565,
   username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
   password: process.argv[5]
 })
