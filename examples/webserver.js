@@ -119,7 +119,7 @@ bot.once('spawn', () => {
   ]
 
   const root = new NestedStateMachine(transitions, printServerStates)
-  root.name = 'main'
+  root.stateName = 'main'
 
   bot.on('chat', (username, message) => {
     if (message === 'hi') { transitions[1].trigger() }
