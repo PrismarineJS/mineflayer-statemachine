@@ -15,7 +15,7 @@ export class BehaviorMoveTo implements StateBehavior {
   private readonly bot: Bot
 
   readonly targets: StateMachineTargets
-  readonly movements: Movements
+  movements: Movements
   stateName: string = 'moveTo'
   active: boolean = false
   x?: number
