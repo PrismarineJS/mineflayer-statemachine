@@ -36,6 +36,9 @@ class Graph {
   }
 
   clear () {
+    const buttonGroup = document.getElementById('layerButtons')
+    buttonGroup.textContent = '';
+    
     this.states = []
     this.transitions = []
     this.repaint = true
