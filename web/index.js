@@ -64,10 +64,9 @@ class Graph {
     }
 
     const findLayerClicked = this.nestedGroups.find((n) => n.enter === stateClicked?.id)
-
     if (!findLayerClicked || findLayerClicked.id === 0) return
-
-    selectLayer(findLayerClicked.id - 1)
+    const selectedLAyer = this.states.find(s => s.id === findLayerClicked.state_id)
+    selectLayer(selectedLAyer.layer)
   }
 
   needsRepaint () {
