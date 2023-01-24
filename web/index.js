@@ -16,7 +16,8 @@ const LAYER_ENTER_COLOR = '#559966'
 
 let graph
 let nestedGroups
-
+let currentLayerSelected = 0
+let currentPacketData
 class Graph {
   constructor (canvas) {
     this.canvas = canvas
@@ -45,6 +46,28 @@ class Graph {
     this.canvas.addEventListener('mousemove', e => this.onMouseMove(e))
     this.canvas.addEventListener('mouseup', e => this.onMouseUp(e))
     this.canvas.addEventListener('mousedown', e => this.onMouseDown(e))
+    this.canvas.addEventListener('dblclick', (e) => this.onDblclick(e))
+  }
+
+  onDblclick(e) {
+    const x = e.pageX - elemLeft
+    const y = e.pageY - elemTop
+
+    const stateClicked = this.states
+      .filter(state => state.nestedGroup === currentLayerSelected)
+      .find((element) => y > element.rect.y && y < element.rect.y + element.rect.h && x > element.rect.x && x < element.rect.x + element.rect.w);
+
+    const findSubLevel = this.nestedGroups.find((n) => n.state_id === stateClicked?.id)
+    if (findSubLevel) {
+      selectLayer(findSubLevel.id)
+      return
+    }
+
+    const findLayerClicked = this.nestedGroups.find((n) => n.enter === stateClicked?.id)
+
+    if (!findLayerClicked || findLayerClicked.id === 0) return
+
+    selectLayer(findLayerClicked.id - 1)
   }
 
   needsRepaint () {
@@ -67,7 +90,7 @@ class Graph {
 
   drawScene () {
     this.width = this.canvas.width = this.canvas.clientWidth
-    this.height = this.canvas.height = this.canvas.clientHeight
+    this.height = this.canvas.height = this.canvas.clientHeight    
 
     const ctx = this.canvas.getContext('2d')
     this.drawBackground(ctx)
@@ -240,11 +263,15 @@ class State {
     ctx.strokeStyle = this.highlight ? NODE_HIGHLIGHT_COLOR : NODE_BORDER_COLOR
     ctx.stroke()
 
+    const nestedIcon = currentPacketData.nestGroups.findIndex(n => n.state_id === this.id) >= 0 ? ' ⤵️ ' :''
+    const upperIcon = currentPacketData.nestGroups.findIndex(n => n.enter === this.id) >= 0 && this.id !== 0 ? ' ⤴️ ' :''
+
+
     ctx.fillStyle = NODE_TEXT_COLOR
     ctx.font = NODE_TEXT_FONT
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(this.name, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2)
+    ctx.fillText(this.name + nestedIcon + upperIcon, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2)
   }
 
   drawActive (ctx) {
@@ -491,13 +518,17 @@ class Transition {
 }
 
 class NestedGroup {
-  constructor (id, indent, enter, exit) {
+  constructor (id, state_id, indent, enter, exit) {
     this.id = id
+    this.state_id = state_id
     this.indent = indent
     this.enter = enter
     this.exit = exit
   }
 }
+
+let elemLeft
+let elemTop
 
 function init () {
   const canvas = document.getElementById('graph')
@@ -507,10 +538,14 @@ function init () {
   const socket = io()
   socket.on('connected', packet => onConnected(packet))
   socket.on('stateChanged', packet => onStateChanged(packet))
+
+  elemLeft = canvas.offsetLeft + canvas.clientLeft
+  elemTop = canvas.offsetTop + canvas.clientTop
 }
 
 function onConnected (packet) {
   console.log('Bot connected.')
+  currentPacketData = packet
 
   graph.clear()
   loadNestedGroups(packet)
@@ -575,14 +610,14 @@ function loadNestedGroups (packet) {
   const buttonGroup = document.getElementById('layerButtons')
 
   for (const n of packet.nestGroups) {
-    const g = new NestedGroup(n.id, n.indent, n.enter, n.exit)
+    const g = new NestedGroup(n.id, n.state_id, n.indent, n.enter, n.exit)
     graph.nestedGroups.push(g)
 
     const button = document.createElement('button')
     button.innerHTML = n.name || 'unnamed layer'
     button.id = `nestedLayer${n.id}`
     button.setAttribute('idnested', n.id)
-    button.addEventListener('click', () => selectLayer(n.id, button))
+    button.addEventListener('click', () => selectLayer(n.id))
 
     if (n.indent > 0) { button.classList.add(`nested${n.indent}`) } else { button.classList.add('selected') }
 
@@ -627,14 +662,16 @@ function reprintNestedGroups(activeNestedGroups){
   })
 }
 
-function selectLayer (layer, newLayerButton) {
+function selectLayer (layer) {
   const oldLayerButton = document.getElementById(`nestedLayer${graph.activeLayer}`)
   oldLayerButton.classList.remove('selected')
 
   graph.activeLayer = layer
   graph.repaint = true
 
+  const newLayerButton = document.getElementById(`nestedLayer${layer}`)
   newLayerButton.classList.add('selected')
 
   console.log(`Selected layer ${layer}`)
+  currentLayerSelected = layer
 }
