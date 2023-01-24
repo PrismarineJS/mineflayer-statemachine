@@ -175,6 +175,7 @@ export class StateMachineWebserver {
       const nest = this.stateMachine.nestedStateMachines[i]
       nestGroups.push({
         id: i,
+        state_id: this.stateMachine.states.indexOf(nest),
         enter: this.stateMachine.states.indexOf(nest.enter),
         exit: nest.exit != null ? this.stateMachine.states.indexOf(nest.exit) : undefined,
         indent: nest.depth ?? -1,
@@ -194,6 +195,7 @@ interface StateMachineStructurePacket {
 
 interface NestedStateMachinePacket {
   id: number
+  state_id: number
   enter: number
   exit?: number
   indent: number
