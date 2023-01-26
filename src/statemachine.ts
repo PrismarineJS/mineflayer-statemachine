@@ -245,7 +245,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   /**
      * A list of all states within this state machine layer.
      */
-  readonly states: StateBehavior[]
+  readonly states: Array<StateBehavior | NestedStateMachine>
 
   /**
      * A list of all transitions within this state machine layer.
