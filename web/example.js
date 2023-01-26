@@ -102,7 +102,7 @@ tree.json(structure);
 setTimeout(() => {
   tree.forEach((e) => {
     // console.log(e)
-    if (e.node.id === 10)
+    if ([10, 8, 7, 6, 3].includes(e.node.id))
       e.classList.add('active')
   })
 }, 500)

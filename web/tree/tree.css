@@ -13,16 +13,13 @@
   display: block;
   width: fit-content;
   width: -moz-fit-content;
-  border: solid 1px #99defd;
-  border-radius: 5px;
-  border-color: brown;
-  border-width: 4px;
-  padding: 5px 10px;
-  margin: 10px 5px;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 5px 0px;
   outline: none;
   cursor: pointer;
-  background-color: black;
-  color: white;
+  background-color: #444444;
+  color: #dddddd;
   font-weight: 600;
 }
 
@@ -106,14 +103,12 @@
 }
 
 .select-tree .selected {
-  background-color: #beebff;
-  border-color: #99defd;
-  color: black;
+  background-color: #666666;
   z-index: 1;
 }
 
 .select-tree .active {
-  color: rgb(204, 18, 18);
+  color: #e45f5f;
 }
 
 
