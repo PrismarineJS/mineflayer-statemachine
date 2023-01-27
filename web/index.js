@@ -64,24 +64,28 @@ class Graph {
     this.canvas.addEventListener('dblclick', (e) => this.onDblclick(e))
   }
 
-  onDblclick(e) {
-    const x = e.pageX - elemLeft
-    const y = e.pageY - elemTop
+  onDblclick(event) {
+    event.preventDefault()
+    const { x, y } = this.eventPos(event)
 
-    const stateClicked = this.states
-      .filter(state => state.nestedGroup === currentLayerSelected)
-      .find((element) => y > element.rect.y && y < element.rect.y + element.rect.h && x > element.rect.x && x < element.rect.x + element.rect.w);
+    for (const state of this.states) {
+      const mousedOver = state.isInBounds(x, y)
 
-    const findSubLevel = this.nestedGroups.find((n) => n.state_id === stateClicked?.id)
-    if (findSubLevel) {
-      tree.find((t) => t.node.id === findSubLevel.id)
-      return
+      if (mousedOver) {
+        const findSubLevel = this.nestedGroups.find((n) => n.state_id === state?.id)
+        if (findSubLevel) {
+          tree.find((t) => t.node.id === findSubLevel.id)
+          return
+        }
+
+        const findLayerClicked = this.nestedGroups.find((n) => n.enter === state?.id)
+        if (!findLayerClicked || findLayerClicked.id === 0) return
+        const selectedLAyer = this.states.find(s => s.id === findLayerClicked.state_id)
+        tree.find((t) => t.node.id === selectedLAyer.layer)
+
+        return
+      }
     }
-
-    const findLayerClicked = this.nestedGroups.find((n) => n.enter === stateClicked?.id)
-    if (!findLayerClicked || findLayerClicked.id === 0) return
-    const selectedLAyer = this.states.find(s => s.id === findLayerClicked.state_id)
-    tree.find((t) => t.node.id === selectedLAyer.layer)
   }
 
   needsRepaint () {
