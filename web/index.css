@@ -15,12 +15,17 @@ body {
 }
 
 #properties-panel,
-#graph {
+#graph-panel {
 	display: inline-block;
 	vertical-align: top;
 	height: 100%;
 	overflow-x: hidden;
 	width: max(75%, calc(100% - 300px));
+}
+
+#graph {
+	width: 100%;
+	height: 100%;
 }
 
 #properties-panel {
