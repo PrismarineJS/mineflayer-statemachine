@@ -12,15 +12,32 @@ body {
 	height: 100%;
 	width: 100%;
 	font-size: 0;
+	display: flex;
 }
 
-#properties-panel,
-#graph-panel {
+#properties-panel {
 	display: inline-block;
 	vertical-align: top;
 	height: 100%;
-	overflow-x: hidden;
 	width: max(75%, calc(100% - 300px));
+}
+
+#graph-panel {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	height: 100%;
+	width: max(75%, calc(100% - 300px));
+}
+
+#graph-panel::after {
+	content: '';
+	background-color: #ccc;
+	position: absolute;
+	left: 0;
+	width: 4px;
+	height: 100%;
+	cursor: ew-resize;
 }
 
 #graph {
