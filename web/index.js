@@ -18,6 +18,21 @@ let graph
 let nestedGroups
 let currentLayerSelected = 0
 let currentPacketData
+
+
+const tree = new Tree(document.getElementById('layerButtons'), {
+  navigate: false, // allow navigate with ArrowUp and ArrowDown
+});
+
+tree.on("select", (e) => {
+  selectLayer(e.node.id)
+});
+
+// keep track of the original node objects
+tree.on("created", (e, node) => {
+  e.node = node;
+});
+
 class Graph {
   constructor (canvas) {
     this.canvas = canvas
@@ -36,10 +51,7 @@ class Graph {
     requestAnimationFrame(() => this.animation())
   }
 
-  clear () {
-    const buttonGroup = document.getElementById('layerButtons')
-    buttonGroup.textContent = '';
-    
+  clear () {   
     this.states = []
     this.transitions = []
     this.repaint = true
@@ -62,14 +74,14 @@ class Graph {
 
     const findSubLevel = this.nestedGroups.find((n) => n.state_id === stateClicked?.id)
     if (findSubLevel) {
-      selectLayer(findSubLevel.id)
+      tree.find((t) => t.node.id === findSubLevel.id)
       return
     }
 
     const findLayerClicked = this.nestedGroups.find((n) => n.enter === stateClicked?.id)
     if (!findLayerClicked || findLayerClicked.id === 0) return
     const selectedLAyer = this.states.find(s => s.id === findLayerClicked.state_id)
-    selectLayer(selectedLAyer.layer)
+    tree.find((t) => t.node.id === selectedLAyer.layer)
   }
 
   needsRepaint () {
@@ -520,10 +532,9 @@ class Transition {
 }
 
 class NestedGroup {
-  constructor (id, state_id, indent, enter, exit) {
+  constructor (id, state_id, enter, exit) {
     this.id = id
     this.state_id = state_id
-    this.indent = indent
     this.enter = enter
     this.exit = exit
   }
@@ -609,23 +620,13 @@ function loadTransitions (packet) {
 }
 
 function loadNestedGroups (packet) {
-  const buttonGroup = document.getElementById('layerButtons')
-
   for (const n of packet.nestGroups) {
-    const g = new NestedGroup(n.id, n.state_id, n.indent, n.enter, n.exit)
+    const g = new NestedGroup(n.id, n.state_id, n.enter, n.exit)
     graph.nestedGroups.push(g)
 
-    const button = document.createElement('button')
-    button.innerHTML = n.name || 'unnamed layer'
-    button.id = `nestedLayer${n.id}`
-    button.setAttribute('idnested', n.id)
-    button.addEventListener('click', () => selectLayer(n.id))
-
-    if (n.indent > 0) { button.classList.add(`nested${n.indent}`) } else { button.classList.add('selected') }
-
-    buttonGroup.appendChild(button)
-    nestedGroups.push(button)
   }
+
+  tree.load(packet.nestGroupsTree)
 }
 
 function getTransitionGroup (groups, parent, child) {
@@ -644,35 +645,26 @@ function getTransitionGroup (groups, parent, child) {
   return group
 }
 
-function onStateChanged (packet) {
+function onStateChanged(packet) {
   console.log(`Bot behavior states changed to ${packet.activeStates}.`)
 
   for (const state of graph.states) { state.activeState = packet.activeStates.includes(state.id) }
   const activeNestedGroups = graph.states.filter(state => packet.activeStates.includes(state.id)).map(i => i.nestedGroup)
-  reprintNestedGroups(activeNestedGroups)
 
   graph.repaint = true
-}
 
-function reprintNestedGroups(activeNestedGroups){
-  nestedGroups.forEach(button => {
-    if(activeNestedGroups.includes(parseInt(button.getAttribute('idnested')))){
-      button.classList.add('running')
-    }else{
-      button.classList.remove('running')
+  tree.forEach((el) => {
+    if (activeNestedGroups.includes(el.node.id)) {
+      el.classList.add('active')
+    } else {
+      el.classList.remove('active')
     }
   })
 }
 
-function selectLayer (layer) {
-  const oldLayerButton = document.getElementById(`nestedLayer${graph.activeLayer}`)
-  oldLayerButton.classList.remove('selected')
-
+function selectLayer(layer) {
   graph.activeLayer = layer
   graph.repaint = true
-
-  const newLayerButton = document.getElementById(`nestedLayer${layer}`)
-  newLayerButton.classList.add('selected')
 
   console.log(`Selected layer ${layer}`)
   currentLayerSelected = layer

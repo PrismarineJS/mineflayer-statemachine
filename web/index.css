@@ -1,5 +1,5 @@
 html {
-    overflow: hidden;
+	overflow: hidden;
 }
 
 * {
@@ -7,7 +7,8 @@ html {
 	padding: 0;
 }
 
-html, body {
+html,
+body {
 	height: 100%;
 }
 
@@ -17,7 +18,8 @@ html, body {
 	font-size: 0;
 }
 
-#properties-panel, canvas {
+#properties-panel,
+canvas {
 	display: inline-block;
 	vertical-align: top;
 	height: 100%;
@@ -50,8 +52,8 @@ canvas {
 	background-color: #666666;
 }
 
-#layerButtons .running {
-	color: #e45f5f;
+#layerButtons {
+	padding: 10px;
 }
 
 #properties-panel .nested1 {

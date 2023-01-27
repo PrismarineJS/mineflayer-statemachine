@@ -206,10 +206,14 @@ export class StateMachineWebserver {
       enter: this.stateMachine.states.indexOf(currentState.enter),
       exit: currentState.exit != null ? this.stateMachine.states.indexOf(currentState.exit) : undefined,
       name: currentState.stateName,
-      subStates: statesOnThisBehavior
+      open: true,
+      selected: false,
+      type: statesOnThisBehavior.length > 0 ? 'folder' : 'file',
+      children: statesOnThisBehavior
     }
 
     if (firstState) {
+      returnData.selected = true
       return [returnData]
     }
 
@@ -243,7 +247,10 @@ interface NestedStateMachinePacketTree {
   enter: number
   exit?: number
   name: string
-  subStates: NestedStateMachinePacketTree[]
+  open: true
+  selected: boolean
+  type: 'folder' | 'file'
+  children: NestedStateMachinePacketTree[]
 }
 
 interface StateMachineStatePacket {

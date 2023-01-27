@@ -5,9 +5,8 @@
     <title>Mineflayer StateMachine</title>
 
     <link rel="stylesheet" type="text/css" href="/web/index.css" />
+    <link rel="stylesheet" type="text/css" href="/web/tree/tree.css" />
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/web/index.js"></script>
 </head>
 
 <body onload="init()">
@@ -16,13 +15,18 @@
             <div id="layerButtons">
             </div>
         </div>
-    
+
         <canvas id="graph">
             Your browser does not support HTML5 canvas and is unable to view this
             web application. We recommend using Firefox or Chrome with JavaScript
             enabled.
         </canvas>
     </div>
+
+
+    <script src="/web/tree/tree.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/web/index.js"></script>
 </body>
 
 </html>
