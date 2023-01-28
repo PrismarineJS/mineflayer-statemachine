@@ -72,20 +72,25 @@ class Graph {
       const mousedOver = state.isInBounds(x, y)
 
       if (mousedOver) {
-        const findSubLevel = this.nestedGroups.find((n) => n.state_id === state?.id)
+        const findSubLevel = currentPacketData.nestGroups.find((n) => n.state_id === state?.id)
         if (findSubLevel) {
-          tree.find((t) => t.node.id === findSubLevel.id)
+          tree.find((t) => {
+            return t.node.state_id === findSubLevel.state_id
+          })
           return
         }
 
-        const findLayerClicked = this.nestedGroups.find((n) => n.enter === state?.id)
-        if (!findLayerClicked || findLayerClicked.id === 0) return
-        const selectedLAyer = this.states.find(s => s.id === findLayerClicked.state_id)
-        tree.find((t) => t.node.id === selectedLAyer.layer)
+        const nestedStateToPrevious = currentPacketData.nestGroups.find((n) => n.enter === state?.id)
+        if (!nestedStateToPrevious || nestedStateToPrevious.id === 0) return
+        const stateToPrevious = currentPacketData.states.find(s => s.id === nestedStateToPrevious.state_id)
+        tree.find((t) => {
+          return t.node.id === stateToPrevious.nestGroup
+        })
 
         return
       }
     }
+
   }
 
   needsRepaint () {
@@ -569,6 +574,7 @@ function onConnected (packet) {
   loadStates(packet)
   loadTransitions(packet)
   graph.repaint = true
+  console.log(packet.nestGroupsTree[0].children[0].children[0].children)
 }
 
 function loadStates (packet) {

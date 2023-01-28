@@ -93,7 +93,7 @@ export class StateMachineWebserver {
     const states = this.getStates()
     const transitions = this.getTransitions()
     const nestGroups = this.getNestGroups()
-    const nestGroupsTree: NestedStateMachinePacketTree[] = this.getNestGroupsTree(this.stateMachine.rootStateMachine, true, 0) as NestedStateMachinePacketTree[]
+    const nestGroupsTree: NestedStateMachinePacketTree[] = this.getNestGroupsTree(this.stateMachine.rootStateMachine, true, nestGroups) as NestedStateMachinePacketTree[]
 
     const packet: StateMachineStructurePacket = {
       states,
@@ -188,25 +188,27 @@ export class StateMachineWebserver {
     return nestGroups
   }
 
-  private getNestGroupsTree (currentState: NestedStateMachine, firstState: boolean, count: number): NestedStateMachinePacketTree[] | NestedStateMachinePacketTree {
+  private getNestGroupsTree (currentState: NestedStateMachine, firstState: boolean, nestedStateMachine: NestedStateMachinePacket[]): NestedStateMachinePacketTree[] | NestedStateMachinePacketTree {
     const statesOnThisBehavior: NestedStateMachinePacketTree[] = []
 
     currentState.states.forEach((state) => {
       if (isNestedStateMachine(state)) {
-        const subStates = this.getNestGroupsTree(state, false, count + 1)
+        const subStates = this.getNestGroupsTree(state, false, nestedStateMachine)
         if (!Array.isArray(subStates)) {
           statesOnThisBehavior.push(subStates)
         }
       }
     })
 
+    const stateId = this.stateMachine.states.indexOf(currentState)
+
     const returnData: NestedStateMachinePacketTree = {
-      id: count,
-      state_id: this.stateMachine.states.indexOf(currentState),
+      id: nestedStateMachine.find((n) => n.state_id === stateId)?.id ?? 0,
+      state_id: stateId,
       enter: this.stateMachine.states.indexOf(currentState.enter),
       exit: currentState.exit != null ? this.stateMachine.states.indexOf(currentState.exit) : undefined,
       name: currentState.stateName,
-      open: true,
+      open: false,
       selected: false,
       type: statesOnThisBehavior.length > 0 ? 'folder' : 'file',
       children: statesOnThisBehavior
@@ -247,7 +249,7 @@ interface NestedStateMachinePacketTree {
   enter: number
   exit?: number
   name: string
-  open: true
+  open: boolean
   selected: boolean
   type: 'folder' | 'file'
   children: NestedStateMachinePacketTree[]
