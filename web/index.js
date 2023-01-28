@@ -39,6 +39,11 @@ openAllBtn.addEventListener('click', () => tree.openAll())
 const closeAllBtn = document.getElementById('closeAll')
 closeAllBtn.addEventListener('click', () => tree.closeAll())
 
+let autoOpenNestedBehaviors = false
+const autoOpenCheckbox = document.getElementById('autoopen')
+autoOpenCheckbox.addEventListener('change', () => {
+  autoOpenNestedBehaviors = autoOpenCheckbox.checked
+})
 
 class Graph {
   constructor (canvas) {
@@ -666,6 +671,9 @@ function onStateChanged (packet) {
   tree.forEach((el) => {
     if (activeNestedGroups.includes(el.node.id)) {
       el.classList.add('active')
+      if(autoOpenNestedBehaviors){
+        tree.open(el.closest('details'))
+      }
     } else {
       el.classList.remove('active')
     }

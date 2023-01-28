@@ -78,3 +78,8 @@ body {
 	color: #222222;
 	transition: 0s
 }
+
+.open-checkbox {
+	font-size: 14px;
+	color: #ccc;
+}
