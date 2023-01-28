@@ -50,6 +50,31 @@ body {
 	background-color: #222222;
 }
 
-#layerButtons {
+#properties-panel {
 	padding: 10px;
+}
+
+#buttons-properties-panel {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+#buttons-properties-panel .button {
+	flex: auto;
+	background-color: #444444;
+	border-radius: 8px;
+	color: #dddddd;
+	font-size: 16px;
+	text-align: center;
+	margin: 10px;
+	padding: 4px;
+	cursor: pointer;
+}
+
+
+#buttons-properties-panel .button:active {
+	background-color: #ccc;
+	color: #222222;
+	transition: 0s
 }

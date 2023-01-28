@@ -47,15 +47,13 @@ class SimpleTree extends Emitter {
       }
     });
     parent.classList.add('simple-tree');
-    if (properties.dark) {
-      parent.classList.add('dark');
-    }
     this.parent = parent.appendChild(document.createElement('details'));
     this.parent.appendChild(document.createElement('summary'));
     this.parent.open = true;
     // use this function to alter a node before being passed to this.file or this.folder
     this.interrupt = node => node;
   }
+
   append(element, parent, before, callback = () => { }) {
     if (before) {
       parent.insertBefore(element, before);
@@ -99,6 +97,10 @@ class SimpleTree extends Emitter {
 
   open(details) {
     details.open = true;
+  }
+
+  close(details) {
+    details.open = false;
   }
 
   hierarchy(element = this.active()) {
@@ -232,6 +234,18 @@ class AsyncTree extends SimpleTree {
         this.forEach(callBack, details);
       }
     }
+  }
+
+  openAll() {
+    this.forEach((e) => {
+      this.open(e.closest('details'))
+    })
+  }
+
+  closeAll() {
+    this.forEach((e) => {
+      this.close(e.closest('details'))
+    })
   }
 
   find(validate, es = this.siblings()) {

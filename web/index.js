@@ -32,6 +32,14 @@ tree.on("created", (e, node) => {
   e.node = node;
 });
 
+const openAllBtn = document.getElementById('openAll')
+openAllBtn.addEventListener('click', () => tree.openAll())
+
+
+const closeAllBtn = document.getElementById('closeAll')
+closeAllBtn.addEventListener('click', () => tree.closeAll())
+
+
 class Graph {
   constructor (canvas) {
     this.canvas = canvas
