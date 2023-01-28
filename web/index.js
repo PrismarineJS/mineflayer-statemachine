@@ -16,7 +16,6 @@ const LAYER_ENTER_COLOR = '#559966'
 
 let graph
 let nestedGroups
-let currentLayerSelected = 0
 let currentPacketData
 
 
@@ -549,9 +548,6 @@ class NestedGroup {
   }
 }
 
-let elemLeft
-let elemTop
-
 function init () {
   const canvas = document.getElementById('graph')
   graph = new Graph(canvas)
@@ -560,9 +556,6 @@ function init () {
   const socket = io()
   socket.on('connected', packet => onConnected(packet))
   socket.on('stateChanged', packet => onStateChanged(packet))
-
-  elemLeft = canvas.offsetLeft + canvas.clientLeft
-  elemTop = canvas.offsetTop + canvas.clientTop
 }
 
 function onConnected (packet) {
@@ -574,7 +567,6 @@ function onConnected (packet) {
   loadStates(packet)
   loadTransitions(packet)
   graph.repaint = true
-  console.log(packet.nestGroupsTree[0].children[0].children[0].children)
 }
 
 function loadStates (packet) {
@@ -655,7 +647,7 @@ function getTransitionGroup (groups, parent, child) {
   return group
 }
 
-function onStateChanged(packet) {
+function onStateChanged (packet) {
   console.log(`Bot behavior states changed to ${packet.activeStates}.`)
 
   for (const state of graph.states) { state.activeState = packet.activeStates.includes(state.id) }
@@ -677,9 +669,9 @@ function selectLayer(layer) {
   graph.repaint = true
 
   console.log(`Selected layer ${layer}`)
-  currentLayerSelected = layer
 }
 
+// Dynamic syze for panel and canvas
 
 const BORDER_SIZE = 4;
 const panel = document.getElementById("graph-panel");
