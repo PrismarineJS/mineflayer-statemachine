@@ -16,10 +16,17 @@ body {
 }
 
 #properties-panel {
-	display: inline-block;
+	display: flex;
+	flex-direction: column;
 	vertical-align: top;
-	height: 100%;
-	width: max(75%, calc(100% - 300px));
+	width: min(25%, 300px);
+	background-color: #222222;
+	padding: 10px;
+}
+
+#layerButtons {
+	margin-top: 10px;
+	overflow: auto;
 }
 
 #graph-panel {
@@ -43,15 +50,6 @@ body {
 #graph {
 	width: 100%;
 	height: 100%;
-}
-
-#properties-panel {
-	width: min(25%, 300px);
-	background-color: #222222;
-}
-
-#properties-panel {
-	padding: 10px;
 }
 
 #buttons-properties-panel {

@@ -70,7 +70,6 @@ class SimpleTree extends Emitter {
     node = this.interrupt(node);
     const a = this.append(Object.assign(document.createElement('a'), {
       textContent: node.name,
-      classList: 'fileStyle',
       href: '#'
     }), parent, before);
     a.dataset.type = SimpleTree.FILE;
@@ -83,8 +82,7 @@ class SimpleTree extends Emitter {
     node = this.interrupt(node);
     const details = document.createElement('details');
     const summary = Object.assign(document.createElement('summary'), {
-      textContent: node.name,
-      classList: 'folderStyle'
+      textContent: node.name
     });
     details.appendChild(summary);
     this.append(details, parent, before, () => {

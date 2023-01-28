@@ -22,6 +22,7 @@
   color: #dddddd;
   font-weight: 600;
   font-size: 14px;
+  border: #ffffff00 2px solid;
 }
 
 .simple-tree a {
@@ -104,6 +105,7 @@
 }
 
 .select-tree .selected {
+  border: #268002 2px solid;
   background-color: #666666;
   z-index: 1;
 }
@@ -111,14 +113,3 @@
 .select-tree .active {
   color: #e45f5f;
 }
-
-
-/* .folderStyle {
-  color: red;
-  font-weight: 600;
-}
-
-.fileStyle {
-  color: rgb(2, 61, 2);
-  font-weight: 600;
-} */
