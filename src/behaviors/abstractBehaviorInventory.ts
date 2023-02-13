@@ -1,7 +1,7 @@
 import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot, EquipmentDestination } from 'mineflayer'
 import { Item } from 'prismarine-item'
-import mcDataLoader from 'minecraft-data'
+import mcDataLoader from 'prismarine-registry'
 
 /**
  * A collection of useful functions for inventory-based behaviors.
@@ -22,7 +22,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
   constructor (bot: Bot, targets: StateMachineTargets) {
     this.bot = bot
     this.targets = targets
-    this.mcData = mcDataLoader(this.bot.version)
+    this.mcData = this.bot.registry
   }
 
   /**
@@ -110,7 +110,7 @@ export abstract class AbstractBehaviorInventory implements StateBehavior {
      * @returns The number of items the bot was able to craft with the given inventory.
      */
   craftItem (item: Item, amount: number = 1, cb: (err?: Error) => void = () => {}): number {
-    const mcData = mcDataLoader(this.bot.version)
+    const mcData = this.bot.registry
     const table = this.bot.findBlock({
       point: this.bot.entity.position,
       matching: mcData.blocksByName.crafting_table.id,

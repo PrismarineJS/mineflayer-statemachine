@@ -37,7 +37,7 @@
     "@types/express": "^4.17.13",
     "@types/node": "^18.7.8",
     "@types/socket.io": "^3.0.2",
-    "minecraft-data": "^3.10.2",
+    "prismarine-registry": "^1.7.0",
     "mineflayer": "^4.4.0",
     "mineflayer-pathfinder": "^2.3.1",
     "prismarine-block": "^1.16.3",
