@@ -1,7 +1,6 @@
 import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot, EquipmentDestination } from 'mineflayer'
 import { Item } from 'prismarine-item'
-import mcDataLoader from 'prismarine-registry'
 
 /**
  * A collection of useful functions for inventory-based behaviors.

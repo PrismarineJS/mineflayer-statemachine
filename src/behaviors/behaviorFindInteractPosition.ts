@@ -2,7 +2,6 @@ import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot } from 'mineflayer'
 import { Block } from 'prismarine-block'
 import { Vec3 } from 'vec3'
-import mcDataLoader from 'prismarine-registry'
 
 /* TODO Allow for creating positions in the air, or mining out new positions,
    if the bot if able to place blocks or mine in the area, respectively. */

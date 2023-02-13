@@ -2,7 +2,6 @@ import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot } from 'mineflayer'
 import { Entity } from 'prismarine-entity'
 import { Movements, goals } from 'mineflayer-pathfinder'
-import mcDataLoader from 'prismarine-registry'
 
 /**
  * Causes the bot to follow the target entity.
