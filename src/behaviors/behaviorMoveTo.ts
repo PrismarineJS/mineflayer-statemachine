@@ -4,8 +4,6 @@ import { Bot } from 'mineflayer'
 import { Movements, goals, Pathfinder, ComputedPath } from 'mineflayer-pathfinder'
 import { Vec3 } from 'vec3'
 
-import mcDataLoader from 'prismarine-registry'
-
 /**
  * Causes the bot to move to the target position.
  *
@@ -32,7 +30,7 @@ export class BehaviorMoveTo implements StateBehavior {
     this.bot = bot
     this.targets = targets
 
-    const mcData = mcDataLoader(bot.version)
+    const mcData = this.bot.registry
     this.movements = new Movements(bot, mcData)
   }
 
