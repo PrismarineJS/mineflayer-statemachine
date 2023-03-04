@@ -27,21 +27,21 @@ const bot = createBot({
   password: process.argv[5],
 });
 
+// first try at a streamlined transition build process.
 const firstTransitions = [
   buildTransition("closestToExit", BehaviorClosestEntity, BehaviorExit, undefined)
     .setShouldTransition((data, state) => !state.foundEntity()),
-
   buildTransition("closestToFollow", BehaviorClosestEntity, BehaviorFollowEntity, undefined)
     .setShouldTransition((data, state) => state.foundEntity()),
-
   buildTransition("followToClosest", BehaviorFollowEntity, BehaviorClosestEntity, [e=>e.type==="player"])
     .setShouldTransition((data, state) => state.isFinished()),
-
   buildTransition("followToExit", BehaviorFollowEntity, BehaviorExit, undefined)
     .setShouldTransition((data, state) => state.isFinished())
 ];
 
+// first try at a streamlined nested machine build process.
 const test = buildNewNestedMachine("good test", BehaviorClosestEntity, BehaviorExit, firstTransitions)
+
 
 const secondTransitions = [
   buildTransition("idleToLook", BehaviorIdle, BehaviorLookAtEntity, undefined),
