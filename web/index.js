@@ -367,6 +367,7 @@ class Transition {
           y: this.child.rect.cy() + offset.y
         }
 
+  
     this.clipArrow(this.child.rect, a, b)
     const arrow = this.arrowBase(a, b)
 
@@ -548,6 +549,7 @@ function loadStates (packet) {
       NODE_HEIGHT
     )
 
+    console.log(packet, state.nestGroup, state.id)
     const stateNode = new State(state.id, state.name, rect, state.nestGroup)
     stateNode.activeState = false
     stateNode.enterState = graph.nestedGroups[state.nestGroup].enter === state.id
@@ -561,6 +563,7 @@ function loadStates (packet) {
 function loadTransitions (packet) {
   const groups = []
 
+  console.log(graph.states);
   for (const transition of packet.transitions) {
     const parent = graph.states[transition.parentState]
     const child = graph.states[transition.childState]
@@ -593,6 +596,7 @@ function loadNestedGroups (packet) {
 
 function getTransitionGroup (groups, parent, child) {
   // To make group order ambiguous
+  console.log(groups, parent, child)
   if (parent.id < child.id) {
     return getTransitionGroup(groups, child, parent)
   }
@@ -609,6 +613,7 @@ function getTransitionGroup (groups, parent, child) {
 
 function onStateChanged (packet) {
   console.log(`Bot behavior states changed to ${packet.activeStates}.`)
+  console.log(graph.states[packet.activeStates], graph.states)
 
   for (const state of graph.states) { state.activeState = packet.activeStates.includes(state.id) }
   const activeNestedGroups = graph.states.filter(state => packet.activeStates.includes(state.id)).map(i => i.nestedGroup)

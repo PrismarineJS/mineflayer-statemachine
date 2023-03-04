@@ -1,11 +1,15 @@
-import { StateBehavior } from '../statemachine'
+import { StateBehavior } from '../stateBehavior'
 
 /**
  * The bot will stand idle and do... nothing.
  */
-export class BehaviorIdle implements StateBehavior {
-  stateName: string = 'idle'
-  active: boolean = false
-  x?: number
-  y?: number
+export class BehaviorIdle extends StateBehavior {
+  static stateName = this.name
+}
+
+/**
+ * The bot will stand idle and do... nothing.
+ */
+export class BehaviorExit extends StateBehavior {
+  static stateName = this.name
 }

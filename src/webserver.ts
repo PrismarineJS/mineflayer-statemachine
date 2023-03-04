@@ -1,14 +1,16 @@
-import { Bot } from 'mineflayer'
-import { BotStateMachine, StateBehavior } from './statemachine'
+import { CentralStateMachine, NestedStateMachine, StateBehavior } from './index'
 import socketLoader, { Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
 import httpLoader from 'http'
-import { globalSettings } from '.'
+import { isNestedStateMachine } from './util'
 
 const publicFolder = './../web'
 
 // TODO Add option to shutdown server
+
+// This is completely ripped off from mineflayer-statemachine.
+// Dear lord, I cannot do frontend. This is a life-saver.
 
 /**
  * A web server which allows users to view the current state of the
@@ -17,32 +19,30 @@ const publicFolder = './../web'
 export class StateMachineWebserver {
   private serverRunning: boolean = false
 
-  readonly bot: Bot
-  readonly stateMachine: BotStateMachine
+  readonly stateMachine: CentralStateMachine
   readonly port: number
 
   /**
-     * Creates and starts a new webserver.
-     * @param bot - The bot being observed.
-     * @param stateMachine - The state machine being observed.
-     * @param port - The port to open this server on.
-     */
-  constructor (bot: Bot, stateMachine: BotStateMachine, port: number = 8934) {
-    this.bot = bot
+   * Creates and starts a new webserver.
+   * @param bot - The bot being observed.
+   * @param stateMachine - The state machine being observed.
+   * @param port - The port to open this server on.
+   */
+  constructor (stateMachine: CentralStateMachine, port: number = 8934) {
     this.stateMachine = stateMachine
     this.port = port
   }
 
   /**
-     * Checks whether or not this server is currently running.
-     */
+   * Checks whether or not this server is currently running.
+   */
   isServerRunning (): boolean {
     return this.serverRunning
   }
 
   /**
-     * Configures and starts a basic static web server.
-     */
+   * Configures and starts a basic static web server.
+   */
   startServer (): void {
     if (this.serverRunning) {
       throw new Error('Server already running!')
@@ -65,27 +65,32 @@ export class StateMachineWebserver {
   }
 
   /**
-     * Called when the web server is started.
-     */
+   * Called when the web server is started.
+   */
   private onStarted (): void {
-    if (globalSettings.debugMode) { console.log(`Started state machine web server at http://localhost:${this.port}.`) }
+    console.log(`Started state machine web server at http://localhost:${this.port}.`)
   }
 
   /**
-     * Called when a web socket connects to this server.
-     */
+   * Called when a web socket connects to this server.
+   */
   private onConnected (socket: Socket): void {
-    if (globalSettings.debugMode) { console.log(`Client ${socket.handshake.address} connected to webserver.`) }
+    console.log(`Client ${socket.handshake.address} connected to webserver.`)
 
     this.sendStatemachineStructure(socket)
-    this.updateClient(socket)
 
-    const updateClient = (): void => this.updateClient(socket)
-    this.stateMachine.on('stateChanged', updateClient)
+    socket.emit('stateChanged', { activeStates: [] })
+
+    const updateClient = (nestedMachine: NestedStateMachine, state: typeof StateBehavior): void =>
+      this.updateClient(socket, nestedMachine, state)
+    this.stateMachine.on('stateEntered', updateClient)
+    this.stateMachine.on('stateExited', updateClient)
 
     socket.on('disconnect', () => {
-      this.stateMachine.removeListener('stateChanged', updateClient)
-      if (globalSettings.debugMode) { console.log(`Client ${socket.handshake.address} disconnected from webserver.`) }
+      this.stateMachine.removeListener('stateEntered', updateClient)
+      this.stateMachine.removeListener('stateExited', updateClient)
+
+      console.log(`Client ${socket.handshake.address} disconnected from webserver.`)
     })
   }
 
@@ -93,6 +98,15 @@ export class StateMachineWebserver {
     const states = this.getStates()
     const transitions = this.getTransitions()
     const nestGroups = this.getNestGroups()
+
+    let i = 0
+    console.log(
+      'FUCK:',
+      states,
+      this.stateMachine.states.map((s) => [i++, s]),
+      transitions,
+      nestGroups
+    )
 
     const packet: StateMachineStructurePacket = {
       states,
@@ -103,18 +117,13 @@ export class StateMachineWebserver {
     socket.emit('connected', packet)
   }
 
-  private updateClient (socket: Socket): void {
-    const states = this.stateMachine.states
+  private updateClient (socket: Socket, nested: NestedStateMachine, state: typeof StateBehavior): void {
     const activeStates: number[] = []
 
-    for (const layer of this.stateMachine.nestedStateMachines) {
-      if (layer.activeState == null) continue
+    const index = this.getStateId(state, nested.staticRef)
 
-      const index = states.indexOf(layer.activeState)
-
-      if (index > -1) {
-        activeStates.push(index)
-      }
+    if (index > -1) {
+      activeStates.push(index)
     }
 
     const packet: StateMachineUpdatePacket = {
@@ -124,45 +133,77 @@ export class StateMachineWebserver {
     socket.emit('stateChanged', packet)
   }
 
-  private getStates (): StateMachineStatePacket[] {
+  /**
+   * Code for finding the id of a state given its host's machine.
+   * ONLY PROVIDE STATE AND TARGETMACHINE.
+   * @param state State we want the id for relative to its machine
+   * @param targetMachine the machine we want to search.
+   * @param searching The machine we are currently searching (always start at root)
+   * @param data object to allow pointer passing for recursion (lol js)
+   * @returns id of state.
+   */
+  private getStateId (
+    state: typeof StateBehavior,
+    targetMachine: typeof NestedStateMachine,
+    searching: typeof NestedStateMachine = this.stateMachine.root.staticRef,
+    data = { offset: 0 }
+  ): number {
+    for (let i = 0; i < searching.states.length; i++) {
+      const foundState = searching.states[i]
+      if (foundState === state && searching === targetMachine) return data.offset
+      data.offset++
+
+      if (isNestedStateMachine(foundState)) {
+        const ret = this.getStateId(state, targetMachine, foundState, data)
+        if (ret !== -1) return ret
+      }
+    }
+
+    return -1
+  }
+
+  // Don't mind this stupid object -> pointer hack.
+  // note: this matches the pattern found locally.
+  // note: slight speedup possible by passing array by pointers as well.
+  private getStates (
+    nested: typeof NestedStateMachine = this.stateMachine.root.staticRef,
+    data = { index: 0, offset: 0 },
+    offset = 0
+  ): StateMachineStatePacket[] {
     const states: StateMachineStatePacket[] = []
 
-    for (let i = 0; i < this.stateMachine.states.length; i++) {
-      const state = this.stateMachine.states[i]
+    for (let i = 0; i < nested.states.length; i++) {
+      const state = nested.states[i]
       states.push({
-        id: i,
+        id: data.index++,
         name: state.stateName,
-        x: state.x,
-        y: state.y,
-        nestGroup: this.getNestGroup(state)
+        x: undefined,
+        y: undefined,
+        nestGroup: offset
       })
+      if (isNestedStateMachine(state)) {
+        states.push(...this.getStates(state, data, offset + ++data.offset))
+      }
     }
 
     return states
   }
 
-  private getNestGroup (state: StateBehavior): number {
-    for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++) {
-      const n = this.stateMachine.nestedStateMachines[i]
-
-      if (n.states == null) continue
-      if (n.states.includes(state)) return i
-    }
-
-    throw new Error('Unexpected state!')
-  }
-
   private getTransitions (): StateMachineTransitionPacket[] {
     const transitions: StateMachineTransitionPacket[] = []
 
-    for (let i = 0; i < this.stateMachine.transitions.length; i++) {
-      const transition = this.stateMachine.transitions[i]
-      transitions.push({
-        id: i,
-        name: transition.name,
-        parentState: this.stateMachine.states.indexOf(transition.parentState),
-        childState: this.stateMachine.states.indexOf(transition.childState)
-      })
+    for (let i = 0; i < this.stateMachine.nestedMachinesHelp.length; i++) {
+      const machine = this.stateMachine.nestedMachinesHelp[i]
+      const foundTransitions = machine.transitions
+      for (let k = 0; k < foundTransitions.length; k++) {
+        const transition = foundTransitions[k]
+        transitions.push({
+          id: i,
+          name: transition.transitionName,
+          parentState: this.getStateId(transition.parentState, machine),
+          childState: this.getStateId(transition.childState, machine)
+        })
+      }
     }
 
     return transitions
@@ -171,14 +212,15 @@ export class StateMachineWebserver {
   private getNestGroups (): NestedStateMachinePacket[] {
     const nestGroups: NestedStateMachinePacket[] = []
 
-    for (let i = 0; i < this.stateMachine.nestedStateMachines.length; i++) {
-      const nest = this.stateMachine.nestedStateMachines[i]
+    for (let i = 0; i < this.stateMachine.nestedMachinesHelp.length; i++) {
+      const machine = this.stateMachine.nestedMachinesHelp[i]
+      const depth = this.stateMachine.getNestedMachineDepth(machine)
       nestGroups.push({
         id: i,
-        enter: this.stateMachine.states.indexOf(nest.enter),
-        exit: nest.exit != null ? this.stateMachine.states.indexOf(nest.exit) : undefined,
-        indent: nest.depth ?? -1,
-        name: nest.stateName
+        enter: this.getStateId(machine.enter, machine),
+        exit: machine.exit != null ? this.getStateId(machine.exit, machine) : undefined,
+        indent: depth,
+        name: machine.stateName
       })
     }
 

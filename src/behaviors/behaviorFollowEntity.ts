@@ -1,110 +1,69 @@
-import { StateBehavior, StateMachineTargets } from '../statemachine'
-import { Bot } from 'mineflayer'
-import { Entity } from 'prismarine-entity'
+import type { Entity } from 'prismarine-entity'
 import { Movements, goals } from 'mineflayer-pathfinder'
+import { StateBehavior } from '../stateBehavior'
 
 /**
  * Causes the bot to follow the target entity.
  *
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
-export class BehaviorFollowEntity implements StateBehavior {
-  private readonly mcData: any
-
-  readonly bot: Bot
-  readonly targets: StateMachineTargets
-  movements: Movements
-
-  stateName: string = 'followEntity'
-  active: boolean = false
-  x?: number
-  y?: number
-
-  /**
-     * How close to the entity should the bot attempt to get?
-     */
+export class BehaviorFollowEntity extends StateBehavior {
+  static stateName = 'followEntity'
+  movements?: Movements
   followDistance: number = 0
 
-  constructor (bot: Bot, targets: StateMachineTargets) {
-    this.bot = bot
-    this.targets = targets
-    this.mcData = this.bot.registry
-    this.movements = new Movements(this.bot, this.mcData)
-  }
+  onStateEntered = (): void => {
+    if (!this.bot.pathfinder) throw Error('Pathfinder is not loaded!')
 
-  onStateEntered (): void {
-    this.startMoving()
+    const mcData = this.bot.registry
+    this.movements = new Movements(this.bot, mcData)
+    this.data.entity = this.bot.nearestEntity((e) => e.type === 'player') ?? undefined
+    this.startMoving(this.data.entity)
   }
 
   onStateExited (): void {
     this.stopMoving()
+    this.data.entity = undefined
   }
 
-  /**
-     * Sets the target entity this bot should follow. If the bot
-     * is currently following another entity, it will stop following
-     * that entity and follow this entity instead.
-     *
-     * If the bot is not currently in this behavior state, the entity
-     * will still be assigned as the target entity when this state is
-     * entered.
-     *
-     * Calling this method will update the targets object.
-     *
-     * @param entity - The entity to follow.
-     */
-  setFollowTarget (entity: Entity): void {
-    if (this.targets.entity === entity) { return }
+  isFinished (): boolean {
+    const distances = this.distanceToTarget()
+    return distances < 3
+  }
 
-    this.targets.entity = entity
+  setFollowTarget (entity: Entity): void {
+    if (this.data === entity) {
+      return
+    }
+
+    this.data.entity = entity
     this.restart()
   }
 
-  /**
-     * Cancels the current path finding operation.
-     */
   private stopMoving (): void {
-    const pathfinder = this.bot.pathfinder
-    pathfinder.setGoal(null)
+    this.bot.pathfinder.stop()
   }
 
-  /**
-     * Starts a new path finding operation.
-     */
-  private startMoving (): void {
-    const entity = this.targets.entity
+  private startMoving (entity?: Entity): void {
     if (entity == null) return
-
+    if (entity === this.data.entity && this.bot.pathfinder.isMoving()) return
     const pathfinder = this.bot.pathfinder
-
     const goal = new goals.GoalFollow(entity, this.followDistance)
-    pathfinder.setMovements(this.movements)
+    if (this.movements != null) pathfinder.setMovements(this.movements)
     pathfinder.setGoal(goal, true)
   }
 
-  /**
-     * Stops and restarts this movement behavior. Does nothing if
-     * this behavior is not active.
-     *
-     * Useful if the target entity is updated while this behavior
-     * is still active.
-     */
   restart (): void {
-    if (!this.active) { return }
+    if (!this.active) {
+      return
+    }
 
     this.stopMoving()
-    this.startMoving()
+    this.startMoving(this.data.entity)
   }
 
-  /**
-     * Gets the distance to the target entity.
-     *
-     * @returns The distance, or 0 if no target entity is assigned.
-     */
   distanceToTarget (): number {
-    const entity = this.targets.entity
-    if (entity == null) return 0
-
-    return this.bot.entity.position.distanceTo(entity.position)
+    if (this.data.entity == null) return Infinity
+    return this.bot.entity.position.distanceTo(this.data.entity.position)
   }
 }
