@@ -27,7 +27,6 @@ CentralStateMachineEvents
 
   readonly transitions: StateTransition[]
   readonly states: Array<typeof StateBehavior>
-  // readonly nestedMachines: NestedStateMachine[];
   readonly nestedMachinesNew: { [depth: number]: Array<typeof NestedStateMachine> }
   readonly nestedMachinesHelp: Array<typeof NestedStateMachine>
 

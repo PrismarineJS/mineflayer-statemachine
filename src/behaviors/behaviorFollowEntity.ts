@@ -63,7 +63,7 @@ export class BehaviorFollowEntity extends StateBehavior {
   }
 
   distanceToTarget (): number {
-    if (this.data.entity == null) return Infinity
+    if (this.data.entity == null) return -1
     return this.bot.entity.position.distanceTo(this.data.entity.position)
   }
 }
