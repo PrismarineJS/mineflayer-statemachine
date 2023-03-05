@@ -22,12 +22,12 @@
     "machine",
     "fsm"
   ],
-  "author": "GenerelSchwerz",
+  "author": "TheDudeFromCI",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PrismarineJS/mineflayer-statemachine/issues"
+    "url": "https://github.com/TheDudeFromCI/mineflayer-statemachine/issues"
   },
-  "homepage": "https://github.com/PrismarineJS/mineflayer-statemachine#readme",
+  "homepage": "https://github.com/TheDudeFromCI/mineflayer-statemachine#readme",
   "dependencies": {
     "express": "^4.17.2",
     "socket.io": "^4.6.0",
