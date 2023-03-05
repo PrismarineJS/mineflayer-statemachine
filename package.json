@@ -31,7 +31,8 @@
   "dependencies": {
     "express": "^4.17.2",
     "socket.io": "^4.6.0",
-    "strict-event-emitter-types": "^2.0.0"
+    "strict-event-emitter-types": "^2.0.0",
+    "node": "^19.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.13",

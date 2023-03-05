@@ -84,7 +84,7 @@ export type StateTransitionInfo<
 
   shouldTransition?: (data: StateMachineData, state: Parent['prototype']) => boolean
   onTransition?: (data: StateMachineData) => void
-} & (OmitTwo<ConstructorParameters<Child>> extends [fuck: any, ...any: infer R]
+} & (OmitTwo<ConstructorParameters<Child>> extends [first: any, ...any: any]
   ? {
       childConstructorArgs: OmitTwo<ConstructorParameters<Child>>
     }
@@ -134,12 +134,12 @@ export class StateTransition<
     this.triggerState = false
   }
 
-  setShouldTransition (should: (data: StateMachineData, state: Parent['prototype']) => boolean) {
+  setShouldTransition (should: (data: StateMachineData, state: Parent['prototype']) => boolean): this {
     this.shouldTransition = should
     return this
   }
 
-  setOnTransition (onTrans: (data: StateMachineData, state: Parent['prototype']) => boolean) {
+  setOnTransition (onTrans: (data: StateMachineData, state: Parent['prototype']) => boolean): this {
     this.onTransition = onTrans
     return this
   }
@@ -162,7 +162,7 @@ export function buildTransition<Parent extends StateBehaviorBuilder, Child exten
   name: string,
   parent: Parent,
   child: Child,
-  args: OmitTwo<ConstructorParameters<Child>> extends [first: infer R0, ...any: infer R] ? OmitTwo<ConstructorParameters<Child>> : undefined
+  args: OmitTwo<ConstructorParameters<Child>> extends [first: any, ...any: any] ? OmitTwo<ConstructorParameters<Child>> : undefined
 ): StateTransition<Parent, Child> {
   return new StateTransition<Parent, Child>({
     transitionName: name,

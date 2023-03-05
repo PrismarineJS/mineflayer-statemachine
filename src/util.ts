@@ -8,7 +8,7 @@ export type StateBehaviorBuilder<Args extends any[] = any[]> = NonConstructor<ty
 // | (new (bot: Bot, data: StateMachineData, ...additonal: Args) => NestedStateMachine)
 )
 
-export type OmitTwo<T extends any[]> = T extends [first: infer R0, second: infer R1, ...any: infer R] ? R : never
+export type OmitTwo<T extends any[]> = T extends [first: any, second: any, ...any: infer R] ? R : never
 
 type NonConstructorKeys<T> = { [P in keyof T]: T[P] extends new () => any ? never : P }[keyof T]
 export type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>

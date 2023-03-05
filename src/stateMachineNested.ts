@@ -42,6 +42,7 @@ export class NestedStateMachine
   public active: boolean = false
 
   public constructor (bot: Bot, data: StateMachineData) {
+    // eslint-disable-next-line constructor-super
     super()
     this.bot = bot
     this.data = data
@@ -161,7 +162,6 @@ export function newNestedStateMachine ({
     if (!states.includes(trans.childState)) states.push(trans.childState)
   }
 
-  console.log('building machine:', stateName, states)
   return class extends NestedStateMachine {
     public static readonly stateName = stateName
     public static readonly transitions = transitions

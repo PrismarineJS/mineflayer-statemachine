@@ -99,15 +99,6 @@ export class StateMachineWebserver {
     const transitions = this.getTransitions()
     const nestGroups = this.getNestGroups()
 
-    let i = 0
-    console.log(
-      'FUCK:',
-      states,
-      this.stateMachine.states.map((s) => [i++, s]),
-      transitions,
-      nestGroups
-    )
-
     const packet: StateMachineStructurePacket = {
       states,
       transitions,

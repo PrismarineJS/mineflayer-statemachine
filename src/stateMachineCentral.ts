@@ -33,6 +33,7 @@ CentralStateMachineEvents
   private autoUpdate: boolean
 
   constructor ({ bot, root: Root, data = {}, autoStart = true, autoUpdate = true }: CentralStateMachineOptions) {
+    // eslint-disable-next-line constructor-super
     super()
     this.bot = bot
     this.states = []
