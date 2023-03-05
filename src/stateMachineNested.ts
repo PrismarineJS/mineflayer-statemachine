@@ -108,7 +108,7 @@ export class NestedStateMachine
     this.activeState.update?.()
     const lastState = this.activeStateType
     const transitions = this.staticRef.transitions
-    let args;
+    let args
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i]
       if (transition.parentState === this.activeStateType) {
@@ -118,7 +118,7 @@ export class NestedStateMachine
           transition.onTransition(this.data, this.activeState)
           this.exitActiveState()
           this.activeStateType = transition.childState
-          args = transition.childConstructorArgs as any;
+          args = transition.childConstructorArgs as any
           if (this.staticRef.enterIntermediateStates) this.enterState(this.activeStateType, this.bot, args)
         }
       }

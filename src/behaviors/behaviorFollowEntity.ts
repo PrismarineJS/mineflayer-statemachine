@@ -13,6 +13,7 @@ export class BehaviorFollowEntity extends StateBehavior {
   followDistance: number = 0
 
   onStateEntered = (): void => {
+    /* tslint:disable-next-line */
     if (!this.bot.pathfinder) throw Error('Pathfinder is not loaded!')
 
     const mcData = this.bot.registry

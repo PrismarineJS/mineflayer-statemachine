@@ -1,4 +1,4 @@
-const { createBot } = require('mineflayer')
+const mineflayer = require('mineflayer')
 const { CentralStateMachine, StateMachineWebserver, StateTransition } = require('../lib')
 const { BehaviorExit, BehaviorFollowEntity, BehaviorIdle, BehaviorLookAtEntity } = require('../lib/behaviors')
 const { newNestedStateMachine } = require('../lib/stateMachineNested')
@@ -6,7 +6,6 @@ const { newNestedStateMachine } = require('../lib/stateMachineNested')
 /**
  * Set up your bot as you normally would
  */
-const mineflayer = require('mineflayer')
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node lookatplayers.js <host> <port> [<name>] [<password>]')
