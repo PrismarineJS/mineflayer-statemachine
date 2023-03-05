@@ -1,5 +1,4 @@
 import { createBot } from "mineflayer";
-import { NestedStateMachine, StateBehavior } from "../lib";
 import { buildTransition, CentralStateMachine, StateMachineWebserver, StateTransition, StateTransitionInfo } from "../src";
 import {
   BehaviorExit,
@@ -9,7 +8,6 @@ import {
   BehaviorLookAtEntity,
 } from "../src/behaviors";
 import { buildNewNestedMachine, newNestedStateMachine } from "../src/stateMachineNested";
-import { OmitTwo, StateBehaviorBuilder } from "../src/util";
 
 /**
  * Set up your bot as you normally would
@@ -45,6 +43,7 @@ const test = buildNewNestedMachine("good test", BehaviorClosestEntity, BehaviorE
 
 const secondTransitions = [
   buildTransition("idleToLook", BehaviorIdle, BehaviorLookAtEntity, undefined),
+  buildTransition("lookToIdle", BehaviorLookAtEntity, BehaviorIdle, undefined),
   buildTransition("idleToTest", BehaviorIdle, test, undefined),
   buildTransition("testToIdle", test, BehaviorIdle, undefined)
     .setShouldTransition((data, state) => state.isFinished())
@@ -67,20 +66,16 @@ const handle = (input) => {
   let target;
   switch (split[0]) {
     case "look":
-      target = bot.nearestEntity((e) => e.type === "player" && e.id !== bot.entity.id);
-      if (!target) return;
-      stateMachine.root.data.entity = target;
       stateMachine.root.transitions[0].trigger();
       break;
     case "lookstop":
-      delete stateMachine.root.data.entity;
       stateMachine.root.transitions[1].trigger();
       break;
     case "come":
-      target = bot.nearestEntity((e) => e.type === "player" && e.id !== bot.entity.id);
-      if (!target) return;
-      stateMachine.root.data.entity = target;
       stateMachine.root.transitions[2].trigger();
+      break;
+    case "movestop":
+      stateMachine.root.transitions[3].trigger();
       break;
   }
 };

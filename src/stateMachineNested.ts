@@ -28,10 +28,9 @@ export class NestedStateMachine
   public static readonly enterIntermediateStates: boolean
 
   // not correct but whatever.
-  public static readonly onStartupListeners: Array<[
-    key: keyof StateBehaviorEvent,
-    listener: StateBehaviorEvent[keyof StateBehaviorEvent]
-  ]>
+  public static readonly onStartupListeners: Array<
+  [key: keyof StateBehaviorEvent, listener: StateBehaviorEvent[keyof StateBehaviorEvent]]
+  >
 
   // not really needed, but helpful.
   staticRef: typeof NestedStateMachine
@@ -109,6 +108,7 @@ export class NestedStateMachine
     this.activeState.update?.()
     const lastState = this.activeStateType
     const transitions = this.staticRef.transitions
+    let args;
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i]
       if (transition.parentState === this.activeStateType) {
@@ -118,12 +118,13 @@ export class NestedStateMachine
           transition.onTransition(this.data, this.activeState)
           this.exitActiveState()
           this.activeStateType = transition.childState
-          if (this.staticRef.enterIntermediateStates) this.enterState(this.activeStateType, this.bot, transition.childConstructorArgs)
+          args = transition.childConstructorArgs as any;
+          if (this.staticRef.enterIntermediateStates) this.enterState(this.activeStateType, this.bot, args)
         }
       }
     }
 
-    if ((this.activeStateType != null) && this.activeStateType !== lastState) this.enterState(this.activeStateType, this.bot)
+    if (this.activeStateType != null && this.activeStateType !== lastState) { this.enterState(this.activeStateType, this.bot, args) }
   }
 
   /**
@@ -171,7 +172,6 @@ export function newNestedStateMachine ({
     public static readonly onStartupListeners = []
   }
 }
-
 
 /**
  * Creates a new Nested

@@ -7,6 +7,7 @@ export class BehaviorFindEntity extends StateBehavior {
 
   constructor (bot: Bot, data: StateMachineData, filter: (entity: Entity) => boolean) {
     super(bot, data)
+    console.trace(filter)
     this.filter = filter
   }
 
