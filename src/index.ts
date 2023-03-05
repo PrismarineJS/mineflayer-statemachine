@@ -1,4 +1,7 @@
-export * from './stateMachineCentral'
-export * from './stateMachineNested'
-export * from './stateBehavior'
+export * from './behaviors'
+export * from './statemachine'
 export * from './webserver'
+
+export const globalSettings = {
+  debugMode: false
+}
