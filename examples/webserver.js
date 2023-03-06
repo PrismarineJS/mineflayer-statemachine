@@ -17,20 +17,20 @@ bot.loadPlugin(require('mineflayer-pathfinder').pathfinder)
 const {
   CentralStateMachine,
   StateMachineWebserver,
-} = require('../lib')
+} = require('mineflayer-statemachine')
 
 const {
   BehaviorIdle,
   BehaviorFindEntity,
   BehaviorFollowEntity,
   BehaviorLookAtEntity
-} = require('../lib/behaviors')
+} = require('mineflayer-statemachine/lib/behaviors')
 
 const {
   buildTransition,
   buildTransitionArgs,
   buildNestedMachine,
-} = require('../lib/builders')
+} = require('mineflayer-statemachine/lib/builders')
 const nearestPlayer = (e) => e.type === "player"
 
 // to replicate the original mineflayer-statemachine exactly:
@@ -73,7 +73,6 @@ const root = buildNestedMachine('root', transitions, BehaviorIdle)
 const stateMachine = new CentralStateMachine({bot, root, autoStart: false})
 const webserver = new StateMachineWebserver(stateMachine)
 webserver.startServer()
-
 
 
 bot.once("spawn", () => {
