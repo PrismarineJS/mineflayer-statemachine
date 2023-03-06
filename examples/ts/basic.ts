@@ -1,25 +1,26 @@
 // Create your bot
-const mineflayer = require("mineflayer");
+import mineflayer from 'mineflayer'
 const bot = mineflayer.createBot({ username: "Player" });
 
 // Load your dependency plugins.
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
 
 // Import required structures.
-const { BotStateMachine } = require('mineflayer-statemachine')
+import { BotStateMachine } from 'mineflayer-statemachine'
 
 // Import required behaviors.
-const {
+import {
+    BehaviorExit,
     BehaviorFindEntity,
     BehaviorFollowEntity,
     BehaviorLookAtEntity
-} = require('mineflayer-statemachine/lib/behaviors')
+} from 'mineflayer-statemachine/lib/behaviors'
 
 // import builders for transitions and machines.
-const {
+import {
     buildTransition,
     buildNestedMachineArgs
-} = require('mineflayer-statemachine/lib/builders')
+} from 'mineflayer-statemachine/lib/builders'
     
 
 // Util function to find the nearest player.
