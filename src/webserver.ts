@@ -22,7 +22,6 @@ export class StateMachineWebserver {
 
   /**
    * Creates and starts a new webserver.
-   * @param bot - The bot being observed.
    * @param stateMachine - The state machine being observed.
    * @param port - The port to open this server on.
    */
@@ -113,6 +112,7 @@ export class StateMachineWebserver {
 
     const index = this.getStateId(state, nested.staticRef)
 
+    console.log(nested.staticRef.stateName, state.stateName, this.stateMachine.states[index], index)
     if (index > -1) {
       activeStates.push(index)
     }
@@ -121,9 +121,9 @@ export class StateMachineWebserver {
       activeStates
     }
 
+    socket.emit('stateChanged', packet)
     this.lastMachine = nested
     this.lastState = state
-    socket.emit('stateChanged', packet)
   }
 
   /**

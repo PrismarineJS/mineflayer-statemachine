@@ -76,7 +76,7 @@ export class StateBehavior {
       Object.defineProperty(
         ToBuild.prototype,
         name,
-        (Object.getOwnPropertyDescriptor(this.prototype, name) != null) || Object.create(null)
+        Object.getOwnPropertyDescriptor(this.prototype, name) ?? Object.create(null)
       )
     })
     if (name != null) ToBuild.stateName = name

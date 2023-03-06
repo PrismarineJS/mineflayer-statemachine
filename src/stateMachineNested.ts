@@ -63,7 +63,7 @@ export class NestedStateMachine
       Object.defineProperty(
         ToBuild.prototype,
         name,
-        (Object.getOwnPropertyDescriptor(this.prototype, name) != null) || Object.create(null)
+        Object.getOwnPropertyDescriptor(this.prototype, name) ?? Object.create(null)
       )
     })
     if (name != null) ToBuild.stateName = name
@@ -117,6 +117,12 @@ export class NestedStateMachine
     this.enterState(this._activeStateType, this.bot, this.staticRef.enterArgs)
   }
 
+  public onStateExited(): void {
+      this.exitActiveState();
+      this._activeStateType = undefined;
+      this._activeState = undefined;
+  }
+
   protected enterState (EnterState: StateBehaviorBuilder, bot: Bot, additional: any[] = []): void {
     this._activeState = new EnterState(bot, this.data, ...additional)
     this._activeState.active = true
@@ -126,10 +132,10 @@ export class NestedStateMachine
   }
 
   protected exitActiveState (): void {
-    if (this._activeState == null) return
-    this._activeState.active = false
-    this.emit('stateExited', this, this._activeState.constructor as typeof StateBehavior, this.data)
-    this._activeState.onStateExited?.()
+    if (this._activeStateType == null) return
+    this._activeState!.active = false
+    this.emit('stateExited', this, this._activeStateType!, this.data)
+    this._activeState!.onStateExited?.()
   }
 
   public update (): void {

@@ -6,6 +6,10 @@ import { StateBehavior } from '..'
 export class BehaviorLookAtEntity extends StateBehavior {
   static stateName = 'lookAtEntity'
 
+  onStateEntered(): void {
+    console.trace("here")
+  }
+
   update (): void {
     this.data.entity = this.bot.nearestEntity((e) => e.type === 'player') ?? undefined
     const entity = this.data.entity
