@@ -49,7 +49,7 @@ export class CentralStateMachine<
     this.findStatesRecursive(Root)
     this.findTransitionsRecursive(Root)
     this.findNestedStateMachinesNew(Root)
-    this.rootType = Root;
+    this.rootType = Root
     this.root = new Root(bot, data)
     this.autoUpdate = autoUpdate
 

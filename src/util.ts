@@ -1,43 +1,43 @@
-import type { Bot } from "mineflayer";
-import type { StateBehavior, StateMachineData } from "./stateBehavior";
-import { NestedStateMachine, NestedStateMachineOptions } from "./stateMachineNested";
+import type { Bot } from 'mineflayer'
+import type { StateBehavior, StateMachineData } from './stateBehavior'
+import { NestedStateMachine, NestedStateMachineOptions } from './stateMachineNested'
 
 export type StateBehaviorBuilder<Args extends any[] = any[]> = NonConstructor<typeof StateBehavior> &
-  (new (bot: Bot, data: StateMachineData, ...additonal: Args) => StateBehavior);
+(new (bot: Bot, data: StateMachineData, ...additonal: Args) => StateBehavior)
 
-export type OmitTwo<T extends any[]> = T extends [first: any, second: any, ...any: infer R] ? R : never;
+export type OmitTwo<T extends any[]> = T extends [first: any, second: any, ...any: infer R] ? R : never
 
 export type HasArgs<Child extends StateBehaviorBuilder> = OmitTwo<Required<ConstructorParameters<Child>>> extends [
   first: any,
   ...any: any
 ]
   ? Child
-  : never;
+  : never
 export type NoArgs<Child extends StateBehaviorBuilder> = OmitTwo<ConstructorParameters<Child>> extends [
   first: any,
   ...any: any
 ]
   ? never
-  : Child;
+  : Child
 
-export type StateConstructorArgs<Child extends StateBehaviorBuilder> = OmitTwo<ConstructorParameters<Child>>;
+export type StateConstructorArgs<Child extends StateBehaviorBuilder> = OmitTwo<ConstructorParameters<Child>>
 
 export type SpecifcNestedStateMachine<
   Enter extends StateBehaviorBuilder = StateBehaviorBuilder,
   Exit extends StateBehaviorBuilder = StateBehaviorBuilder
-> = typeof NestedStateMachine & NestedStateMachineOptions<Enter, Exit>;
+> = typeof NestedStateMachine & NestedStateMachineOptions<Enter, Exit>
 
-type NonConstructorKeys<T> = { [P in keyof T]: T[P] extends new () => any ? never : P }[keyof T];
-export type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>;
+type NonConstructorKeys<T> = { [P in keyof T]: T[P] extends new () => any ? never : P }[keyof T]
+export type NonConstructor<T> = Pick<T, NonConstructorKeys<T>>
 
-export function isNestedStateMachine(first: FunctionConstructor["prototype"]): first is typeof NestedStateMachine {
+export function isNestedStateMachine (first: FunctionConstructor['prototype']): first is typeof NestedStateMachine {
   while (first !== Function.prototype) {
     if (first === NestedStateMachine) {
-      return true;
+      return true
     }
-    first = Object.getPrototypeOf(first);
+    first = Object.getPrototypeOf(first)
   }
-  return false;
+  return false
 }
 
 /**
@@ -47,29 +47,26 @@ export function isNestedStateMachine(first: FunctionConstructor["prototype"]): f
  * @param name
  * @returns
  */
-export function clone<T extends StateBehaviorBuilder>(this: T, name?: string): T {
-  const ToBuild = class ClonedState extends this.prototype.constructor {};
+export function clone<T extends StateBehaviorBuilder> (this: T, name?: string): T {
+  const ToBuild = class ClonedState extends this.prototype.constructor {}
   Object.getOwnPropertyNames(this.prototype).forEach((name) => {
     Object.defineProperty(
       ToBuild.prototype,
       name,
       Object.getOwnPropertyDescriptor(this.prototype, name) ?? Object.create(null)
-    );
-  });
+    )
+  })
 
-  const descriptors = Object.getOwnPropertyDescriptors(this);
+  const descriptors = Object.getOwnPropertyDescriptors(this)
   Object.getOwnPropertyNames(this).forEach((name) => {
-    if (descriptors[name].writable) {
-      Object.defineProperty(ToBuild, name, Object.getOwnPropertyDescriptor(this, name) ?? Object.create(null));
+    if (descriptors[name].writable == null) {
+      Object.defineProperty(ToBuild, name, Object.getOwnPropertyDescriptor(this, name) ?? Object.create(null))
     }
-  });
-
-  console.log("toBuild:", Object.getOwnPropertyDescriptors(ToBuild));
-  console.log("this:", Object.getOwnPropertyDescriptors(this));
-
-  console.log(this.stateName, (this as any).states?.[0] === (ToBuild as any).states?.[0])
+  })
 
   // console.log(ToBuild, this);
-  if (name != null) ToBuild.stateName = name;
-  return ToBuild as unknown as T;
+  if (name != null) ToBuild.stateName = name
+  return ToBuild as unknown as T
 }
+
+export type WebserverBehaviorPositionIterable = Iterable<{ parentMachine?: typeof NestedStateMachine, state: typeof StateBehavior, x: number, y: number }>

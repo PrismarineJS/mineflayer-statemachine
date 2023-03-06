@@ -23,7 +23,6 @@ export interface StateMachineData {
 }
 
 export class StateBehavior {
-
   /**
    * Name displayed on the webserver.
    */

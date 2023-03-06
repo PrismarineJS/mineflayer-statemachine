@@ -70,7 +70,7 @@ const transitions = [
 const root = buildNestedMachine('root', transitions, BehaviorIdle)
 
 const stateMachine = new CentralStateMachine({bot, root, autoStart: false})
-const webserver = new StateMachineWebserver(stateMachine)
+const webserver = new StateMachineWebserver({stateMachine})
 webserver.startServer()
 
 bot.once("spawn", () => {

@@ -24,6 +24,7 @@ import {
 } from "../lib/behaviors";
 
 import { buildTransition, buildTransitionArgs, buildNestedMachine } from "../lib/builders";
+import { WebserverBehaviorPositions } from "../lib/webserver";
 
 
 // to replicate the original mineflayer-statemachine exactly:
@@ -63,10 +64,8 @@ const transitions = [
 
 const root = buildNestedMachine("root", transitions, BehaviorIdle);
 
-const test = new root(bot, {});
-
 const stateMachine = new CentralStateMachine({ bot, root, autoStart: false });
-const webserver = new StateMachineWebserver(stateMachine);
+const webserver = new StateMachineWebserver({stateMachine});
 webserver.startServer();
 
 bot.once("spawn", () => {

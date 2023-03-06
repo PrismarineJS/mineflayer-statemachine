@@ -7,7 +7,7 @@
   "scripts": {
     "build": "ts-standard && tsc",
     "clean": "rm -rf lib",
-    "test": "node --trace-warnings examples/webserver.js",
+    "test": "node --trace-warnings examples/webserver_static_layout.js",
     "fix-lint": "ts-standard --fix"
   },
   "repository": {

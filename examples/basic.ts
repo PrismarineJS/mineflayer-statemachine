@@ -63,7 +63,7 @@ const RootMachine = newNestedStateMachineArgs({
 });
 
 const stateMachine = new CentralStateMachine({ bot, root: RootMachine, autoStart: false });
-const webserver = new StateMachineWebserver(stateMachine);
+const webserver = new StateMachineWebserver({stateMachine});
 webserver.startServer();
 
 // added functionality to delay starting machine until bot spawns.

@@ -9,9 +9,8 @@ export class BehaviorLookAtEntity extends StateBehavior {
   update (): void {
     if (this.data.entity == null) throw Error('No target to look at')
 
-    void this.bot.lookAt(this.data.entity.position.offset(0, this.data.entity.height, 0));
+    void this.bot.lookAt(this.data.entity.position.offset(0, this.data.entity.height, 0))
   }
-
 
   /**
    * Gets the distance to the target entity.

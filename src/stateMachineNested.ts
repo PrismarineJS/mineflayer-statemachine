@@ -58,7 +58,6 @@ export class NestedStateMachine
     this.onStartupListeners.push([key, listener])
   }
 
- 
   /**
    * Getter (does not actually get specific type, so class may not match)
    */
