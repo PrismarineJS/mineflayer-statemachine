@@ -5,12 +5,12 @@ import { StateBehavior, StateTransition, StateMachineData } from './stateBehavio
 import { NestedStateMachine } from './stateMachineNested'
 import { isNestedStateMachine, SpecifcNestedStateMachine, StateBehaviorBuilder } from './util'
 
-export interface CentralStateMachineEvents {
+export interface BotStateMachineEvents {
   stateEntered: (type: typeof NestedStateMachine, cls: NestedStateMachine, newState: typeof StateBehavior) => void
   stateExited: (type: typeof NestedStateMachine, cls: NestedStateMachine, oldState: typeof StateBehavior) => void
 }
 
-export interface CentralStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
+export interface BotStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
   bot: Bot
   root: SpecifcNestedStateMachine<Enter, Exit>
   data?: StateMachineData
@@ -18,10 +18,10 @@ export interface CentralStateMachineOptions<Enter extends StateBehaviorBuilder, 
   autoUpdate?: boolean
 }
 
-export class CentralStateMachine<
+export class BotStateMachine<
   Enter extends StateBehaviorBuilder,
   Exit extends StateBehaviorBuilder
-> extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, CentralStateMachineEvents>) {
+> extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, BotStateMachineEvents>) {
   readonly bot: Bot
   readonly rootType: SpecifcNestedStateMachine<Enter, Exit>
   readonly root: InstanceType<SpecifcNestedStateMachine<Enter, Exit>>
@@ -38,7 +38,7 @@ export class CentralStateMachine<
     data = {},
     autoStart = true,
     autoUpdate = true
-  }: CentralStateMachineOptions<Enter, Exit>) {
+  }: BotStateMachineOptions<Enter, Exit>) {
     // eslint-disable-next-line constructor-super
     super()
     this.bot = bot

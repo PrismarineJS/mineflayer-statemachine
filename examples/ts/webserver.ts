@@ -14,17 +14,17 @@ const bot = mineflayer.createBot({
 
 bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
 
-import { CentralStateMachine, StateMachineWebserver } from "../lib";
+import { BotStateMachine, StateMachineWebserver } from "../../lib";
 
 import {
   BehaviorIdle,
   BehaviorFindEntity,
   BehaviorFollowEntity,
   BehaviorLookAtEntity,
-} from "../lib/behaviors";
+} from "../../lib/behaviors";
 
-import { buildTransition, buildTransitionArgs, buildNestedMachine } from "../lib/builders";
-import { WebserverBehaviorPositions } from "../lib/webserver";
+import { buildTransition, buildTransitionArgs, buildNestedMachine } from "../../lib/builders";
+import { WebserverBehaviorPositions } from "../../lib/webserver";
 
 
 // to replicate the original mineflayer-statemachine exactly:
@@ -64,7 +64,7 @@ const transitions = [
 
 const root = buildNestedMachine("root", transitions, BehaviorIdle);
 
-const stateMachine = new CentralStateMachine({ bot, root, autoStart: false });
+const stateMachine = new BotStateMachine({ bot, root, autoStart: false });
 const webserver = new StateMachineWebserver({stateMachine});
 webserver.startServer();
 

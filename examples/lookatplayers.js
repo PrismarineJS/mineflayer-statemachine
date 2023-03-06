@@ -20,7 +20,7 @@ const bot = mineflayer.createBot({
  */
 
 // Imports
-const { CentralStateMachine } = require("mineflayer-statemachine");
+const { BotStateMachine } = require("mineflayer-statemachine");
 const { BehaviorIdle, BehaviorFindEntity, BehaviorLookAtEntity } = require("../lib/behaviors");
 const { buildTransition, buildTransitionArgs } = require("mineflayer-statemachine/lib/builders");
 const { buildNestedMachine } = require("../lib/stateMachineNested");
@@ -62,7 +62,7 @@ bot.on("chat", (username, message) => {
 const root = buildNestedMachine("Root", transitions, BehaviorIdle);
 
 // Let's add these settings to the state machine and start it!
-const stateMachine = new CentralStateMachine({ bot, root, data, autoStart: false });
+const stateMachine = new BotStateMachine({ bot, root, data, autoStart: false });
 const webserver = new StateMachineWebserver(stateMachine)
 webserver.startServer()
 bot.once('spawn', () => {

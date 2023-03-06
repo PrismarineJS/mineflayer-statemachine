@@ -15,7 +15,7 @@ const bot = mineflayer.createBot({
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder)
 
 const {
-  CentralStateMachine,
+  BotStateMachine,
   StateMachineWebserver,
 } = require('../lib')
 
@@ -69,7 +69,7 @@ const transitions = [
 
 const root = buildNestedMachine('root', transitions, BehaviorIdle)
 
-const stateMachine = new CentralStateMachine({bot, root, autoStart: false})
+const stateMachine = new BotStateMachine({bot, root, autoStart: false})
 const webserver = new StateMachineWebserver({stateMachine})
 webserver.startServer()
 

@@ -1,13 +1,13 @@
 import mineflayer from "mineflayer";
-import { CentralStateMachine, StateMachineWebserver } from "../src";
+import { BotStateMachine, StateMachineWebserver } from "../../src";
 import {
   BehaviorExit,
   BehaviorFollowEntity,
   BehaviorIdle,
   BehaviorLookAtEntity,
   BehaviorFindEntity,
-} from "../src/behaviors";
-import { buildTransition, buildTransitionArgs, newNestedStateMachineArgs } from "../src/builders";
+} from "../../src/behaviors";
+import { buildTransition, buildTransitionArgs, newNestedStateMachineArgs } from "../../src/builders";
 
 /**
  * Set up your bot as you normally would
@@ -55,14 +55,14 @@ const secondTransitions = [
   buildTransition("testToIdle", FollowMachine, BehaviorIdle).setShouldTransition(isFinished),
 ];
 
-const RootMachine = newNestedStateMachineArgs({
+const root = newNestedStateMachineArgs({
   stateName: "root",
   transitions: secondTransitions,
   enter: BehaviorFindEntity,
   enterArgs: [playerFilter],
 });
 
-const stateMachine = new CentralStateMachine({ bot, root: RootMachine, autoStart: false });
+const stateMachine = new BotStateMachine({ bot, root, autoStart: false });
 const webserver = new StateMachineWebserver({stateMachine});
 webserver.startServer();
 

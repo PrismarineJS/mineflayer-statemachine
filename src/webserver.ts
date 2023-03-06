@@ -1,4 +1,4 @@
-import { CentralStateMachine, NestedStateMachine, StateBehavior } from './index'
+import { BotStateMachine, NestedStateMachine, StateBehavior } from './index'
 import socketLoader, { Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
@@ -73,7 +73,7 @@ export class WebserverBehaviorPositions {
 export class StateMachineWebserver {
   private serverRunning: boolean = false
 
-  readonly stateMachine: CentralStateMachine<any, any>
+  readonly stateMachine: BotStateMachine<any, any>
   readonly presetPositions?: WebserverBehaviorPositions
   readonly port: number
 
@@ -90,7 +90,7 @@ export class StateMachineWebserver {
     presetPositions,
     port = 8934
   }: {
-    stateMachine: CentralStateMachine<any, any>
+    stateMachine: BotStateMachine<any, any>
     presetPositions?: WebserverBehaviorPositions
     port?: number
   }) {
