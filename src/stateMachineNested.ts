@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { Bot } from 'mineflayer'
 import { StrictEventEmitter } from 'strict-event-emitter-types'
 import { StateBehavior, StateTransition, StateMachineData } from './stateBehavior'
-import { HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { clone, HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
   stateName: string
@@ -28,6 +28,8 @@ export class NestedStateMachine
   public static readonly enterArgs: any[] | undefined = undefined // StateConstructorArgs<typeof this.enter>; // sadly, this is always undefined (no static generics).
   public static readonly exit?: typeof StateBehavior
   public static readonly enterIntermediateStates: boolean
+
+  public static readonly clone = clone
 
   // not correct but whatever.
   public static readonly onStartupListeners: Array<
@@ -56,18 +58,12 @@ export class NestedStateMachine
     this.onStartupListeners.push([key, listener])
   }
 
-  // copied from stateBehavior.
-  public static clone<T extends StateBehaviorBuilder>(this: T, name?: string): T {
-    const ToBuild = class ClonedNestedMachine extends this.prototype.constructor {}
-    Object.getOwnPropertyNames(this.prototype).forEach((name) => {
-      Object.defineProperty(
-        ToBuild.prototype,
-        name,
-        Object.getOwnPropertyDescriptor(this.prototype, name) ?? Object.create(null)
-      )
-    })
-    if (name != null) ToBuild.stateName = name
-    return ToBuild as unknown as T
+ 
+  /**
+   * Getter (does not actually get specific type, so class may not match)
+   */
+  public get staticRef (): typeof NestedStateMachine {
+    return this.constructor as typeof NestedStateMachine
   }
 
   /**
@@ -82,13 +78,6 @@ export class NestedStateMachine
    */
   public get activeState (): StateBehavior | undefined {
     return this._activeState
-  }
-
-  /**
-   * Getter
-   */
-  public get staticRef (): typeof NestedStateMachine {
-    return this.constructor as typeof NestedStateMachine
   }
 
   /**

@@ -6,17 +6,12 @@ import { StateBehavior } from '..'
 export class BehaviorLookAtEntity extends StateBehavior {
   static stateName = 'lookAtEntity'
 
-  onStateEntered (): void {
-    console.trace('here')
+  update (): void {
+    if (this.data.entity == null) throw Error('No target to look at')
+
+    void this.bot.lookAt(this.data.entity.position.offset(0, this.data.entity.height, 0));
   }
 
-  update (): void {
-    this.data.entity = this.bot.nearestEntity((e) => e.type === 'player') ?? undefined
-    const entity = this.data.entity
-    if (entity != null) {
-      void this.bot.lookAt(entity.position.offset(0, entity.height, 0))
-    }
-  }
 
   /**
    * Gets the distance to the target entity.
@@ -24,7 +19,7 @@ export class BehaviorLookAtEntity extends StateBehavior {
    * @returns The distance, or 0 if no target entity is assigned.
    */
   distanceToTarget (): number {
-    if (this.data.entity == null) return 0
+    if (this.data.entity == null) return -1
 
     return this.bot.entity.position.distanceTo(this.data.entity.position)
   }

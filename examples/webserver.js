@@ -73,7 +73,6 @@ const stateMachine = new CentralStateMachine({bot, root, autoStart: false})
 const webserver = new StateMachineWebserver(stateMachine)
 webserver.startServer()
 
-
 bot.once("spawn", () => {
     stateMachine.start()
 

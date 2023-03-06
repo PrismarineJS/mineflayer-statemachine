@@ -6,8 +6,8 @@ import { NestedStateMachine } from './stateMachineNested'
 import { isNestedStateMachine, SpecifcNestedStateMachine, StateBehaviorBuilder } from './util'
 
 export interface CentralStateMachineEvents {
-  stateEntered: (cls: NestedStateMachine, newState: typeof StateBehavior) => void
-  stateExited: (cls: NestedStateMachine, oldState: typeof StateBehavior) => void
+  stateEntered: (type: typeof NestedStateMachine, cls: NestedStateMachine, newState: typeof StateBehavior) => void
+  stateExited: (type: typeof NestedStateMachine, cls: NestedStateMachine, oldState: typeof StateBehavior) => void
 }
 
 export interface CentralStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
@@ -23,6 +23,7 @@ export class CentralStateMachine<
   Exit extends StateBehaviorBuilder
 > extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, CentralStateMachineEvents>) {
   readonly bot: Bot
+  readonly rootType: SpecifcNestedStateMachine<Enter, Exit>
   readonly root: InstanceType<SpecifcNestedStateMachine<Enter, Exit>>
   readonly transitions: StateTransition[]
   readonly states: Array<typeof StateBehavior>
@@ -48,6 +49,7 @@ export class CentralStateMachine<
     this.findStatesRecursive(Root)
     this.findTransitionsRecursive(Root)
     this.findNestedStateMachinesNew(Root)
+    this.rootType = Root;
     this.root = new Root(bot, data)
     this.autoUpdate = autoUpdate
 
@@ -98,8 +100,8 @@ export class CentralStateMachine<
     this.nestedMachinesNew[depth] ||= []
     this.nestedMachinesNew[depth].push(nested)
 
-    nested.addEventualListener('stateEntered', (nested, state) => this.emit('stateEntered', nested, state))
-    nested.addEventualListener('stateExited', (nested, state) => this.emit('stateExited', nested, state))
+    nested.addEventualListener('stateEntered', (machine, state) => this.emit('stateEntered', nested, machine, state))
+    nested.addEventualListener('stateExited', (machine, state) => this.emit('stateExited', nested, machine, state))
 
     for (const state of nested.states) {
       if (isNestedStateMachine(state)) {

@@ -33,7 +33,6 @@ export class BehaviorFollowEntity extends StateBehavior {
 
   onStateExited (): void {
     this.stopMoving()
-    this.data.entity = undefined
   }
 
   isFinished (): boolean {

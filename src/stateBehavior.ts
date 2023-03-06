@@ -2,7 +2,7 @@ import type { Bot, Player } from 'mineflayer'
 import type { Entity } from 'prismarine-entity'
 import type { Item } from 'prismarine-item'
 import type { Vec3 } from 'vec3'
-import { HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { clone, HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 /**
  * A collection of targets which the bot is currently
@@ -23,8 +23,16 @@ export interface StateMachineData {
 }
 
 export class StateBehavior {
+
+  /**
+   * Name displayed on the webserver.
+   */
   static readonly stateName: string = this.name
 
+  /**
+   * Method to clone the behavior, see util.ts
+   */
+  static clone = clone
   /**
    * Bot the state is related to.
    */
@@ -68,19 +76,6 @@ export class StateBehavior {
   constructor (bot: Bot, data: StateMachineData) {
     this.bot = bot
     this.data = data
-  }
-
-  public static clone<T extends StateBehaviorBuilder>(this: T, name?: string): T {
-    const ToBuild = class ClonedState extends this.prototype.constructor {}
-    Object.getOwnPropertyNames(this.prototype).forEach((name) => {
-      Object.defineProperty(
-        ToBuild.prototype,
-        name,
-        Object.getOwnPropertyDescriptor(this.prototype, name) ?? Object.create(null)
-      )
-    })
-    if (name != null) ToBuild.stateName = name
-    return ToBuild as unknown as T
   }
 }
 

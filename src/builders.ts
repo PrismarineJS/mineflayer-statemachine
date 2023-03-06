@@ -1,6 +1,6 @@
 import { StateBehavior, StateTransition } from './stateBehavior'
 import { NestedStateMachine, NestedStateMachineOptions } from './stateMachineNested'
-import { HasArgs, NoArgs, SpecifcNestedStateMachine, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { clone, HasArgs, NoArgs, SpecifcNestedStateMachine, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 /**
  * Builds a transition with no consttructor arguments.
@@ -84,6 +84,8 @@ function internalBuildNested<Enter extends StateBehaviorBuilder, Exit extends St
     public static readonly exit? = exit
     public static readonly enterIntermediateStates = enterIntermediateStates
     public static readonly onStartupListeners = []
+
+    public static readonly clone = clone
   }
 }
 

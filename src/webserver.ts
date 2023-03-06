@@ -17,7 +17,7 @@ export class StateMachineWebserver {
   readonly stateMachine: CentralStateMachine<any, any>
   readonly port: number
 
-  private lastMachine: NestedStateMachine | undefined
+  private lastMachine: typeof NestedStateMachine | undefined
   private lastState: typeof StateBehavior | undefined
 
   /**
@@ -80,8 +80,8 @@ export class StateMachineWebserver {
 
     if ((this.lastMachine != null) && (this.lastState != null)) this.updateClient(socket, this.lastMachine, this.lastState)
 
-    const updateClient = (nestedMachine: NestedStateMachine, state: typeof StateBehavior): void =>
-      this.updateClient(socket, nestedMachine, state)
+    const updateClient = (type: typeof NestedStateMachine, nestedMachine: NestedStateMachine, state: typeof StateBehavior): void =>
+      this.updateClient(socket, type, state)
     this.stateMachine.on('stateEntered', updateClient)
     this.stateMachine.on('stateExited', updateClient)
 
@@ -107,12 +107,11 @@ export class StateMachineWebserver {
     socket.emit('connected', packet)
   }
 
-  private updateClient (socket: Socket, nested: NestedStateMachine, state: typeof StateBehavior): void {
+  private updateClient (socket: Socket, nested: typeof NestedStateMachine, state: typeof StateBehavior): void {
     const activeStates: number[] = []
 
-    const index = this.getStateId(state, nested.staticRef)
+    const index = this.getStateId(state, nested)
 
-    console.log(nested.staticRef.stateName, state.stateName, this.stateMachine.states[index], index)
     if (index > -1) {
       activeStates.push(index)
     }
@@ -142,7 +141,7 @@ export class StateMachineWebserver {
   private getStateId (
     state: typeof StateBehavior,
     targetMachine: typeof NestedStateMachine,
-    searching: typeof NestedStateMachine = this.stateMachine.root.staticRef,
+    searching: typeof NestedStateMachine = this.stateMachine.rootType,
     data = { offset: 0 }
   ): number {
     for (let i = 0; i < searching.states.length; i++) {
@@ -165,7 +164,7 @@ export class StateMachineWebserver {
   // note: this matches the pattern found locally.
   // note: slight speedup possible by passing array by pointers as well.
   private getStates (
-    nested: typeof NestedStateMachine = this.stateMachine.root.staticRef,
+    nested: typeof NestedStateMachine = this.stateMachine.rootType,
     data = { index: 0, offset: 0 },
     offset = 0
   ): StateMachineStatePacket[] {
