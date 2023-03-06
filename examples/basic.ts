@@ -30,7 +30,6 @@ bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
 const playerFilter = (e) => e.type === "player";
 const isFinished = (state) => state.isFinished();
 
-const test = BehaviorFindEntity.clone();
 
 const findAndFollowTransitions = [
   buildTransition("findToFollow", BehaviorFindEntity, BehaviorFollowEntity).setShouldTransition((state) =>
@@ -50,7 +49,6 @@ const FollowMachine = newNestedStateMachineArgs({
 
 const secondTransitions = [
   buildTransitionArgs("idleToFind", BehaviorIdle, BehaviorFindEntity, [playerFilter]).setShouldTransition(() => true),
-
   buildTransition("findToLook", BehaviorFindEntity, BehaviorLookAtEntity),
   buildTransition("lookToIdle", BehaviorLookAtEntity, BehaviorIdle),
   buildTransition("findToTest", BehaviorFindEntity, FollowMachine),

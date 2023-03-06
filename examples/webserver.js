@@ -15,10 +15,8 @@ const bot = mineflayer.createBot({
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder)
 
 const {
-  StateTransition,
   CentralStateMachine,
   StateMachineWebserver,
-  NestedStateMachine
 } = require('../lib')
 
 const {
@@ -40,35 +38,35 @@ const BehaviorLookAtPlayers = BehaviorLookAtEntity.clone("LookAtPlayers")
 const BehaviorLookAtFollowing = BehaviorLookAtEntity.clone("LookAtFollowing")
 
 const transitions = [
-  buildTransitionArgs('player says "hi"', BehaviorIdle, BehaviorFindEntity, [nearestPlayer]) // 1
-    .setOnTransition(() => bot.chat('hello')),
+  buildTransitionArgs('player says "hi"', BehaviorIdle, BehaviorFindEntity, [(e) => e.type === "player"]) // 1
+    .setOnTransition(() => bot.chat("hello")),
 
-  buildTransition('closestToLook', BehaviorFindEntity, BehaviorLookAtPlayers) // 2
+  buildTransition("closestToLook", BehaviorFindEntity, BehaviorLookAtPlayers) // 2
     .setShouldTransition(() => true),
 
   buildTransition('player says "bye"', BehaviorLookAtPlayers, BehaviorIdle) // 3
-    .setOnTransition(() => bot.chat('goodbye')),
+    .setOnTransition(() => bot.chat("goodbye")),
 
   buildTransition('player says "come"', BehaviorLookAtPlayers, BehaviorFollowEntity) // 4
-    .setOnTransition(() => bot.chat('coming')),
+    .setOnTransition(() => bot.chat("coming")),
 
   buildTransition('player says "stay"', BehaviorFollowEntity, BehaviorLookAtPlayers) // 5
-    .setOnTransition(() => bot.chat('stay')),
+    .setOnTransition(() => bot.chat("stay")),
 
   buildTransition('player says "bye"', BehaviorFollowEntity, BehaviorIdle) // 6
-    .setOnTransition(() => bot.chat('goodbye')),
+    .setOnTransition(() => bot.chat("goodbye")),
 
-  buildTransition('closeToTarget', BehaviorFollowEntity, BehaviorLookAtFollowing) // 7
-    .setShouldTransition(state => state.distanceToTarget() < 3),
+  buildTransition("closeToTarget", BehaviorFollowEntity, BehaviorLookAtFollowing) // 7
+    .setShouldTransition((state) => state.distanceToTarget() < 3),
 
-  buildTransition('farFromTarget', BehaviorLookAtFollowing, BehaviorFollowEntity) // 8
-    .setShouldTransition(state => state.distanceToTarget() >= 3),
+  buildTransition("farFromTarget", BehaviorLookAtFollowing, BehaviorFollowEntity) // 8
+    .setShouldTransition((state) => state.distanceToTarget() >= 3),
 
   buildTransition('player says "bye"', BehaviorLookAtFollowing, BehaviorIdle) // 9
-    .setOnTransition(() => bot.chat('goodbye')),
+    .setOnTransition(() => bot.chat("goodbye")),
 
-  buildTransition('player says "stay"', BehaviorLookAtFollowing, BehaviorLookAtPlayers) // 10
-]
+  buildTransition('player says "stay"', BehaviorLookAtFollowing, BehaviorLookAtPlayers), // 10
+];
 
 const root = buildNestedMachine('root', transitions, BehaviorIdle)
 
