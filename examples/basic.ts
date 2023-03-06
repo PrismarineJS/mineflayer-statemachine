@@ -6,7 +6,7 @@ import {
   BehaviorIdle,
   BehaviorLookAtEntity,
   BehaviorFindEntity,
-} from "mineflayer-statemachine/src/behaviors";
+} from "../src/behaviors";
 import { buildTransition, buildTransitionArgs, newNestedStateMachineArgs } from "../src/builders";
 
 /**
@@ -29,6 +29,8 @@ bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
 
 const playerFilter = (e) => e.type === "player";
 const isFinished = (state) => state.isFinished();
+
+const test = BehaviorFindEntity.clone();
 
 const findAndFollowTransitions = [
   buildTransition("findToFollow", BehaviorFindEntity, BehaviorFollowEntity).setShouldTransition((state) =>

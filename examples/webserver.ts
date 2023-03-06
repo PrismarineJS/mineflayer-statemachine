@@ -1,38 +1,40 @@
-const mineflayer = require('mineflayer')
+import mineflayer from'mineflayer'
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log('Usage : node webserver.js <host> <port> [<name>] [<password>]')
   process.exit(1)
-}
+};
 
 const bot = mineflayer.createBot({
   host: process.argv[2],
   port: parseInt(process.argv[3]),
   username: process.argv[4] ? process.argv[4] : 'statemachine_bot',
   password: process.argv[5]
-})
+});
 
 bot.loadPlugin(require('mineflayer-pathfinder').pathfinder)
 
-const {
+import {
   StateTransition,
   CentralStateMachine,
   StateMachineWebserver,
   NestedStateMachine
-} = require('../lib')
+} from '../lib'
 
-const {
+import {
   BehaviorIdle,
   BehaviorFindEntity,
   BehaviorFollowEntity,
   BehaviorLookAtEntity
-} = require('../lib/behaviors')
+} from '../lib/behaviors'
 
-const {
+import {
   buildTransition,
   buildTransitionArgs,
   buildNestedMachine,
-} = require('../lib/builders')
+} from'../lib/builders'
+
+
 const nearestPlayer = (e) => e.type === "player"
 
 // to replicate the original mineflayer-statemachine exactly:
@@ -82,7 +84,10 @@ bot.once("spawn", () => {
     stateMachine.start()
 
     bot.on('chat', (username, message) => {
-        if (message === 'hi') { transitions[0].trigger() }
+        if (message === 'hi') { 
+          bot.chat('trigger?')
+          transitions[0].trigger()
+         }
     
         if (message === 'bye') {
           transitions[2].trigger()

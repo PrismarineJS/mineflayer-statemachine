@@ -56,6 +56,11 @@ export class NestedStateMachine
     this.onStartupListeners.push([key, listener])
   }
 
+
+  static clone(): any {
+    throw Error('Not yet implemented')
+  }
+
   public get activeStateType (): typeof StateBehavior | undefined {
     return this._activeStateType
   }
@@ -134,6 +139,8 @@ export class NestedStateMachine
             this.enterState(lastState, this.bot, args)
           }
         }
+      } else {
+        transition.resetTrigger() // always reset to false to avoid false positives.
       }
     }
 
