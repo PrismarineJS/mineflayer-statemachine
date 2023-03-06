@@ -56,15 +56,30 @@ export class NestedStateMachine
     this.onStartupListeners.push([key, listener])
   }
 
-
-  static clone(): any {
-    throw Error('Not yet implemented')
+  // copied from stateBehavior.
+  public static clone<T extends StateBehaviorBuilder>(this: T, name?: string): T {
+    const ToBuild = class ClonedNestedMachine extends this.prototype.constructor {};
+    Object.getOwnPropertyNames(this.prototype).forEach((name) => {
+      Object.defineProperty(
+        ToBuild.prototype,
+        name,
+        Object.getOwnPropertyDescriptor(this.prototype, name) || Object.create(null)
+      );
+    });
+    if (name) ToBuild.stateName = name;
+    return ToBuild as unknown as T;
   }
 
+  /**
+   * Getter
+   */
   public get activeStateType (): typeof StateBehavior | undefined {
     return this._activeStateType
   }
 
+  /**
+   * Getter
+   */
   public get activeState (): StateBehavior | undefined {
     return this._activeState
   }
