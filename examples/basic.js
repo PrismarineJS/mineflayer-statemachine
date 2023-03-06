@@ -12,7 +12,8 @@ const { BotStateMachine } = require('mineflayer-statemachine')
 const {
     BehaviorFindEntity,
     BehaviorFollowEntity,
-    BehaviorLookAtEntity
+    BehaviorLookAtEntity,
+    BehaviorExit
 } = require('mineflayer-statemachine/lib/behaviors')
 
 // import builders for transitions and machines.
@@ -36,7 +37,7 @@ const transitions = [
     
     // We want to start following the player immediately after finding them.
     // Since BehaviorFindEntity finishes instantly, we will transition almost immediately.
-    buildTransition('findToFollow', BehaviorFindEntity, BehaviorFollowEntity)
+    buildTransition('findToExit', BehaviorFindEntity, BehaviorExit)
         .setShouldTransition(state => state.foundEntity()),
     
 
