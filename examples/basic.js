@@ -1,11 +1,5 @@
 const mineflayer = require("mineflayer");
-const {
-  CentralStateMachine,
-  StateMachineWebserver,
-  StateTransition,
-  buildTransition,
-  buildTransitionArgs,
-} = require("../lib");
+const { CentralStateMachine, StateMachineWebserver } = require("../lib");
 const {
   BehaviorExit,
   BehaviorFollowEntity,
@@ -13,9 +7,12 @@ const {
   BehaviorLookAtEntity,
   BehaviorFindEntity,
 } = require("../lib/behaviors");
-const { newNestedStateMachineArgs, buildSimpleNestedMachine } = require("../lib/stateMachineNested");
-const { isNestedStateMachine } = require("../lib/util");
-
+const {
+  buildTransition,
+  buildTransitionArgs,
+  buildNestedMachineArgs,
+  buildNestedMachine
+} = require("../lib/builders");
 /**
  * Set up your bot as you normally would
  */
@@ -34,78 +31,42 @@ const bot = mineflayer.createBot({
 
 bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
 
-
+// some utils to shorten.
 const playerFilter = (e) => e.type === "player";
 const isFinished = (state) => state.isFinished();
 
 const findAndFollowTransitions = [
-  buildTransition("findToFollow", BehaviorFindEntity, BehaviorFollowEntity)
-    .setShouldTransition((state) => state.foundEntity()),
-
-  buildTransition("followToExit", BehaviorFollowEntity, BehaviorExit)
-    .setShouldTransition(isFinished),
+  buildTransition("findToFollow", BehaviorFindEntity, BehaviorFollowEntity).setShouldTransition((state) => state.foundEntity()),
+  buildTransition("followToExit", BehaviorFollowEntity, BehaviorExit).setShouldTransition(isFinished),
 ];
 
-const FollowMachine = newNestedStateMachineArgs({
-  stateName: "findAndFollow",
-  transitions: findAndFollowTransitions,
-  enter: BehaviorFindEntity,
-  exit: BehaviorExit,
-  enterArgs: [playerFilter],
-});
+const FollowMachine = buildNestedMachineArgs("findAndFollow", findAndFollowTransitions, BehaviorFindEntity, [playerFilter], BehaviorExit)
 
-const secondTransitions = [
-  buildTransitionArgs("idleToFind", BehaviorIdle, BehaviorFindEntity, [playerFilter])
-    .setShouldTransition(() => true),
-
+const rootTransitions = [
+  buildTransitionArgs("idleToFind", BehaviorIdle, BehaviorFindEntity, [playerFilter]).setShouldTransition(() => true),
   buildTransition("findToLook", BehaviorFindEntity, BehaviorLookAtEntity),
   buildTransition("lookToIdle", BehaviorLookAtEntity, BehaviorIdle),
   buildTransition("findToTest", BehaviorFindEntity, FollowMachine),
-  buildTransition("testToIdle", FollowMachine, BehaviorIdle)
-    .setShouldTransition(isFinished),
+  buildTransition("testToIdle", FollowMachine, BehaviorIdle).setShouldTransition(isFinished),
 ];
 
-const RootMachine = newNestedStateMachineArgs({
-  stateName: "root",
-  transitions: secondTransitions,
-  enter: BehaviorFindEntity,
-  enterArgs: [playerFilter],
-});
+const RootMachine = buildNestedMachine("root", rootTransitions, BehaviorIdle);
 
 const stateMachine = new CentralStateMachine({ bot, root: RootMachine, autoStart: false });
 const webserver = new StateMachineWebserver(stateMachine);
 webserver.startServer();
 
 
-const handle = (input) => {
+bot.on("chat", (username, input) => {
   const split = input.split(" ");
   if (split[0] === "find") stateMachine.root.transitions[0].trigger();
   if (split[0] === "look") stateMachine.root.transitions[1].trigger();
   if (split[0] === "come") stateMachine.root.transitions[3].trigger();
   if (split[0] === "lookstop") stateMachine.root.transitions[2].trigger();
   if (split[0] === "movestop") stateMachine.root.transitions[4].trigger();
-};
-
-bot.on("chat", (username, message) => handle(message));
-
-// added functionality to delay starting machine until bot spawns.
-
-
-bot.on("spawn", async () => {
-  stateMachine.start();
-  while (true) {
-    const state = stateMachine.root.activeState;
-    // if (isNestedStateMachine(state.constructor)) {
-    //   // console.log("in nested:", { ...state.activeState, bot: {} }, state.activeStateType);
-    //   console.log(state.activeStateType)
-    // } else {
-    //   console.log(state.constructor)
-    //   // console.log("in root:", { ...state, bot: {} }, state.constructor);
-    // }
-
-    await new Promise((res, rej) => setTimeout(res, 1000));
-  }
 });
 
-// stateMachine.on("stateEntered", (nested,state) => console.log("ENTERED:", {...nested, data:{}, staticRef: undefined, bot: undefined, activeState: undefined}, state));
-// stateMachine.on("stateExited", (nested, state) => console.log("EXITED:", {...nested, data:{}, staticRef: undefined, bot: undefined, activeState: undefined}, state));
+// added functionality to delay starting machine until bot spawns.
+bot.on("spawn", async () => {
+  stateMachine.start();
+});

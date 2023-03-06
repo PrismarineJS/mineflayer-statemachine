@@ -1,27 +1,13 @@
 import mineflayer from "mineflayer";
-import { Movements } from "mineflayer-pathfinder";
-import { NestedStateMachineOptions } from "../src";
-import {
-  buildTransition,
-  buildTransitionArgs,
-  CentralStateMachine,
-  StateMachineWebserver,
-  StateTransition,
-} from "../src";
+import { CentralStateMachine, StateMachineWebserver } from "../src";
 import {
   BehaviorExit,
   BehaviorFollowEntity,
   BehaviorIdle,
   BehaviorLookAtEntity,
   BehaviorFindEntity,
-} from "../src/behaviors";
-import {
-  newNestedStateMachineArgs,
-  buildNestedMachine,
-  NestedStateMachine,
-  buildNestedMachineArgs,
-} from "../src/stateMachineNested";
-import { HasArgs, OmitTwo, StateBehaviorBuilder, StateConstructorArgs } from "../src/util";
+} from "mineflayer-statemachine/src/behaviors";
+import { buildTransition, buildTransitionArgs, newNestedStateMachineArgs } from "../src/builders";
 
 /**
  * Set up your bot as you normally would
@@ -41,16 +27,15 @@ const bot = mineflayer.createBot({
 
 bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
 
-
 const playerFilter = (e) => e.type === "player";
 const isFinished = (state) => state.isFinished();
 
 const findAndFollowTransitions = [
-  buildTransition("findToFollow", BehaviorFindEntity, BehaviorFollowEntity)
-    .setShouldTransition((state) => state.foundEntity()),
+  buildTransition("findToFollow", BehaviorFindEntity, BehaviorFollowEntity).setShouldTransition((state) =>
+    state.foundEntity()
+  ),
 
-  buildTransition("followToExit", BehaviorFollowEntity, BehaviorExit)
-    .setShouldTransition(isFinished),
+  buildTransition("followToExit", BehaviorFollowEntity, BehaviorExit).setShouldTransition(isFinished),
 ];
 
 const FollowMachine = newNestedStateMachineArgs({
@@ -62,14 +47,12 @@ const FollowMachine = newNestedStateMachineArgs({
 });
 
 const secondTransitions = [
-  buildTransitionArgs("idleToFind", BehaviorIdle, BehaviorFindEntity, [playerFilter])
-    .setShouldTransition(() => true),
+  buildTransitionArgs("idleToFind", BehaviorIdle, BehaviorFindEntity, [playerFilter]).setShouldTransition(() => true),
 
   buildTransition("findToLook", BehaviorFindEntity, BehaviorLookAtEntity),
   buildTransition("lookToIdle", BehaviorLookAtEntity, BehaviorIdle),
   buildTransition("findToTest", BehaviorFindEntity, FollowMachine),
-  buildTransition("testToIdle", FollowMachine, BehaviorIdle)
-    .setShouldTransition(isFinished),
+  buildTransition("testToIdle", FollowMachine, BehaviorIdle).setShouldTransition(isFinished),
 ];
 
 const RootMachine = newNestedStateMachineArgs({
