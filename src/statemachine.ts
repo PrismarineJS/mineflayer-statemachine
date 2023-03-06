@@ -1,8 +1,9 @@
-import { Bot, Player } from 'mineflayer'
 import { EventEmitter } from 'events'
 import { globalSettings } from '.'
-import { Entity } from 'prismarine-entity'
-import { Vec3 } from 'vec3'
+import type { Bot, Player } from 'mineflayer'
+import type { Entity } from 'prismarine-entity'
+import type { Item } from 'prismarine-item'
+import type { Vec3 } from 'vec3'
 
 /**
  * A simple behavior state plugin for handling AI state machine
@@ -123,6 +124,38 @@ export class StateTransition {
   resetTrigger (): void {
     this.triggerState = false
   }
+
+  /**
+     * Sets the `shouldTransition` function on the transition.
+     *  
+     * To be used with transition builder.
+     * @param should Transition function.
+     * @returns {this} this
+     */
+  setShouldTransition (should: () => boolean): this {
+    this.shouldTransition = should
+    return this
+  }
+
+  /**
+     * Sets the `onTransition` function on the transition.
+     *  
+     * To be used with transition builder.
+     * @param on Transition function.
+     * @returns {this} this
+     */
+  setOnTransition (on: () => void): this {
+    this.onTransition = on
+    return this
+  }
+}
+
+export function buildTransition (name: string, parent: StateBehavior, child: StateBehavior): StateTransition {
+  return new StateTransition({
+    name,
+    parent,
+    child
+  })
 }
 
 /**
@@ -175,7 +208,7 @@ export class BotStateMachine extends EventEmitter {
     this.findTransitionsRecursive(this.rootStateMachine)
     this.findNestedStateMachines(this.rootStateMachine)
 
-    this.bot.on('physicTick', () => this.update())
+    this.bot.on('physicsTick', () => this.update())
 
     this.rootStateMachine.active = true
     this.rootStateMachine.onStateEntered()
@@ -224,13 +257,13 @@ export class BotStateMachine extends EventEmitter {
 export interface StateMachineTargets {
   entity?: Entity
   position?: Vec3
-  item?: any
+  item?: Item
   player?: Player
   blockFace?: Vec3
 
   entities?: Entity[]
   positions?: Vec3[]
-  items?: any[]
+  items?: Item[]
   players?: Player[]
 }
 
