@@ -6,8 +6,8 @@ import { StateBehavior } from '..'
 export class BehaviorLookAtEntity extends StateBehavior {
   static stateName = 'lookAtEntity'
 
-  onStateEntered(): void {
-    console.trace("here")
+  onStateEntered (): void {
+    console.trace('here')
   }
 
   update (): void {

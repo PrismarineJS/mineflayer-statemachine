@@ -117,10 +117,10 @@ export class NestedStateMachine
     this.enterState(this._activeStateType, this.bot, this.staticRef.enterArgs)
   }
 
-  public onStateExited(): void {
-      this.exitActiveState();
-      this._activeStateType = undefined;
-      this._activeState = undefined;
+  public onStateExited (): void {
+    this.exitActiveState()
+    this._activeStateType = undefined
+    this._activeState = undefined
   }
 
   protected enterState (EnterState: StateBehaviorBuilder, bot: Bot, additional: any[] = []): void {
@@ -133,9 +133,10 @@ export class NestedStateMachine
 
   protected exitActiveState (): void {
     if (this._activeStateType == null) return
-    this._activeState!.active = false
-    this.emit('stateExited', this, this._activeStateType!, this.data)
-    this._activeState!.onStateExited?.()
+    if (this._activeState == null) return
+    this._activeState.active = false
+    this.emit('stateExited', this, this._activeStateType, this.data)
+    this._activeState.onStateExited?.()
   }
 
   public update (): void {
