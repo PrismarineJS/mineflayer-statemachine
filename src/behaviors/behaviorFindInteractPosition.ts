@@ -2,7 +2,6 @@ import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot } from 'mineflayer'
 import { Block } from 'prismarine-block'
 import { Vec3 } from 'vec3'
-import mcDataLoader from 'minecraft-data'
 
 /* TODO Allow for creating positions in the air, or mining out new positions,
    if the bot if able to place blocks or mine in the area, respectively. */
@@ -201,7 +200,7 @@ class StandingPositionCosts {
     this.bot = bot
     this.targets = targets
 
-    const mcData = mcDataLoader(this.bot.version)
+    const mcData = this.bot.registry
 
     this.avoid = [
       mcData.blocksByName.lava.id,
