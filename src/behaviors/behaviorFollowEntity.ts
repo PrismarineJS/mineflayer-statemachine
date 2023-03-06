@@ -26,7 +26,7 @@ export class BehaviorFollowEntity extends StateBehavior {
     this.startMoving(this.data.entity)
   }
 
-  update(): void {
+  update (): void {
     if (this.data.entity == null) throw Error('No pathfinder target loaded.')
     this.startMoving(this.data.entity)
   }

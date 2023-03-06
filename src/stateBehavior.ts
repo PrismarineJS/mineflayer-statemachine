@@ -1,8 +1,8 @@
-import type { Bot, Player } from "mineflayer";
-import type { Entity } from "prismarine-entity";
-import type { Item } from "prismarine-item";
-import type { Vec3 } from "vec3";
-import { HasArgs, NoArgs, StateBehaviorBuilder, StateConstructorArgs } from "./util";
+import type { Bot, Player } from 'mineflayer'
+import type { Entity } from 'prismarine-entity'
+import type { Item } from 'prismarine-item'
+import type { Vec3 } from 'vec3'
+import { HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 /**
  * A collection of targets which the bot is currently
@@ -10,77 +10,77 @@ import { HasArgs, NoArgs, StateBehaviorBuilder, StateConstructorArgs } from "./u
  * states to communicate with each other more effectively.
  */
 export interface StateMachineData {
-  entity?: Entity;
-  position?: Vec3;
-  item?: Item;
-  player?: Player;
-  blockFace?: Vec3;
+  entity?: Entity
+  position?: Vec3
+  item?: Item
+  player?: Player
+  blockFace?: Vec3
 
-  entities?: Entity[];
-  positions?: Vec3[];
-  items?: Item[];
-  players?: Player[];
+  entities?: Entity[]
+  positions?: Vec3[]
+  items?: Item[]
+  players?: Player[]
 }
 
 export class StateBehavior {
-  static readonly stateName: string = this.name;
+  static readonly stateName: string = this.name
 
   /**
    * Bot the state is related to.
    */
-  readonly bot: Bot;
+  readonly bot: Bot
 
   /**
    * Data instance.
    */
-  readonly data: StateMachineData;
+  readonly data: StateMachineData
 
   /**
    * Gets whether or not this state is currently active.
    */
-  active: boolean = false;
+  active: boolean = false
 
   /**
    * Called when the bot enters this behavior state.
    */
-  onStateEntered(): void {}
+  onStateEntered (): void {}
 
   /**
    * Called each tick to update this behavior.
    */
-  update?(): void {}
+  update? (): void {}
 
   /**
    * Called when the bot leaves this behavior state.
    */
-  onStateExited?(): void {}
+  onStateExited? (): void {}
 
   /**
    * Called if the behavior is anonymous per tick, checks if task is complete.
    */
-  isFinished(): boolean {
-    return false;
+  isFinished (): boolean {
+    return false
   }
 
   /**
    * Args is a compatibility hack here. Don't like it, but whatever.
    */
-  constructor(bot: Bot, data: StateMachineData) {
-    this.bot = bot;
-    this.data = data;
+  constructor (bot: Bot, data: StateMachineData) {
+    this.bot = bot
+    this.data = data
   }
 
   public static clone<T extends StateBehaviorBuilder>(this: T, name?: string): T {
-    const ToBuild = class ClonedState extends this.prototype.constructor {};
+    const ToBuild = class ClonedState extends this.prototype.constructor {}
     Object.getOwnPropertyNames(this.prototype).forEach((name) => {
       Object.defineProperty(
         ToBuild.prototype,
         name,
-        Object.getOwnPropertyDescriptor(this.prototype, name) || Object.create(null)
-      );
-    });
-    if (name) ToBuild.stateName = name;
-    return ToBuild as unknown as T;
+        (Object.getOwnPropertyDescriptor(this.prototype, name) != null) || Object.create(null)
+      )
+    })
+    if (name != null) ToBuild.stateName = name
+    return ToBuild as unknown as T
   }
 }
 
@@ -91,12 +91,12 @@ export interface StateTransitionInfo<
   Parent extends StateBehaviorBuilder = StateBehaviorBuilder,
   Child extends StateBehaviorBuilder = StateBehaviorBuilder
 > {
-  parent: Parent;
-  child: Child;
-  constructorArgs: HasArgs<Child> extends Child ? StateConstructorArgs<Child> : never;
-  name?: string;
-  shouldTransition?: (state: Parent["prototype"]) => boolean;
-  onTransition?: (data: StateMachineData) => void;
+  parent: Parent
+  child: Child
+  constructorArgs: HasArgs<Child> extends Child ? StateConstructorArgs<Child> : never
+  name?: string
+  shouldTransition?: (state: Parent['prototype']) => boolean
+  onTransition?: (data: StateMachineData) => void
 }
 
 /**
@@ -107,75 +107,49 @@ export class StateTransition<
   Parent extends StateBehaviorBuilder = StateBehaviorBuilder,
   Child extends StateBehaviorBuilder = StateBehaviorBuilder
 > {
-  readonly parentState: Parent;
-  readonly childState: Child;
-  public readonly constructorArgs: StateTransitionInfo<Parent, Child>["constructorArgs"];
-  private triggerState: boolean = false;
-  shouldTransition: (state: Parent["prototype"]) => boolean;
-  onTransition: (data: StateMachineData) => void;
-  name?: string;
+  readonly parentState: Parent
+  readonly childState: Child
+  public readonly constructorArgs: StateTransitionInfo<Parent, Child>['constructorArgs']
+  private triggerState: boolean = false
+  shouldTransition: (state: Parent['prototype']) => boolean
+  onTransition: (data: StateMachineData) => void
+  name?: string
 
-  constructor({
+  constructor ({
     parent,
     child,
     name,
     constructorArgs,
     shouldTransition = (data) => false,
-    onTransition = (data) => {},
+    onTransition = (data) => {}
   }: StateTransitionInfo<Parent, Child>) {
-    this.parentState = parent;
-    this.childState = child;
-    this.shouldTransition = shouldTransition;
-    this.onTransition = onTransition;
-    this.constructorArgs = constructorArgs;
-    this.name = name;
+    this.parentState = parent
+    this.childState = child
+    this.shouldTransition = shouldTransition
+    this.onTransition = onTransition
+    this.constructorArgs = constructorArgs
+    this.name = name
   }
 
-  trigger(): void {
-    this.triggerState = true;
+  trigger (): void {
+    this.triggerState = true
   }
 
-  isTriggered(): boolean {
-    return this.triggerState;
+  isTriggered (): boolean {
+    return this.triggerState
   }
 
-  resetTrigger(): void {
-    this.triggerState = false;
+  resetTrigger (): void {
+    this.triggerState = false
   }
 
-  setShouldTransition(should: (state: Parent["prototype"]) => boolean): this {
-    this.shouldTransition = should;
-    return this;
+  setShouldTransition (should: (state: Parent['prototype']) => boolean): this {
+    this.shouldTransition = should
+    return this
   }
 
-  setOnTransition(onTrans: (data: StateMachineData) => void): this {
-    this.onTransition = onTrans;
-    return this;
+  setOnTransition (onTrans: (data: StateMachineData) => void): this {
+    this.onTransition = onTrans
+    return this
   }
-}
-
-export function buildTransition<Parent extends StateBehaviorBuilder, Child extends StateBehaviorBuilder>(
-  name: string,
-  parent: Parent,
-  child: NoArgs<Child>
-): StateTransition<Parent, Child> {
-  return new StateTransition<Parent, Child>({
-    parent,
-    child,
-    name,
-  } as any);
-}
-
-export function buildTransitionArgs<Parent extends StateBehaviorBuilder, Child extends StateBehaviorBuilder>(
-  name: string,
-  parent: Parent,
-  child: HasArgs<Child>,
-  args: StateConstructorArgs<Child>
-): StateTransition<Parent, Child> {
-  return new StateTransition<Parent, Child>({
-    parent,
-    child,
-    name,
-    constructorArgs: args,
-  } as any);
 }

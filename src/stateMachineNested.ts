@@ -2,7 +2,7 @@ import EventEmitter from 'events'
 import { Bot } from 'mineflayer'
 import { StrictEventEmitter } from 'strict-event-emitter-types'
 import { StateBehavior, StateTransition, StateMachineData } from './stateBehavior'
-import { HasArgs, NoArgs, SpecifcNestedStateMachine, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
   stateName: string
@@ -13,13 +13,13 @@ export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, E
   enterIntermediateStates?: boolean
 }
 
-export interface StateBehaviorEvent {
+export interface NestedMachineEvents {
   stateEntered: (cls: NestedStateMachine, newBehavior: typeof StateBehavior, data: StateMachineData) => void
   stateExited: (cls: NestedStateMachine, oldBehavior: typeof StateBehavior, data: StateMachineData) => void
 }
 
 export class NestedStateMachine
-  extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, StateBehaviorEvent>)
+  extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, NestedMachineEvents>)
   implements StateBehavior {
   public static readonly stateName: string = this.name
   public static readonly transitions: StateTransition[]
@@ -31,7 +31,7 @@ export class NestedStateMachine
 
   // not correct but whatever.
   public static readonly onStartupListeners: Array<
-  [key: keyof StateBehaviorEvent, listener: StateBehaviorEvent[keyof StateBehaviorEvent]]
+  [key: keyof NestedMachineEvents, listener: NestedMachineEvents[keyof NestedMachineEvents]]
   >
 
   protected _activeStateType?: typeof StateBehavior
@@ -51,23 +51,23 @@ export class NestedStateMachine
     }
   }
 
-  static addEventualListener<Key extends keyof StateBehaviorEvent>(key: Key, listener: StateBehaviorEvent[Key]): void {
+  static addEventualListener<Key extends keyof NestedMachineEvents>(key: Key, listener: NestedMachineEvents[Key]): void {
     if (this.onStartupListeners.find((l) => l[0] === key) != null) return
     this.onStartupListeners.push([key, listener])
   }
 
   // copied from stateBehavior.
   public static clone<T extends StateBehaviorBuilder>(this: T, name?: string): T {
-    const ToBuild = class ClonedNestedMachine extends this.prototype.constructor {};
+    const ToBuild = class ClonedNestedMachine extends this.prototype.constructor {}
     Object.getOwnPropertyNames(this.prototype).forEach((name) => {
       Object.defineProperty(
         ToBuild.prototype,
         name,
-        Object.getOwnPropertyDescriptor(this.prototype, name) || Object.create(null)
-      );
-    });
-    if (name) ToBuild.stateName = name;
-    return ToBuild as unknown as T;
+        (Object.getOwnPropertyDescriptor(this.prototype, name) != null) || Object.create(null)
+      )
+    })
+    if (name != null) ToBuild.stateName = name
+    return ToBuild as unknown as T
   }
 
   /**
@@ -172,81 +172,4 @@ export class NestedStateMachine
     if (this.staticRef.exit == null) return false
     return this._activeStateType === this.staticRef.exit
   }
-}
-
-/**
- * Creates a new Nested State Machine class.
- *
- * This does NOT create an instance. This is used statically.
- *
- * @param stateName Name of state.
- * @returns {typeof NestedStateMachine} A static reference to a new NestedMachine.
- */
-function internalBuildNested<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
-  stateName: string,
-  transitions: Array<StateTransition<any, any>>,
-  enter: Enter,
-  enterArgs?: StateConstructorArgs<Enter>,
-  exit?: Exit,
-  enterIntermediateStates = true
-): SpecifcNestedStateMachine<Enter, Exit> {
-  const states: Array<typeof StateBehavior> = []
-
-  states.push(enter)
-
-  if (!(exit == null) && !states.includes(exit)) states.push(exit)
-
-  for (let i = 0; i < transitions.length; i++) {
-    const trans = transitions[i]
-    if (!states.includes(trans.parentState)) states.push(trans.parentState)
-    if (!states.includes(trans.childState)) states.push(trans.childState)
-  }
-
-  return class BuiltNestedStateMachine extends NestedStateMachine {
-    public static readonly stateName = stateName
-    public static readonly transitions = transitions
-    public static readonly states = states
-    public static readonly enter = enter
-    public static readonly enterArgs: StateConstructorArgs<typeof enter> = enterArgs as any
-    public static readonly exit? = exit
-    public static readonly enterIntermediateStates = enterIntermediateStates
-    public static readonly onStartupListeners = []
-  }
-}
-
-/**
- * Creates a new Nested
- * @param param0
- * @returns
- */
-export function newNestedStateMachineArgs<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> ({
-  stateName,
-  transitions,
-  enter,
-  enterArgs,
-  exit,
-  enterIntermediateStates = true
-}: NestedStateMachineOptions<Enter, Exit>): SpecifcNestedStateMachine<Enter, Exit> {
-  return internalBuildNested(stateName, transitions, enter, enterArgs, exit, enterIntermediateStates)
-}
-
-export function buildNestedMachine<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
-  stateName: string,
-  transitions: Array<StateTransition<any, any>>,
-  enter: NoArgs<Enter>,
-  exit?: Exit,
-  enterIntermediateStates = true
-): SpecifcNestedStateMachine<Enter, Exit> {
-  return internalBuildNested(stateName, transitions, enter, undefined, exit, enterIntermediateStates)
-}
-
-export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
-  stateName: string,
-  transitions: Array<StateTransition<any, any>>,
-  enter: HasArgs<Enter>,
-  enterArgs: StateConstructorArgs<Enter>,
-  exit?: Exit,
-  enterIntermediateStates = true
-): SpecifcNestedStateMachine<Enter, Exit> {
-  return internalBuildNested(stateName, transitions, enter, enterArgs, exit, enterIntermediateStates)
 }
