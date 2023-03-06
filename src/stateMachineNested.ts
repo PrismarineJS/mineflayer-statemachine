@@ -56,12 +56,12 @@ export class NestedStateMachine
     this.onStartupListeners.push([key, listener])
   }
 
-  public get activeStateType(): typeof StateBehavior | undefined {
-    return this._activeStateType;
+  public get activeStateType (): typeof StateBehavior | undefined {
+    return this._activeStateType
   }
 
-  public get activeState(): StateBehavior | undefined {
-    return this._activeState;
+  public get activeState (): StateBehavior | undefined {
+    return this._activeState
   }
 
   /**

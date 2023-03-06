@@ -17,7 +17,7 @@ export class StateMachineWebserver {
   readonly stateMachine: CentralStateMachine<any, any>
   readonly port: number
 
-  private lastMachine: NestedStateMachine | undefined;
+  private lastMachine: NestedStateMachine | undefined
   private lastState: typeof StateBehavior | undefined
 
   /**
@@ -29,8 +29,8 @@ export class StateMachineWebserver {
   constructor (stateMachine: CentralStateMachine<any, any>, port: number = 8934) {
     this.stateMachine = stateMachine
     this.port = port
-    this.lastMachine = undefined;
-    this.lastState = undefined;
+    this.lastMachine = undefined
+    this.lastState = undefined
   }
 
   /**
@@ -79,7 +79,7 @@ export class StateMachineWebserver {
 
     this.sendStatemachineStructure(socket)
 
-    if (this.lastMachine && this.lastState) this.updateClient(socket, this.lastMachine, this.lastState)
+    if ((this.lastMachine != null) && (this.lastState != null)) this.updateClient(socket, this.lastMachine, this.lastState)
 
     const updateClient = (nestedMachine: NestedStateMachine, state: typeof StateBehavior): void =>
       this.updateClient(socket, nestedMachine, state)
@@ -121,8 +121,8 @@ export class StateMachineWebserver {
       activeStates
     }
 
-    this.lastMachine = nested;
-    this.lastState = state;
+    this.lastMachine = nested
+    this.lastState = state
     socket.emit('stateChanged', packet)
   }
 
