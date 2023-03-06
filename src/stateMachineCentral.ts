@@ -3,28 +3,27 @@ import { Bot } from 'mineflayer'
 import StrictEventEmitter from 'strict-event-emitter-types/types/src'
 import { StateBehavior, StateTransition, StateMachineData } from './stateBehavior'
 import { NestedStateMachine } from './stateMachineNested'
-import { isNestedStateMachine } from './util'
+import { isNestedStateMachine, SpecifcNestedStateMachine, StateBehaviorBuilder } from './util'
 
 export interface CentralStateMachineEvents {
   stateEntered: (cls: NestedStateMachine, newState: typeof StateBehavior) => void
   stateExited: (cls: NestedStateMachine, oldState: typeof StateBehavior) => void
 }
 
-export interface CentralStateMachineOptions {
+export interface CentralStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
   bot: Bot
-  root: typeof NestedStateMachine
+  root: SpecifcNestedStateMachine<Enter, Exit>
   data?: StateMachineData
   autoStart?: boolean
   autoUpdate?: boolean
 }
 
-export class CentralStateMachine extends (EventEmitter as new () => StrictEventEmitter<
-EventEmitter,
-CentralStateMachineEvents
->) {
+export class CentralStateMachine<
+  Enter extends StateBehaviorBuilder,
+  Exit extends StateBehaviorBuilder
+> extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, CentralStateMachineEvents>) {
   readonly bot: Bot
-  readonly root: NestedStateMachine
-
+  readonly root: InstanceType<SpecifcNestedStateMachine<Enter, Exit>>
   readonly transitions: StateTransition[]
   readonly states: Array<typeof StateBehavior>
   readonly nestedMachinesNew: { [depth: number]: Array<typeof NestedStateMachine> }
@@ -32,7 +31,13 @@ CentralStateMachineEvents
 
   private autoUpdate: boolean
 
-  constructor ({ bot, root: Root, data = {}, autoStart = true, autoUpdate = true }: CentralStateMachineOptions) {
+  constructor ({
+    bot,
+    root: Root,
+    data = {},
+    autoStart = true,
+    autoUpdate = true
+  }: CentralStateMachineOptions<Enter, Exit>) {
     // eslint-disable-next-line constructor-super
     super()
     this.bot = bot

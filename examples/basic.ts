@@ -1,20 +1,27 @@
-const mineflayer = require("mineflayer");
-const {
+import mineflayer from "mineflayer";
+import { Movements } from "mineflayer-pathfinder";
+import { NestedStateMachineOptions } from "../src";
+import {
+  buildTransition,
+  buildTransitionArgs,
   CentralStateMachine,
   StateMachineWebserver,
   StateTransition,
-  buildTransition,
-  buildTransitionArgs,
-} = require("../lib");
-const {
+} from "../src";
+import {
   BehaviorExit,
   BehaviorFollowEntity,
   BehaviorIdle,
   BehaviorLookAtEntity,
   BehaviorFindEntity,
-} = require("../lib/behaviors");
-const { newNestedStateMachineArgs, buildSimpleNestedMachine } = require("../lib/stateMachineNested");
-const { isNestedStateMachine } = require("../lib/util");
+} from "../src/behaviors";
+import {
+  newNestedStateMachineArgs,
+  buildNestedMachine,
+  NestedStateMachine,
+  buildNestedMachineArgs,
+} from "../src/stateMachineNested";
+import { HasArgs, OmitTwo, StateBehaviorBuilder, StateConstructorArgs } from "../src/util";
 
 /**
  * Set up your bot as you normally would
@@ -76,6 +83,8 @@ const stateMachine = new CentralStateMachine({ bot, root: RootMachine, autoStart
 const webserver = new StateMachineWebserver(stateMachine);
 webserver.startServer();
 
+// added functionality to delay starting machine until bot spawns.
+bot.on("spawn", () => stateMachine.start());
 
 const handle = (input) => {
   const split = input.split(" ");
@@ -88,24 +97,18 @@ const handle = (input) => {
 
 bot.on("chat", (username, message) => handle(message));
 
-// added functionality to delay starting machine until bot spawns.
+// (async () => {
+//   while (true) {
+//     const state = stateMachine.root.activeState;
+//     if (isNestedStateMachine(state.constructor)) {
+//       console.log("in nested:", { ...state.activeState, bot: {} }, state.activeStateType);
+//     } else {
+//       console.log("in root:", { ...state, bot: {} }, state.constructor);
+//     }
 
-
-bot.on("spawn", async () => {
-  stateMachine.start();
-  while (true) {
-    const state = stateMachine.root.activeState;
-    // if (isNestedStateMachine(state.constructor)) {
-    //   // console.log("in nested:", { ...state.activeState, bot: {} }, state.activeStateType);
-    //   console.log(state.activeStateType)
-    // } else {
-    //   console.log(state.constructor)
-    //   // console.log("in root:", { ...state, bot: {} }, state.constructor);
-    // }
-
-    await new Promise((res, rej) => setTimeout(res, 1000));
-  }
-});
+//     await new Promise((res, rej) => setTimeout(res, 1000));
+//   }
+// })();
 
 // stateMachine.on("stateEntered", (nested,state) => console.log("ENTERED:", {...nested, data:{}, staticRef: undefined, bot: undefined, activeState: undefined}, state));
 // stateMachine.on("stateExited", (nested, state) => console.log("EXITED:", {...nested, data:{}, staticRef: undefined, bot: undefined, activeState: undefined}, state));

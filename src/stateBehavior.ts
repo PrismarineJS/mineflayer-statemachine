@@ -2,7 +2,7 @@ import type { Bot, Player } from 'mineflayer'
 import type { Entity } from 'prismarine-entity'
 import type { Item } from 'prismarine-item'
 import type { Vec3 } from 'vec3'
-import { OmitTwo, StateBehaviorBuilder } from './util'
+import { HasArgs, NoArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 /**
  * A collection of targets which the bot is currently
@@ -74,43 +74,39 @@ export class StateBehavior {
 /**
  * The parameters for initializing a state transition.
  */
-export type StateTransitionInfo<
+export interface StateTransitionInfo<
   Parent extends StateBehaviorBuilder = StateBehaviorBuilder,
   Child extends StateBehaviorBuilder = StateBehaviorBuilder
-> = {
+> {
   parent: Parent
   child: Child
-  transitionName?: string
-
-  shouldTransition?: (data: StateMachineData, state: Parent['prototype']) => boolean
+  constructorArgs: HasArgs<Child> extends Child ? StateConstructorArgs<Child> : never
+  name?: string
+  shouldTransition?: (state: Parent['prototype']) => boolean
   onTransition?: (data: StateMachineData) => void
-} & (OmitTwo<ConstructorParameters<Child>> extends [first: any, ...any: any]
-  ? {
-      childConstructorArgs: OmitTwo<ConstructorParameters<Child>>
-    }
-  : { childConstructorArgs?: never })
+}
 
 /**
  * A transition that links when one state (the parent) should transition
  * to another state (the child).
  */
 export class StateTransition<
-  Parent extends StateBehaviorBuilder = typeof StateBehavior,
-  Child extends StateBehaviorBuilder = typeof StateBehavior
+  Parent extends StateBehaviorBuilder = StateBehaviorBuilder,
+  Child extends StateBehaviorBuilder = StateBehaviorBuilder
 > {
   readonly parentState: Parent
   readonly childState: Child
-  readonly childConstructorArgs: StateTransitionInfo<Parent, Child>['childConstructorArgs']
+  public readonly constructorArgs: StateTransitionInfo<Parent, Child>['constructorArgs']
   private triggerState: boolean = false
-  shouldTransition: (data: StateMachineData, state: Parent['prototype']) => boolean
-  onTransition: (data: StateMachineData, state: Parent['prototype']) => void
-  transitionName?: string
+  shouldTransition: (state: Parent['prototype']) => boolean
+  onTransition: (data: StateMachineData) => void
+  name?: string
 
   constructor ({
     parent,
     child,
-    transitionName,
-    childConstructorArgs,
+    name,
+    constructorArgs,
     shouldTransition = (data) => false,
     onTransition = (data) => {}
   }: StateTransitionInfo<Parent, Child>) {
@@ -118,8 +114,8 @@ export class StateTransition<
     this.childState = child
     this.shouldTransition = shouldTransition
     this.onTransition = onTransition
-    this.transitionName = transitionName
-    this.childConstructorArgs = childConstructorArgs
+    this.constructorArgs = constructorArgs
+    this.name = name
   }
 
   trigger (): void {
@@ -134,40 +130,39 @@ export class StateTransition<
     this.triggerState = false
   }
 
-  setShouldTransition (should: (data: StateMachineData, state: Parent['prototype']) => boolean): this {
+  setShouldTransition (should: (state: Parent['prototype']) => boolean): this {
     this.shouldTransition = should
     return this
   }
 
-  setOnTransition (onTrans: (data: StateMachineData, state: Parent['prototype']) => boolean): this {
+  setOnTransition (onTrans: (data: StateMachineData) => void): this {
     this.onTransition = onTrans
     return this
   }
 }
 
-// export function buildTransition<Parent extends StateBehaviorBuilder, Child extends StateBehaviorBuilder>(
-//   name: string,
-//   parent: Parent,
-//   child: Child,
-//   args: OmitTwo<ConstructorParameters<Child>>
-// ): StateTransition<Parent, Child>;
-
-// export function buildTransition<Parent extends StateBehaviorBuilder, Child extends StateBehaviorBuilder>(
-//   name: string,
-//   parent: Parent,
-//   child: Child,
-// ): StateTransition<Parent, Child>;
-
 export function buildTransition<Parent extends StateBehaviorBuilder, Child extends StateBehaviorBuilder> (
   name: string,
   parent: Parent,
-  child: Child,
-  args: OmitTwo<ConstructorParameters<Child>> extends [first: any, ...any: any] ? OmitTwo<ConstructorParameters<Child>> : undefined
+  child: NoArgs<Child>
 ): StateTransition<Parent, Child> {
   return new StateTransition<Parent, Child>({
-    transitionName: name,
     parent,
     child,
-    childConstructorArgs: args
+    name
+  } as any)
+}
+
+export function buildTransitionArgs<Parent extends StateBehaviorBuilder, Child extends StateBehaviorBuilder> (
+  name: string,
+  parent: Parent,
+  child: HasArgs<Child>,
+  args: StateConstructorArgs<Child>
+): StateTransition<Parent, Child> {
+  return new StateTransition<Parent, Child>({
+    parent,
+    child,
+    name,
+    constructorArgs: args
   } as any)
 }

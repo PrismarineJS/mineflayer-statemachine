@@ -1,6 +1,7 @@
+import { goals, Movements } from 'mineflayer-pathfinder'
+import { StateBehavior, StateMachineData } from '../stateBehavior'
+import type { Bot } from 'mineflayer'
 import type { Entity } from 'prismarine-entity'
-import { Movements, goals } from 'mineflayer-pathfinder'
-import { StateBehavior } from '../stateBehavior'
 
 /**
  * Causes the bot to follow the target entity.
@@ -9,16 +10,19 @@ import { StateBehavior } from '../stateBehavior'
  */
 export class BehaviorFollowEntity extends StateBehavior {
   static stateName = 'followEntity'
-  movements?: Movements
-  followDistance: number = 0
+  movements: Movements
+  followDistance = 0
+
+  constructor (bot: Bot, data: StateMachineData, movements = new Movements(bot, bot.registry)) {
+    super(bot, data)
+    this.movements = movements
+  }
 
   onStateEntered = (): void => {
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!this.bot.pathfinder) throw Error('Pathfinder is not loaded!')
+    if (this.data.entity == null) throw Error('No pathfinder target loaded.')
 
-    const mcData = this.bot.registry
-    this.movements = new Movements(this.bot, mcData)
-    this.data.entity = this.bot.nearestEntity((e) => e.type === 'player') ?? undefined
     this.startMoving(this.data.entity)
   }
 
@@ -32,39 +36,34 @@ export class BehaviorFollowEntity extends StateBehavior {
     return distances < 3
   }
 
-  setFollowTarget (entity: Entity): void {
-    if (this.data === entity) {
-      return
-    }
+  distanceToTarget (): number {
+    if (this.data.entity == null) return -1
+    return this.bot.entity.position.distanceTo(this.data.entity.position)
+  }
 
+  setFollowTarget (entity: Entity): void {
+    if (this.data === entity) return
     this.data.entity = entity
     this.restart()
   }
 
-  private stopMoving (): void {
-    this.bot.pathfinder.stop()
-  }
-
-  private startMoving (entity?: Entity): void {
-    if (entity == null) return
-    if (entity === this.data.entity && this.bot.pathfinder.isMoving()) return
-    const pathfinder = this.bot.pathfinder
-    const goal = new goals.GoalFollow(entity, this.followDistance)
-    if (this.movements != null) pathfinder.setMovements(this.movements)
-    pathfinder.setGoal(goal, true)
-  }
-
   restart (): void {
-    if (!this.active) {
-      return
-    }
+    if (!this.active) throw Error('State is not active')
+    if (this.data.entity == null) throw Error('No pathfinder target loaded.')
 
     this.stopMoving()
     this.startMoving(this.data.entity)
   }
 
-  distanceToTarget (): number {
-    if (this.data.entity == null) return -1
-    return this.bot.entity.position.distanceTo(this.data.entity.position)
+  private startMoving (entity: Entity): void {
+    if (this.movements == null) throw Error('No movements loaded!')
+    if (entity === this.data.entity && this.bot.pathfinder.isMoving()) return
+    const goal = new goals.GoalFollow(entity, this.followDistance)
+    this.bot.pathfinder.setMovements(this.movements)
+    this.bot.pathfinder.setGoal(goal, true)
+  }
+
+  private stopMoving (): void {
+    this.bot.pathfinder.stop()
   }
 }

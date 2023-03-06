@@ -5,9 +5,8 @@ import type { Entity } from 'prismarine-entity'
 export class BehaviorFindEntity extends StateBehavior {
   public filter: (entity: Entity) => boolean
 
-  constructor (bot: Bot, data: StateMachineData, filter: (entity: Entity) => boolean) {
+  constructor (bot: Bot, data: StateMachineData, filter: BehaviorFindEntity['filter']) {
     super(bot, data)
-    console.trace(filter)
     this.filter = filter
   }
 

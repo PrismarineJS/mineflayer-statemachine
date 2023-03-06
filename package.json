@@ -7,7 +7,7 @@
   "scripts": {
     "build": "ts-standard && tsc",
     "clean": "rm -rf lib",
-    "test": "test",
+    "test": "node --trace-warnings examples/basic.js",
     "fix-lint": "ts-standard --fix"
   },
   "repository": {
@@ -51,7 +51,8 @@
   "ts-standard": {
     "ignore": [
       "web",
-      "lib"
+      "lib",
+      "examples"
     ]
   }
 }

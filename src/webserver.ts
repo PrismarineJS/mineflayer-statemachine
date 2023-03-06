@@ -7,11 +7,6 @@ import { isNestedStateMachine } from './util'
 
 const publicFolder = './../web'
 
-// TODO Add option to shutdown server
-
-// This is completely ripped off from mineflayer-statemachine.
-// Dear lord, I cannot do frontend. This is a life-saver.
-
 /**
  * A web server which allows users to view the current state of the
  * bot behavior state machine.
@@ -19,7 +14,7 @@ const publicFolder = './../web'
 export class StateMachineWebserver {
   private serverRunning: boolean = false
 
-  readonly stateMachine: CentralStateMachine
+  readonly stateMachine: CentralStateMachine<any, any>
   readonly port: number
 
   /**
@@ -28,7 +23,7 @@ export class StateMachineWebserver {
    * @param stateMachine - The state machine being observed.
    * @param port - The port to open this server on.
    */
-  constructor (stateMachine: CentralStateMachine, port: number = 8934) {
+  constructor (stateMachine: CentralStateMachine<any, any>, port: number = 8934) {
     this.stateMachine = stateMachine
     this.port = port
   }
@@ -145,7 +140,9 @@ export class StateMachineWebserver {
   ): number {
     for (let i = 0; i < searching.states.length; i++) {
       const foundState = searching.states[i]
-      if (foundState === state && searching === targetMachine) return data.offset
+      if (foundState === state && searching === targetMachine) {
+        return data.offset
+      }
       data.offset++
 
       if (isNestedStateMachine(foundState)) {
@@ -194,7 +191,7 @@ export class StateMachineWebserver {
         const transition = foundTransitions[k]
         transitions.push({
           id: i,
-          name: transition.transitionName,
+          name: transition.name,
           parentState: this.getStateId(transition.parentState, machine),
           childState: this.getStateId(transition.childState, machine)
         })

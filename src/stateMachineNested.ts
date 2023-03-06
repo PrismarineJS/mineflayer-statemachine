@@ -2,13 +2,14 @@ import EventEmitter from 'events'
 import { Bot } from 'mineflayer'
 import { StrictEventEmitter } from 'strict-event-emitter-types'
 import { StateBehavior, StateTransition, StateMachineData } from './stateBehavior'
-import { isNestedStateMachine, StateBehaviorBuilder } from './util'
+import { HasArgs, NoArgs, SpecifcNestedStateMachine, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
-export interface NestedStateMachineOptions {
+export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
   stateName: string
   transitions: Array<StateTransition<any, any>>
-  enter: StateBehaviorBuilder
-  exit?: StateBehaviorBuilder
+  enter: Enter
+  enterArgs: HasArgs<Enter> extends Enter ? StateConstructorArgs<Enter> : never
+  exit?: Exit
   enterIntermediateStates?: boolean
 }
 
@@ -24,6 +25,7 @@ export class NestedStateMachine
   public static readonly transitions: StateTransition[]
   public static readonly states: Array<typeof StateBehavior>
   public static readonly enter: typeof StateBehavior
+  public static readonly enterArgs: any[] | undefined = undefined // StateConstructorArgs<typeof this.enter>; // sadly, this is always undefined (no static generics).
   public static readonly exit?: typeof StateBehavior
   public static readonly enterIntermediateStates: boolean
 
@@ -32,10 +34,8 @@ export class NestedStateMachine
   [key: keyof StateBehaviorEvent, listener: StateBehaviorEvent[keyof StateBehaviorEvent]]
   >
 
-  // not really needed, but helpful.
-  staticRef: typeof NestedStateMachine
-  activeStateType?: typeof StateBehavior
-  activeState?: StateBehavior
+  protected activeStateType?: typeof StateBehavior
+  protected activeState?: StateBehavior
 
   public readonly bot: Bot
   public readonly data: StateMachineData
@@ -46,7 +46,6 @@ export class NestedStateMachine
     super()
     this.bot = bot
     this.data = data
-    this.staticRef = this.constructor as typeof NestedStateMachine
     for (const listener of this.staticRef.onStartupListeners) {
       this.on(listener[0], listener[1])
     }
@@ -55,6 +54,13 @@ export class NestedStateMachine
   static addEventualListener<Key extends keyof StateBehaviorEvent>(key: Key, listener: StateBehaviorEvent[Key]): void {
     if (this.onStartupListeners.find((l) => l[0] === key) != null) return
     this.onStartupListeners.push([key, listener])
+  }
+
+  /**
+   * Getter
+   */
+  public get staticRef (): typeof NestedStateMachine {
+    return this.constructor as typeof NestedStateMachine
   }
 
   /**
@@ -80,58 +86,57 @@ export class NestedStateMachine
 
   public onStateEntered (): void {
     this.activeStateType = this.staticRef.enter
-    this.enterState(this.activeStateType, this.bot)
+    this.enterState(this.activeStateType, this.bot, this.staticRef.enterArgs)
   }
 
-  private enterState (EnterState: StateBehaviorBuilder, bot: Bot, ...additional: any[]): void {
-    if (isNestedStateMachine(EnterState)) {
-      for (const [key, func] of this.staticRef.onStartupListeners) {
-        if (EnterState.onStartupListeners.find((l) => l[0] === key) == null) EnterState.addEventualListener(key, func)
-      }
-    }
-
+  protected enterState (EnterState: StateBehaviorBuilder, bot: Bot, additional: any[] = []): void {
     this.activeState = new EnterState(bot, this.data, ...additional)
     this.activeState.active = true
-    this.activeState.onStateEntered?.()
     this.emit('stateEntered', this, EnterState, this.data)
+    this.activeState.onStateEntered?.()
   }
 
-  private exitActiveState (): void {
+  protected exitActiveState (): void {
     if (this.activeState == null) return
     this.activeState.active = false
-    this.activeState.onStateExited?.()
     this.emit('stateExited', this, this.activeState.constructor as typeof StateBehavior, this.data)
+    this.activeState.onStateExited?.()
   }
 
   public update (): void {
-    // this will only occur when state is not active.
+    // update will only occur when this is active anyway, so return if not.
     if (this.activeState == null) return
     this.activeState.update?.()
-    const lastState = this.activeStateType
+    let lastState = this.activeStateType
     const transitions = this.staticRef.transitions
-    let args
+    let args: any[] | undefined
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i]
       if (transition.parentState === this.activeStateType) {
-        if (transition.isTriggered() || transition.shouldTransition(this.data, this.activeState)) {
+        if (transition.isTriggered() || transition.shouldTransition(this.activeState)) {
           transition.resetTrigger()
           i = -1
-          transition.onTransition(this.data, this.activeState)
+          transition.onTransition(this.data)
           this.exitActiveState()
           this.activeStateType = transition.childState
-          args = transition.childConstructorArgs as any
-          if (this.staticRef.enterIntermediateStates) this.enterState(this.activeStateType, this.bot, args)
+          args = transition.constructorArgs
+          if (this.staticRef.enterIntermediateStates) {
+            lastState = transition.childState
+            this.enterState(lastState, this.bot, args)
+          }
         }
       }
     }
 
-    if (this.activeStateType != null && this.activeStateType !== lastState) { this.enterState(this.activeStateType, this.bot, args) }
+    if (this.activeStateType != null && this.activeStateType !== lastState) {
+      this.enterState(this.activeStateType, this.bot, args)
+    }
   }
 
   /**
    * Checks whether or not this state machine layer has finished running.
    */
-  isFinished (): boolean {
+  public isFinished (): boolean {
     if (this.active == null) return true
     if (this.staticRef.exit == null) return false
     return this.activeStateType === this.staticRef.exit
@@ -139,17 +144,21 @@ export class NestedStateMachine
 }
 
 /**
- * Creates a new Nested
- * @param param0
- * @returns
+ * Creates a new Nested State Machine class.
+ *
+ * This does NOT create an instance. This is used statically.
+ *
+ * @param stateName Name of state.
+ * @returns {typeof NestedStateMachine} A static reference to a new NestedMachine.
  */
-export function newNestedStateMachine ({
-  stateName,
-  transitions,
-  enter,
-  exit,
+function internalBuildNested<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
+  stateName: string,
+  transitions: Array<StateTransition<any, any>>,
+  enter: Enter,
+  enterArgs?: StateConstructorArgs<Enter>,
+  exit?: Exit,
   enterIntermediateStates = true
-}: NestedStateMachineOptions): typeof NestedStateMachine {
+): SpecifcNestedStateMachine<Enter, Exit> {
   const states: Array<typeof StateBehavior> = []
 
   if (!states.includes(enter)) states.push(enter)
@@ -167,6 +176,7 @@ export function newNestedStateMachine ({
     public static readonly transitions = transitions
     public static readonly states = states
     public static readonly enter = enter
+    public static readonly enterArgs: StateConstructorArgs<typeof enter> = enterArgs as any
     public static readonly exit? = exit
     public static readonly enterIntermediateStates = enterIntermediateStates
     public static readonly onStartupListeners = []
@@ -178,33 +188,34 @@ export function newNestedStateMachine ({
  * @param param0
  * @returns
  */
-export function buildNewNestedMachine (
-  stateName: string,
-  enter: StateBehaviorBuilder,
-  exit: StateBehaviorBuilder,
-  transitions: Array<StateTransition<any, any>>,
+export function newNestedStateMachineArgs<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> ({
+  stateName,
+  transitions,
+  enter,
+  enterArgs,
+  exit,
   enterIntermediateStates = true
-): typeof NestedStateMachine {
-  const states: Array<typeof StateBehavior> = []
+}: NestedStateMachineOptions<Enter, Exit>): SpecifcNestedStateMachine<Enter, Exit> {
+  return internalBuildNested(stateName, transitions, enter, enterArgs, exit, enterIntermediateStates)
+}
 
-  if (!states.includes(enter)) states.push(enter)
+export function buildNestedMachine<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
+  stateName: string,
+  transitions: Array<StateTransition<any, any>>,
+  enter: NoArgs<Enter>,
+  exit?: Exit,
+  enterIntermediateStates = true
+): SpecifcNestedStateMachine<Enter, Exit> {
+  return internalBuildNested(stateName, transitions, enter, undefined, exit, enterIntermediateStates)
+}
 
-  if (!(exit == null) && !states.includes(exit)) states.push(exit)
-
-  for (let i = 0; i < transitions.length; i++) {
-    const trans = transitions[i]
-    if (!states.includes(trans.parentState)) states.push(trans.parentState)
-    if (!states.includes(trans.childState)) states.push(trans.childState)
-  }
-
-  console.log('building machine:', stateName, states)
-  return class extends NestedStateMachine {
-    public static readonly stateName = stateName
-    public static readonly transitions = transitions
-    public static readonly states = states
-    public static readonly enter = enter
-    public static readonly exit? = exit
-    public static readonly enterIntermediateStates = enterIntermediateStates
-    public static readonly onStartupListeners = []
-  }
+export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
+  stateName: string,
+  transitions: Array<StateTransition<any, any>>,
+  enter: HasArgs<Enter>,
+  enterArgs: StateConstructorArgs<Enter>,
+  exit?: Exit,
+  enterIntermediateStates = true
+): SpecifcNestedStateMachine<Enter, Exit> {
+  return internalBuildNested(stateName, transitions, enter, enterArgs, exit, enterIntermediateStates)
 }
