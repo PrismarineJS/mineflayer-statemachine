@@ -1,12 +1,13 @@
-/**
- * Set up your bot as you normally would
- */
-const mineflayer = require("mineflayer");
 
 if (process.argv.length < 4 || process.argv.length > 6) {
   console.log("Usage : node lookatplayers.js <host> <port> [<name>] [<password>]");
   process.exit(1);
 }
+
+/**
+ * Set up your bot as you normally would
+ */
+const mineflayer = require("mineflayer");
 
 const bot = mineflayer.createBot({
   host: process.argv[2],
@@ -15,16 +16,16 @@ const bot = mineflayer.createBot({
   password: process.argv[5],
 });
 
-/**
- * Setting up the state machine is pretty straightforward.
- */
-
 // Imports
-const { BotStateMachine } = require("mineflayer-statemachine");
-const { BehaviorIdle, BehaviorFindEntity, BehaviorLookAtEntity } = require("../lib/behaviors");
-const { buildTransition, buildTransitionArgs } = require("mineflayer-statemachine/lib/builders");
-const { buildNestedMachine } = require("../lib/stateMachineNested");
-const { StateMachineWebserver } = require("../lib");
+const {
+  BotStateMachine,
+  StateMachineWebserver,
+  buildTransition,
+  buildTransitionArgs,
+  buildNestedMachine,
+} = require("mineflayer-statemachine");
+
+const { BehaviorIdle, BehaviorFindEntity, BehaviorLookAtEntity } = require("mineflayer-statemachine/lib/behaviors");
 
 // util function for finding nearest player.
 const nearestPlayer = (e) => e.type === "player";
@@ -32,8 +33,9 @@ const nearestPlayer = (e) => e.type === "player";
 // This targets object is used to pass data between different states. It can be left empty.
 const data = {};
 
-const BehaviorLook = BehaviorLookAtEntity.clone("LookAt")
+const BehaviorLook = BehaviorLookAtEntity.clone("LookAt");
 const transitions = [
+
   // This transitions from the idleState to the getClosestPlayer state
   // when someone says hi in chat.
   buildTransitionArgs("idleToClosest", BehaviorIdle, BehaviorFindEntity, [nearestPlayer])
@@ -50,12 +52,6 @@ const transitions = [
     .setOnTransition(() => bot.chat("goodbye")),
 ];
 
-// Set up some quick events to trigger transitions.
-bot.on("chat", (username, message) => {
-  if (message === "hi") transitions[0].trigger();
-  if (message === "bye") transitions[2].trigger();
-});
-
 // A state machine is made from a series of layers, so let's create the root
 // layer to place in our state machine. We just need the transition list and
 // the starting position.
@@ -63,11 +59,19 @@ const root = buildNestedMachine("Root", transitions, BehaviorIdle);
 
 // Let's add these settings to the state machine and start it!
 const stateMachine = new BotStateMachine({ bot, root, data, autoStart: false });
-const webserver = new StateMachineWebserver(stateMachine)
-webserver.startServer()
-bot.once('spawn', () => {
-  stateMachine.start()
-  console.log(`Started a state machine with ${stateMachine.transitions.length} transitions and ${stateMachine.states.length} states`);
-})
+const webserver = new StateMachineWebserver(stateMachine);
+webserver.startServer();
 
 
+bot.once("spawn", () => {
+  stateMachine.start();
+  console.log(
+    `Started a state machine with ${stateMachine.transitions.length} transitions and ${stateMachine.states.length} states`
+  );
+});
+
+// Set up some quick events to trigger transitions.
+bot.on("chat", (username, message) => {
+  if (message === "hi") transitions[0].trigger();
+  if (message === "bye") transitions[2].trigger();
+});

@@ -14,7 +14,7 @@ const bot = mineflayer.createBot({
 
 bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
 
-import { BotStateMachine, StateMachineWebserver } from "../../lib";
+import { BotStateMachine, StateMachineWebserver, buildTransition, buildTransitionArgs, buildNestedMachine, newNestedStateMachine } from "../../src";
 
 import {
   BehaviorIdle,
@@ -22,9 +22,6 @@ import {
   BehaviorFollowEntity,
   BehaviorLookAtEntity,
 } from "../../lib/behaviors";
-
-import { buildTransition, buildTransitionArgs, buildNestedMachine } from "../../lib/builders";
-import { WebserverBehaviorPositions } from "../../lib/webserver";
 
 
 // to replicate the original mineflayer-statemachine exactly:

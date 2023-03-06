@@ -89,11 +89,6 @@ function internalBuildNested<Enter extends StateBehaviorBuilder, Exit extends St
   }
 }
 
-/**
-   * Creates a new Nested
-   * @param param0
-   * @returns
-   */
 export function newNestedStateMachineArgs<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> ({
   stateName,
   transitions,
@@ -103,6 +98,16 @@ export function newNestedStateMachineArgs<Enter extends StateBehaviorBuilder, Ex
   enterIntermediateStates = true
 }: NestedStateMachineOptions<Enter, Exit>): SpecifcNestedStateMachine<Enter, Exit> {
   return internalBuildNested(stateName, transitions, enter, enterArgs, exit, enterIntermediateStates)
+}
+
+export function newNestedStateMachine<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> ({
+  stateName,
+  transitions,
+  enter,
+  exit,
+  enterIntermediateStates = true
+}: Omit<NestedStateMachineOptions<NoArgs<Enter>, Exit>, "enterArgs">): SpecifcNestedStateMachine<Enter, Exit> {
+  return internalBuildNested(stateName, transitions, enter, undefined, exit, enterIntermediateStates)
 }
 
 export function buildNestedMachine<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
