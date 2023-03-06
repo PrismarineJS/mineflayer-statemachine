@@ -127,7 +127,7 @@ export class StateTransition {
 
   /**
      * Sets the `shouldTransition` function on the transition.
-     *  
+     *
      * To be used with transition builder.
      * @param should Transition function.
      * @returns {this} this
@@ -139,7 +139,7 @@ export class StateTransition {
 
   /**
      * Sets the `onTransition` function on the transition.
-     *  
+     *
      * To be used with transition builder.
      * @param on Transition function.
      * @returns {this} this
