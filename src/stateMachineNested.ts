@@ -31,7 +31,6 @@ export class NestedStateMachine
 
   public static readonly clone = clone
 
- 
   // not correct but whatever.
   public static readonly onStartupListeners: Array<
   [key: keyof NestedMachineEvents, listener: NestedMachineEvents[keyof NestedMachineEvents]]

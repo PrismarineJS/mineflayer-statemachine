@@ -22,6 +22,7 @@ export class WebserverBehaviorPositions {
     if (parentMachine != null) return parentMachine.name + parentMachine.stateName + state.name + state.stateName
     return state.name + state.stateName
   }
+
   public has (state: typeof StateBehavior, parentMachine?: typeof NestedStateMachine): boolean {
     if (parentMachine != null) {
       const flag = !(this.storage[parentMachine.name + parentMachine.stateName + state.name + state.stateName] == null)

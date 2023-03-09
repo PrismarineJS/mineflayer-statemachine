@@ -106,7 +106,7 @@ export function newNestedStateMachine<Enter extends StateBehaviorBuilder, Exit e
   enter,
   exit,
   enterIntermediateStates = true
-}: Omit<NestedStateMachineOptions<NoArgs<Enter>, Exit>, "enterArgs">): SpecifcNestedStateMachine<Enter, Exit> {
+}: Omit<NestedStateMachineOptions<NoArgs<Enter>, Exit>, 'enterArgs'>): SpecifcNestedStateMachine<Enter, Exit> {
   return internalBuildNested(stateName, transitions, enter, undefined, exit, enterIntermediateStates)
 }
 
