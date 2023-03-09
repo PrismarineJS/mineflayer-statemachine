@@ -1,7 +1,7 @@
 {
-  "name": "mineflayer-statemachine",
-  "version": "1.7.0",
-  "description": "A state machine plugin for Mineflayer to aid in designing more complex behavior trees.",
+  "name": "@nxg-org/mineflayer-statemachine",
+  "version": "0.1.0",
+  "description": "A redesigned version of mineflayer-statemachine using static classes.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheDudeFromCI/mineflayer-statemachine.git"
+    "url": "git+https://github.com/GenerelSchwerz/mineflayer-statemachine.git"
   },
   "keywords": [
     "ai",
@@ -25,9 +25,9 @@
   "author": "GenerelSchwerz",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/PrismarineJS/mineflayer-statemachine/issues"
+    "url": "https://github.com/GenerelSchwerz/mineflayer-statemachine/issues"
   },
-  "homepage": "https://github.com/PrismarineJS/mineflayer-statemachine#readme",
+  "homepage": "https://github.com/GenerelSchwerz/mineflayer-statemachine#readme",
   "dependencies": {
     "express": "^4.17.2",
     "socket.io": "^4.6.0",

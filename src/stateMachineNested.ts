@@ -31,6 +31,7 @@ export class NestedStateMachine
 
   public static readonly clone = clone
 
+ 
   // not correct but whatever.
   public static readonly onStartupListeners: Array<
   [key: keyof NestedMachineEvents, listener: NestedMachineEvents[keyof NestedMachineEvents]]
@@ -53,6 +54,7 @@ export class NestedStateMachine
     }
   }
 
+  // correct typing here.
   static addEventualListener<Key extends keyof NestedMachineEvents>(key: Key, listener: NestedMachineEvents[Key]): void {
     if (this.onStartupListeners.find((l) => l[0] === key) != null) return
     this.onStartupListeners.push([key, listener])

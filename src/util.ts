@@ -64,7 +64,6 @@ export function clone<T extends StateBehaviorBuilder> (this: T, name?: string): 
     }
   })
 
-  // console.log(ToBuild, this);
   if (name != null) ToBuild.stateName = name
   return ToBuild as unknown as T
 }

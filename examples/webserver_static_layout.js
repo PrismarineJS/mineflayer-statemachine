@@ -17,74 +17,74 @@ bot.loadPlugin(require('mineflayer-pathfinder').pathfinder)
 const {
   BotStateMachine,
   StateMachineWebserver,
-  WebserverBehaviorPositions
-} = require('mineflayer-statemachine')
-
-const {
-  BehaviorIdle,
-  BehaviorFindEntity,
-  BehaviorFollowEntity,
-  BehaviorLookAtEntity
-} = require('mineflayer-statemachine/lib/behaviors')
-
-const {
+  WebserverBehaviorPositions,
   buildTransition,
   buildTransitionArgs,
   buildNestedMachine,
-} = require('mineflayer-statemachine/lib/builders')
+} = require('mineflayer-statemachine')
+
+// import behaviors here
+// renaming happens in import schema here.
+const {
+  BehaviorIdle: Idle,
+  BehaviorFindEntity: FindEntity,
+  BehaviorFollowEntity: FollowTarget,
+  BehaviorLookAtEntity: LookAtTarget
+} = require('mineflayer-statemachine/lib/behaviors')
 
 
 // to replicate the original mineflayer-statemachine exactly:
-const BehaviorLookAtPlayers = BehaviorLookAtEntity.clone("LookAtPlayers")
-const BehaviorLookAtFollowing = BehaviorLookAtEntity.clone("LookAtFollowing")
+const LookAtPlayers = LookAtTarget.clone("LookAtPlayers")
+const LookAtFollowing = LookAtTarget.clone("LookAtFollowing")
 
 const transitions = [
-  buildTransitionArgs('player says "hi"', BehaviorIdle, BehaviorFindEntity, [(e) => e.type === "player"]) // 1
+  buildTransitionArgs('player says "hi"', Idle, FindEntity, [(e) => e.type === "player"]) // 1
     .setOnTransition(() => bot.chat("hello")),
 
-  buildTransition("closestToLook", BehaviorFindEntity, BehaviorLookAtPlayers) // 2
+  buildTransition("closestToLook", FindEntity, LookAtPlayers)                 // 2
     .setShouldTransition(() => true),
 
-  buildTransition('player says "bye"', BehaviorLookAtPlayers, BehaviorIdle) // 3
+  buildTransition('player says "bye"', LookAtPlayers, Idle)                   // 3
     .setOnTransition(() => bot.chat("goodbye")),
 
-  buildTransition('player says "come"', BehaviorLookAtPlayers, BehaviorFollowEntity) // 4
+  buildTransition('player says "come"', LookAtPlayers, FollowTarget)          // 4
     .setOnTransition(() => bot.chat("coming")),
 
-  buildTransition('player says "stay"', BehaviorFollowEntity, BehaviorLookAtPlayers) // 5
+  buildTransition('player says "stay"', FollowTarget, LookAtPlayers)          // 5
     .setOnTransition(() => bot.chat("stay")),
 
-  buildTransition('player says "bye"', BehaviorFollowEntity, BehaviorIdle) // 6
+  buildTransition('player says "bye"', FollowTarget, Idle)                    // 6
     .setOnTransition(() => bot.chat("goodbye")),
 
-  buildTransition("closeToTarget", BehaviorFollowEntity, BehaviorLookAtFollowing) // 7
+  buildTransition("closeToTarget", FollowTarget, LookAtFollowing)             // 7
     .setShouldTransition((state) => state.distanceToTarget() < 3),
 
-  buildTransition("farFromTarget", BehaviorLookAtFollowing, BehaviorFollowEntity) // 8
+  buildTransition("farFromTarget", LookAtFollowing, FollowTarget)             // 8
     .setShouldTransition((state) => state.distanceToTarget() >= 3),
 
-  buildTransition('player says "bye"', BehaviorLookAtFollowing, BehaviorIdle) // 9
+  buildTransition('player says "bye"', LookAtFollowing, Idle)                 // 9
     .setOnTransition(() => bot.chat("goodbye")),
 
-  buildTransition('player says "stay"', BehaviorLookAtFollowing, BehaviorLookAtPlayers), // 10
+  buildTransition('player says "stay"', LookAtFollowing, LookAtPlayers),     // 10
 ];
 
-const root = buildNestedMachine('root', transitions, BehaviorIdle)
+const root = buildNestedMachine('root', transitions, Idle)
 const stateMachine = new BotStateMachine({bot, root, autoStart: false})
-
 
 const behaviorPositions = new WebserverBehaviorPositions();
 behaviorPositions
-  .set(BehaviorIdle, 400, 100)
-  .set(BehaviorLookAtPlayers, 400, 300)
-  .set(BehaviorFollowEntity, 100, 400)
-  .set(BehaviorFindEntity, 700, 100)
-  .set(BehaviorLookAtFollowing, 700, 400)
+  .set(Idle, 400, 100)
+  .set(LookAtPlayers, 400, 300)
+  .set(FollowTarget, 100, 400)
+  .set(FindEntity, 700, 100)
+  .set(LookAtFollowing, 700, 400)
 
 const webserver = new StateMachineWebserver({stateMachine, behaviorPositions})
 webserver.startServer()
 
 bot.once("spawn", () => {
+
+    // start server later, after spawning
     stateMachine.start()
 
     bot.on('chat', (username, message) => {
