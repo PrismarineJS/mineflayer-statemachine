@@ -23,9 +23,9 @@ const {
   buildTransition,
   buildTransitionArgs,
   buildNestedMachine,
-} = require("mineflayer-statemachine");
+} = require("@nxg-org/mineflayer-statemachine");
 
-const { BehaviorIdle, BehaviorFindEntity, BehaviorLookAtEntity } = require("mineflayer-statemachine/lib/behaviors");
+const { BehaviorIdle, BehaviorFindEntity, BehaviorLookAtEntity } = require("@nxg-org/mineflayer-statemachine/lib/behaviors");
 
 // util function for finding nearest player.
 const nearestPlayer = (e) => e.type === "player";

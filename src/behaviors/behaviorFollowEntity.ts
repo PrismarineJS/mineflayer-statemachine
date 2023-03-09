@@ -11,11 +11,12 @@ import type { Entity } from 'prismarine-entity'
 export class BehaviorFollowEntity extends StateBehavior {
   static stateName = 'followEntity'
   movements: Movements
-  followDistance = 0
+  followDistance: number
 
-  constructor (bot: Bot, data: StateMachineData, movements = new Movements(bot, bot.registry)) {
+  constructor (bot: Bot, data: StateMachineData, options?: { movements?: Movements, followDistance?: number }) {
     super(bot, data)
-    this.movements = movements
+    this.movements = options?.movements ?? new Movements(bot, bot.registry)
+    this.followDistance = options?.followDistance ?? 2
   }
 
   onStateEntered = (): void => {

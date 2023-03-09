@@ -1,17 +1,12 @@
 export { BotStateMachine } from './stateMachineBot'
 export { NestedStateMachine } from './stateMachineNested'
-export { StateBehavior, StateTransition } from './stateBehavior'
+export { StateBehavior } from './stateBehavior'
+export { StateTransition } from './stateTransition'
 export { StateMachineWebserver, WebserverBehaviorPositions } from './webserver'
 
 export {
   buildNestedMachine,
   buildNestedMachineArgs,
   buildTransition,
-  buildTransitionArgs,
-  newNestedStateMachine,
-  newNestedStateMachineArgs
+  buildTransitionArgs
 } from './builders'
-
-export const globalSettings = {
-  debugMode: true
-}

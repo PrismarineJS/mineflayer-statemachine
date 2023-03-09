@@ -1,12 +1,24 @@
+// check for correct usage at startup
+if (process.argv.length < 4 || process.argv.length > 6) {
+    console.log("Usage : node lookatplayers.js <host> <port> [<name>] [<password>]");
+    process.exit(1);
+}
+
 // Create your bot
-const mineflayer = require("mineflayer");
-const bot = mineflayer.createBot({ username: "Player" });
+const mineflayer = require('mineflayer');
+const bot = mineflayer.createBot({
+  host: process.argv[2],
+  port: parseInt(process.argv[3]),
+  username: process.argv[4] ? process.argv[4] : "statemachine_bot",
+  password: process.argv[5],
+});
 
 // Load your dependency plugins.
-bot.loadPlugin(require('mineflayer-pathfinder').pathfinder);
+bot.loadPlugin(require("mineflayer-pathfinder").pathfinder);
+
 
 // Import required structures.
-const { BotStateMachine, buildTransition, buildNestedMachineArgs } = require('mineflayer-statemachine') 
+const { BotStateMachine, buildTransition, buildNestedMachineArgs } = require('@nxg-org/mineflayer-statemachine') 
 
 // Import required behaviors.
 // Note: Rename behaviors by import schema here.
@@ -14,7 +26,7 @@ const {
     BehaviorFindEntity: FindEntity,
     BehaviorFollowEntity: FollowTarget,
     BehaviorLookAtEntity: LookAtTarget
-} = require('mineflayer-statemachine/lib/behaviors')
+} = require('@nxg-org/mineflayer-statemachine/lib/behaviors')
 
 // Util function to find the nearest player.
 const nearestPlayer = (e) => e.type === 'player'

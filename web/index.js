@@ -13,6 +13,7 @@ const LINE_SEPARATION = 16
 const LINE_HIGHLIGHT = '#888888'
 const LINE_TEXT_FONT = '12px Calibri'
 const LAYER_ENTER_COLOR = '#559966'
+const LAYER_EXIT_COLOR = '#009ed3'
 
 let graph
 let nestedGroups
@@ -232,8 +233,7 @@ class State {
     if (this.layer !== graph.activeLayer) { return }
 
     this.fillNodePath(ctx)
-
-    ctx.fillStyle = this.enterState ? LAYER_ENTER_COLOR : NODE_COLOR
+    ctx.fillStyle = this.enterState ? LAYER_ENTER_COLOR : this.exitState ? LAYER_EXIT_COLOR : NODE_COLOR
     ctx.fill()
 
     ctx.lineWidth = 2
@@ -245,6 +245,7 @@ class State {
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(this.name, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2)
+    // `${this.name} ${this.rect.x.toFixed(0)} ${this.rect.y.toFixed(0)}`
   }
 
   drawActive (ctx) {
@@ -367,7 +368,6 @@ class Transition {
           y: this.child.rect.cy() + offset.y
         }
 
-  
     this.clipArrow(this.child.rect, a, b)
     const arrow = this.arrowBase(a, b)
 
@@ -492,11 +492,11 @@ class Transition {
 }
 
 class NestedGroup {
-  constructor (id, indent, enter, exit) {
+  constructor (id, indent, enter, exits) {
     this.id = id
     this.indent = indent
     this.enter = enter
-    this.exit = exit
+    this.exits = exits
   }
 }
 
@@ -549,11 +549,10 @@ function loadStates (packet) {
       NODE_HEIGHT
     )
 
-    console.log(packet, state.nestGroup, state.id)
     const stateNode = new State(state.id, state.name, rect, state.nestGroup)
     stateNode.activeState = false
     stateNode.enterState = graph.nestedGroups[state.nestGroup].enter === state.id
-    stateNode.exitState = graph.nestedGroups[state.nestGroup].exit === state.id
+    stateNode.exitState = graph.nestedGroups[state.nestGroup].exits?.includes(state.id)
     stateNode.nestedGroup = state.nestGroup
 
     graph.states.push(stateNode)
@@ -563,7 +562,6 @@ function loadStates (packet) {
 function loadTransitions (packet) {
   const groups = []
 
-  console.log(graph.states);
   for (const transition of packet.transitions) {
     const parent = graph.states[transition.parentState]
     const child = graph.states[transition.childState]
@@ -578,7 +576,7 @@ function loadNestedGroups (packet) {
   const buttonGroup = document.getElementById('layerButtons')
 
   for (const n of packet.nestGroups) {
-    const g = new NestedGroup(n.id, n.indent, n.enter, n.exit)
+    const g = new NestedGroup(n.id, n.indent, n.enter, n.exits)
     graph.nestedGroups.push(g)
 
     const button = document.createElement('button')
@@ -596,7 +594,6 @@ function loadNestedGroups (packet) {
 
 function getTransitionGroup (groups, parent, child) {
   // To make group order ambiguous
-  console.log(groups, parent, child)
   if (parent.id < child.id) {
     return getTransitionGroup(groups, child, parent)
   }
@@ -613,7 +610,6 @@ function getTransitionGroup (groups, parent, child) {
 
 function onStateChanged (packet) {
   console.log(`Bot behavior states changed to ${packet.activeStates}.`)
-  console.log(graph.states[packet.activeStates], graph.states)
 
   for (const state of graph.states) { state.activeState = packet.activeStates.includes(state.id) }
   const activeNestedGroups = graph.states.filter(state => packet.activeStates.includes(state.id)).map(i => i.nestedGroup)

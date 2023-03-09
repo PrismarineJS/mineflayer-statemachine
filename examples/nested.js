@@ -53,7 +53,7 @@ const rootTransitions = [
 const RootMachine = buildNestedMachine("root", rootTransitions, BehaviorIdle);
 
 const stateMachine = new BotStateMachine({ bot, root: RootMachine, autoStart: false });
-const webserver = new StateMachineWebserver(stateMachine);
+const webserver = new StateMachineWebserver({stateMachine});
 webserver.startServer();
 
 
@@ -70,3 +70,11 @@ bot.on("chat", (username, input) => {
 bot.on("spawn", async () => {
   stateMachine.start();
 });
+
+let time = performance.now()
+stateMachine.on('stateEntered', (type, nested, state) => {
+  const now = performance.now();
+  console.log(type.stateName, state.stateName, now - time);
+
+  time = now;
+})

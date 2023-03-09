@@ -1,4 +1,4 @@
-import { StateBehavior } from '..'
+import { StateBehavior } from '../stateBehavior'
 
 /**
  * The bot will look at the target entity.

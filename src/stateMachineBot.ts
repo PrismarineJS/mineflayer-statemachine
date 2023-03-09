@@ -1,18 +1,19 @@
 import EventEmitter from 'events'
 import { Bot } from 'mineflayer'
-import StrictEventEmitter from 'strict-event-emitter-types/types/src'
-import { StateBehavior, StateTransition, StateMachineData } from './stateBehavior'
+import StrictEventEmitter from 'strict-event-emitter-types'
+import { StateMachineData } from './stateBehavior'
 import { NestedStateMachine } from './stateMachineNested'
+import { StateTransition } from './stateTransition'
 import { isNestedStateMachine, SpecifcNestedStateMachine, StateBehaviorBuilder } from './util'
 
 export interface BotStateMachineEvents {
-  stateEntered: (type: typeof NestedStateMachine, cls: NestedStateMachine, newState: typeof StateBehavior) => void
-  stateExited: (type: typeof NestedStateMachine, cls: NestedStateMachine, oldState: typeof StateBehavior) => void
+  stateEntered: (type: typeof NestedStateMachine, cls: NestedStateMachine, newState: StateBehaviorBuilder) => void
+  stateExited: (type: typeof NestedStateMachine, cls: NestedStateMachine, oldState: StateBehaviorBuilder) => void
 }
 
-export interface BotStateMachineOptions<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> {
+export interface BotStateMachineOptions<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[]> {
   bot: Bot
-  root: SpecifcNestedStateMachine<Enter, Exit>
+  root: SpecifcNestedStateMachine<Enter, Exits>
   data?: StateMachineData
   autoStart?: boolean
   autoUpdate?: boolean
@@ -20,17 +21,18 @@ export interface BotStateMachineOptions<Enter extends StateBehaviorBuilder, Exit
 
 export class BotStateMachine<
   Enter extends StateBehaviorBuilder,
-  Exit extends StateBehaviorBuilder
+  Exits extends StateBehaviorBuilder[]
 > extends (EventEmitter as new () => StrictEventEmitter<EventEmitter, BotStateMachineEvents>) {
   readonly bot: Bot
-  readonly rootType: SpecifcNestedStateMachine<Enter, Exit>
-  readonly root: InstanceType<SpecifcNestedStateMachine<Enter, Exit>>
+  readonly rootType: SpecifcNestedStateMachine<Enter, Exits>
+  readonly root: InstanceType<SpecifcNestedStateMachine<Enter, Exits>>
   readonly transitions: StateTransition[]
-  readonly states: Array<typeof StateBehavior>
+  readonly states: StateBehaviorBuilder[]
   readonly nestedMachinesNew: { [depth: number]: Array<typeof NestedStateMachine> }
   readonly nestedMachinesHelp: Array<typeof NestedStateMachine>
 
   private autoUpdate: boolean
+  private _activeMachine?: typeof NestedStateMachine
 
   constructor ({
     bot,
@@ -38,7 +40,7 @@ export class BotStateMachine<
     data = {},
     autoStart = true,
     autoUpdate = true
-  }: BotStateMachineOptions<Enter, Exit>) {
+  }: BotStateMachineOptions<Enter, Exits>) {
     // eslint-disable-next-line constructor-super
     super()
     this.bot = bot
@@ -48,24 +50,22 @@ export class BotStateMachine<
     this.nestedMachinesHelp = []
     this.findStatesRecursive(Root)
     this.findTransitionsRecursive(Root)
-    this.findNestedStateMachinesNew(Root)
+    this.findNestedStateMachines(Root)
     this.rootType = Root
     this.root = new Root(bot, data)
     this.autoUpdate = autoUpdate
 
-    if (autoStart) {
-      this.root.active = true
-      this.root.onStateEntered()
+    if (autoStart) this.start()
+  }
 
-      if (autoUpdate) {
-        this.bot.on('physicsTick', this.update)
-      }
-    }
+  public get activeMachine (): typeof NestedStateMachine | undefined {
+    return this._activeMachine
   }
 
   public start (autoUpdate = this.autoUpdate): void {
     if (this.root.active) throw Error('Root already started! No need to start again.')
     this.root.active = true
+    this._activeMachine = this.rootType
     this.root.onStateEntered()
 
     if (!this.bot.listeners('physicsTick').includes(this.update) && autoUpdate) {
@@ -81,31 +81,20 @@ export class BotStateMachine<
     return -1
   }
 
-  // private findNestedStateMachines(nested: NestedStateMachine, depth: number = 0): void {
-  //   this.nestedMachines.push(nested);
-  //   nested.depth = depth;
-
-  //   nested.on("stateEntered", (state) => this.emit("stateEntered", nested, state));
-  //   nested.on("stateExited", (state) => this.emit("stateExited", nested, state));
-
-  //   for (const state of nested.staticRef.states) {
-  //     if (state instanceof NestedStateMachine) {
-  //       this.findNestedStateMachines(state, depth + 1);
-  //     }
-  //   }
-  // }
-
-  private findNestedStateMachinesNew (nested: typeof NestedStateMachine, depth: number = 0): void {
+  private findNestedStateMachines (nested: typeof NestedStateMachine, depth: number = 0): void {
     this.nestedMachinesHelp.push(nested)
     this.nestedMachinesNew[depth] ||= []
     this.nestedMachinesNew[depth].push(nested)
 
-    nested.addEventualListener('stateEntered', (machine, state) => this.emit('stateEntered', nested, machine, state))
     nested.addEventualListener('stateExited', (machine, state) => this.emit('stateExited', nested, machine, state))
+    nested.addEventualListener('stateEntered', (machine, state) => {
+      this._activeMachine = nested
+      this.emit('stateEntered', nested, machine, state)
+    })
 
     for (const state of nested.states) {
       if (isNestedStateMachine(state)) {
-        this.findNestedStateMachinesNew(state, depth + 1)
+        this.findNestedStateMachines(state, depth + 1)
       }
     }
   }
@@ -113,7 +102,6 @@ export class BotStateMachine<
   private findStatesRecursive (nested: typeof NestedStateMachine): void {
     for (const state of nested.states) {
       this.states.push(state)
-
       if (isNestedStateMachine(state)) {
         this.findStatesRecursive(state)
       }
@@ -124,8 +112,10 @@ export class BotStateMachine<
     for (const transition of nested.transitions) {
       this.transitions.push(transition)
 
-      if (isNestedStateMachine(transition.parentState)) {
-        this.findTransitionsRecursive(transition.parentState)
+      for (const parentState of transition.parentStates) {
+        if (isNestedStateMachine(parentState)) {
+          this.findTransitionsRecursive(parentState)
+        }
       }
     }
   }
