@@ -120,10 +120,10 @@ export function getTransition<
 
 class NestedMachineBuilder<
   Enter extends StateBehaviorBuilder<StateBehavior, any[]>,
-  Exits extends ReadonlyArray<StateBehaviorBuilder<StateBehavior, any[]>>,
-  ParsedExits extends U2T<ListType<Exits>> = U2T<ListType<Exits>>,
+  Exits extends ReadonlyArray<StateBehaviorBuilder<StateBehavior, any[]>> | undefined = undefined,
+  ParsedExits extends U2T<ListType<Exits>> | undefined = undefined,
   BuildArgs = IgnoreConstructorArgs<Enter>,
-  EnterArgs = true
+  EnterArgs = false
 > {
   public readonly name: string
   public readonly enter: Enter
@@ -168,7 +168,7 @@ class NestedMachineBuilder<
 
 function build1<This extends NestedMachineBuilder<any, any, any, true, true>> (
   this: This
-): SpecifcNestedStateMachine<This['enter'], U2T<ListType<This['exits']>>> {
+): This["exits"] extends undefined ? SpecifcNestedStateMachine<This["enter"]> : SpecifcNestedStateMachine<This["enter"], U2T<ListType<This["exits"]>>> {
   const states: StateBehaviorBuilder[] = []
 
   states.push(this.enter)
@@ -203,6 +203,11 @@ function build1<This extends NestedMachineBuilder<any, any, any, true, true>> (
   }
 }
 
+export function getNestedMachine<Enter extends StateBehaviorBuilder> (
+  name: string,
+  transitions: Array<StateTransition<any, any>>,
+  enter: NoEnterArgs<Enter>,
+): NestedMachineBuilder<Enter>
 export function getNestedMachine<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
   name: string,
   transitions: Array<StateTransition<any, any>>,
@@ -215,11 +220,11 @@ export function getNestedMachine<Enter extends StateBehaviorBuilder, Exits exten
   enter: NoEnterArgs<Enter>,
   exit: Exits
 ): NestedMachineBuilder<Enter, Exits>
-export function getNestedMachine<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[]> (
+export function getNestedMachine<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[] | undefined> (
   name: string,
   transitions: Array<StateTransition<any, any>>,
   enter: NoEnterArgs<Enter>,
-  exits: Exits
+  exits?: Exits
 ): NestedMachineBuilder<Enter, Exits> {
   let realExits: StateBehaviorBuilder[] | undefined
 
@@ -230,23 +235,40 @@ export function getNestedMachine<Enter extends StateBehaviorBuilder, Exits exten
   return new NestedMachineBuilder<Enter, Exits>(name, transitions, enter, realExits as any)
 }
 
+
+
+/**
+ * @deprecated
+ */
 export function buildNestedMachine<Enter extends StateBehaviorBuilder> (
   stateName: string,
   transitions: Array<StateTransition<any, any>>,
   enter: NoConstructArgs<Enter>
 ): ReturnType<typeof internalBuildNested<Enter>>
+
+/**
+ * @deprecated
+ */
 export function buildNestedMachine<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
   stateName: string,
   transitions: Array<StateTransition<any, any>>,
   enter: NoConstructArgs<Enter>,
   exit: Exit
 ): ReturnType<typeof internalBuildNested<Enter, [Exit]>>
+
+/**
+ * @deprecated
+ */
 export function buildNestedMachine<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[]> (
   stateName: string,
   transitions: Array<StateTransition<any, any>>,
   enter: NoConstructArgs<Enter>,
   exit: Exits
 ): ReturnType<typeof internalBuildNested<Enter, Exits>>
+
+/**
+ * @deprecated
+ */
 export function buildNestedMachine<
   Enter extends StateBehaviorBuilder,
   Exits extends StateBehaviorBuilder[] | undefined
@@ -259,6 +281,9 @@ export function buildNestedMachine<
   return internalBuildNested(stateName, transitions, enter, undefined, exit)
 }
 
+/**
+ * @deprecated
+ */
 export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exit extends StateBehaviorBuilder> (
   stateName: string,
   transitions: Array<StateTransition<any, any>>,
@@ -266,6 +291,10 @@ export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exit 
   enterArgs: StateConstructorArgs<Enter>,
   exits?: Exit
 ): ReturnType<typeof internalBuildNested<Enter, [Exit]>>
+
+/**
+ * @deprecated
+ */
 export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[]> (
   stateName: string,
   transitions: Array<StateTransition<any, any>>,
@@ -273,6 +302,10 @@ export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exits
   enterArgs: StateConstructorArgs<Enter>,
   exits?: Exits
 ): ReturnType<typeof internalBuildNested<Enter, Exits>>
+
+/**
+ * @deprecated
+ */
 export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[]> (
   stateName: string,
   transitions: Array<StateTransition<any, any>>,
@@ -284,6 +317,7 @@ export function buildNestedMachineArgs<Enter extends StateBehaviorBuilder, Exits
 }
 
 /**
+ * @deprecated
  * Creates a new Nested State Machine class.
  *
  * This does NOT create an instance. This is used statically.
@@ -323,7 +357,6 @@ function internalBuildNested<
     if (!states.includes(trans.childState)) states.push(trans.childState)
   }
 
-  console.log(exits)
   return class BuiltNestedStateMachine extends NestedStateMachine {
     public static readonly stateName = stateName
     public static readonly transitions = transitions

@@ -30,8 +30,9 @@ import {
   BehaviorFollowEntity as FollowEntity,
   BehaviorEquipItem,
 } from "../../src/behaviors";
+import { getNestedMachine } from "../../src/builders";
 
-const FindPlayer = FindEntity.transform("FindPlayer", [(e) => e.type === "player"]);
+const FindPlayer = FindEntity.transform("FindPlayer", [e=>e.type === "player"]);
 const CustomFollowEntity = FollowEntity.transform("FollowPlayer", [{ followDistance: 2 }]);
 
 const comeToMeTransitions = [
@@ -50,8 +51,7 @@ const comeToMeTransitions = [
     .setOnTransition(() => bot.chat("Reached goal, finishing!"))
     .build(),
 ];
-// const comeMachine = getNestedMachine('comeToMe', comeToMeTransitions, FindPlayer, Exit).build();
-const comeMachine = buildNestedMachine("comeToMe", comeToMeTransitions, FindPlayer, Exit);
+const comeMachine = getNestedMachine('comeToMe', comeToMeTransitions, FindPlayer, Exit).build();
 
 const followAndLookTransitions = [
   // trigger this to exit the state machine.
@@ -83,7 +83,7 @@ const followAndLookTransitions = [
     .build(),
 ];
 
-const followMachine = buildNestedMachine("followAndLook", followAndLookTransitions, FindPlayer);
+const followMachine = getNestedMachine("followAndLook", followAndLookTransitions, FindPlayer).build()
 
 const rootTransitions = [
   getTransition("wildcard", Wildcard, Idle)
@@ -104,7 +104,7 @@ const rootTransitions = [
 // Now we just wrap our transition list in a nested state machine layer. We want the bot
 // to start on the getClosestPlayer state, so we'll specify that here.
 // We can specify entry arguments to our entry class here as well.
-const root = buildNestedMachine("rootLayer", rootTransitions, Idle);
+const root = getNestedMachine("rootLayer", rootTransitions, Idle).build();
 
 // We can start our state machine simply by creating a new instance.
 // We can delay the start of our machine by using autoStart: false
