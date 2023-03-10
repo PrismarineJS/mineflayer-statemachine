@@ -80,7 +80,6 @@ const followAndLookTransitions = [
 
 ]
 
-
 const followMachine = buildNestedMachine('followAndLook', followAndLookTransitions, FindPlayer);
 
 
@@ -101,7 +100,12 @@ const root = buildNestedMachine("rootLayer", rootTransitions, Idle);
 
 // We can start our state machine simply by creating a new instance.
 // We can delay the start of our machine by using autoStart: false
-const machine = new BotStateMachine({ bot, root, autoStart: false });
+const machine = new BotStateMachine({ 
+  bot, 
+  data: {test: "hey"},
+  root, 
+  autoStart: false 
+});
 
 // Start the machine anytime using <name>.start()
 bot.once("spawn", () => {
