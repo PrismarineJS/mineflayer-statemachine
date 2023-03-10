@@ -168,7 +168,7 @@ class NestedMachineBuilder<
 
 function build1<This extends NestedMachineBuilder<any, any, any, true, true>> (
   this: This
-): This["exits"] extends undefined ? SpecifcNestedStateMachine<This["enter"]> : SpecifcNestedStateMachine<This["enter"], U2T<ListType<This["exits"]>>> {
+): This['exits'] extends undefined ? SpecifcNestedStateMachine<This['enter']> : SpecifcNestedStateMachine<This['enter'], U2T<ListType<This['exits']>>> {
   const states: StateBehaviorBuilder[] = []
 
   states.push(this.enter)
@@ -234,8 +234,6 @@ export function getNestedMachine<Enter extends StateBehaviorBuilder, Exits exten
   }
   return new NestedMachineBuilder<Enter, Exits>(name, transitions, enter, realExits as any)
 }
-
-
 
 /**
  * @deprecated
