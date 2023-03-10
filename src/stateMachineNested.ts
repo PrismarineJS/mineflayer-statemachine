@@ -55,7 +55,6 @@ export class NestedStateMachine
     for (const listener of this.staticRef.onStartupListeners) {
       this.on(listener[0], listener[1])
     }
-
   }
 
   static addEventualListener<Key extends keyof NestedMachineEvents>(key: Key, listener: NestedMachineEvents[Key]): void {
@@ -119,7 +118,7 @@ export class NestedStateMachine
     const transitions = this.staticRef.transitions
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i]
-      if ((this._activeStateType != null && transition.parentStates.includes(this._activeStateType)) || transition.parentStates.includes(BehaviorWildcard)) { 
+      if ((this._activeStateType != null && transition.parentStates.includes(this._activeStateType)) || transition.parentStates.includes(BehaviorWildcard)) {
         if (transition.isTriggered() || transition.shouldTransition(this._activeState as any)) {
           transition.resetTrigger()
           i = -1
@@ -143,4 +142,3 @@ export class NestedStateMachine
     return this.staticRef.exits.includes(this._activeStateType)
   }
 }
-

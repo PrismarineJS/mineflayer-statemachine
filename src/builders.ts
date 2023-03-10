@@ -323,7 +323,7 @@ function internalBuildNested<
     if (!states.includes(trans.childState)) states.push(trans.childState)
   }
 
-  console.log(exits);
+  console.log(exits)
   return class BuiltNestedStateMachine extends NestedStateMachine {
     public static readonly stateName = stateName
     public static readonly transitions = transitions
