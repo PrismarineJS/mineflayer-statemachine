@@ -2,7 +2,7 @@ import type { Bot, Player } from 'mineflayer'
 import type { Entity } from 'prismarine-entity'
 import type { Vec3 } from 'vec3'
 import type { Item } from 'prismarine-item'
-import { CustomNarrow, HasArgs, OmitX, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { CustomNarrow, HasConstructArgs, OmitX, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 /**
  * A collection of targets which the bot is currently
@@ -58,7 +58,7 @@ export class StateBehavior {
   /**
    * Called when the bot enters this behavior state.
    */
-  onStateEntered (): void {}
+  onStateEntered (...args: any[]): void {}
 
   /**
    * Called each tick to update this behavior.
@@ -126,7 +126,7 @@ export function transform<
   Args extends CustomNarrow<Partial<StateConstructorArgs<T>>>,
   Len extends Args['length'] extends number ? Args['length'] : never
 > (
-  this: HasArgs<T>,
+  this: HasConstructArgs<T>,
   name: string,
   defaultArgs: Args
   // @ts-expect-error This exception catch is because this type definition is technically infinite.

@@ -15,6 +15,6 @@ export class BehaviorFindEntity extends StateBehavior {
   }
 
   foundEntity (): boolean {
-    return !(this.data.entity == null)
+    return this.data.entity != null
   }
 }

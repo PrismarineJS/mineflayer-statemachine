@@ -2,21 +2,33 @@ import type { Bot } from 'mineflayer'
 import type { StateBehavior, StateMachineData } from './stateBehavior'
 import { NestedStateMachine, NestedStateMachineOptions } from './stateMachineNested'
 
-export type StateBehaviorBuilder<State extends StateBehavior = StateBehavior, Args extends any[] = []> =
-NonConstructor<typeof StateBehavior> & (new (bot: Bot, data: StateMachineData, ...additonal: Args) => State)
+export type StateBehaviorBuilder<State extends StateBehavior = StateBehavior, Args extends any[] = any[]> = NonConstructor<
+  typeof StateBehavior
+> &
+(new (bot: Bot, data: StateMachineData, ...additonal: Args) => State)
 
 export type OmitTwo<T extends any[]> = T extends [any, any, ...infer R] ? R : never
 
-export type HasArgs<Child extends StateBehaviorBuilder> = OmitTwo<Required<ConstructorParameters<Child>>> extends [
+export type HasConstructArgs<Child extends StateBehaviorBuilder> = OmitTwo<
+Required<ConstructorParameters<Child>>
+> extends [first: any, ...any: any[]]
+  ? Child
+  : never
+export type NoConstructArgs<Child extends StateBehaviorBuilder> = OmitTwo<ConstructorParameters<Child>> extends [
   first: any,
-  ...any: any
+  ...any: any[]
+]
+  ? never
+  : Child
+
+export type HasEnterArgs<Child extends StateBehaviorBuilder> = Required<OnEnterArgs<Child>> extends [
+  first: any,
+  ...any: any[]
 ]
   ? Child
   : never
-export type NoArgs<Child extends StateBehaviorBuilder> = OmitTwo<ConstructorParameters<Child>> extends [
-  first: any,
-  ...any: any
-]
+
+export type NoEnterArgs<Child extends StateBehaviorBuilder> = OnEnterArgs<Child> extends [first: any, ...any: any[]]
   ? never
   : Child
 
@@ -40,14 +52,17 @@ export function isNestedStateMachine (first: Function): first is typeof NestedSt
   return false
 }
 
-export declare type OmitX<ToRemove extends number, Args extends any[], Remain extends any[] = []> =
-  ToRemove extends Remain['length']
-    ? Args
-    : Args extends []
-      ? never
-      : Args extends [first?: infer Arg, ...i: infer Rest]
-        ? OmitX<ToRemove, Rest, [...Remain, Arg]>
-        : never
+export declare type OmitX<
+  ToRemove extends number,
+  Args extends any[],
+  Remain extends any[] = []
+> = ToRemove extends Remain['length']
+  ? Args
+  : Args extends []
+    ? never
+    : Args extends [first?: infer Arg, ...i: infer Rest]
+      ? OmitX<ToRemove, Rest, [...Remain, Arg]>
+      : never
 
 declare type Narrowable = string | number | bigint | boolean
 declare type CustomNarrowRaw<A> = A extends []
@@ -68,16 +83,21 @@ export type MergeStates<
   Start extends boolean = false
 > = ToMerge extends []
   ? Final
-  : ToMerge extends readonly [first: infer R extends StateBehaviorBuilder, ...i: infer Rest extends readonly StateBehaviorBuilder[]]
+  : ToMerge extends readonly [
+      first: infer R extends StateBehaviorBuilder,
+      ...i: infer Rest extends readonly StateBehaviorBuilder[]
+  ]
     ? Start extends true
       ? MergeStates<Rest, Final | InstanceType<R>, Start>
       : MergeStates<Rest, InstanceType<R>, true>
     : StateBehavior
 
 export type ReplaceKeyTypes<Original extends any, Replacement> = {
-  [Key in keyof Original]: Key extends keyof Replacement ?
-    Original[Key] extends Replacement[Key] ?
-      Original[Key] : Replacement[Key] : Original[Key]
+  [Key in keyof Original]: Key extends keyof Replacement
+    ? Original[Key] extends Replacement[Key]
+      ? Original[Key]
+      : Replacement[Key]
+    : Original[Key];
 }
 
 export type WebserverBehaviorPositionIterable = Iterable<{
@@ -87,21 +107,14 @@ export type WebserverBehaviorPositionIterable = Iterable<{
   y: number
 }>
 
-type U2I<U> = (
-  U extends U ? (arg: U) => 0 : never
-) extends (arg: infer I) => 0
-  ? I
-  : never
+type U2I<U> = (U extends U ? (arg: U) => 0 : never) extends (arg: infer I) => 0 ? I : never
 
 // For homogeneous unions, it picks the last member
-type OneOf<U> = U2I<
-U extends U ? (x: U) => 0 : never
-> extends (x: infer L) => 0
-  ? L
-  : never
+type OneOf<U> = U2I<U extends U ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never
 
-export type U2T<U, L = OneOf<U>> = [U] extends [never]
-  ? []
-  : [...U2T<Exclude<U, L>>, L]
+export type U2T<U, L = OneOf<U>> = [U] extends [never] ? [] : [...U2T<Exclude<U, L>>, L]
 
 export type ListType<L> = L extends Array<infer R> ? R : never
+
+type ArgumentTypes<F extends Function> = F extends (...args: infer A) => any ? A : never
+export type OnEnterArgs<State extends StateBehaviorBuilder> = ArgumentTypes<InstanceType<State>['onStateEntered']>

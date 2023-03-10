@@ -7,5 +7,5 @@ export { StateMachineWebserver, WebserverBehaviorPositions } from './webserver'
 export {
   buildNestedMachine,
   buildNestedMachineArgs,
-  buildTransition
+  getTransition
 } from './builders'

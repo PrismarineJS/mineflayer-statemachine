@@ -1,68 +1,68 @@
-import { BotStateMachine, NestedStateMachine, StateBehavior } from "./index";
-import socketLoader, { Socket } from "socket.io";
-import path from "path";
-import express from "express";
-import httpLoader from "http";
-import { isNestedStateMachine, StateBehaviorBuilder, WebserverBehaviorPositionIterable } from "./util";
+import { BotStateMachine, NestedStateMachine, StateBehavior } from './index'
+import socketLoader, { Socket } from 'socket.io'
+import path from 'path'
+import express from 'express'
+import httpLoader from 'http'
+import { isNestedStateMachine, StateBehaviorBuilder, WebserverBehaviorPositionIterable } from './util'
 
-const publicFolder = "./../web";
+const publicFolder = './../web'
 
 // provide positioning for both specific-to-machine states and globally as a backup.
 export class WebserverBehaviorPositions {
-  protected storage: { [name: string]: { x: number; y: number } | undefined } = {};
-  constructor(items?: WebserverBehaviorPositionIterable) {
+  protected storage: { [name: string]: { x: number, y: number } | undefined } = {}
+  constructor (items?: WebserverBehaviorPositionIterable) {
     if (items != null) {
       for (const item of items) {
-        this.storage[this.getName(item.state, item.parentMachine)] = { x: item.x, y: item.y };
+        this.storage[this.getName(item.state, item.parentMachine)] = { x: item.x, y: item.y }
       }
     }
   }
 
-  private getName(state: StateBehaviorBuilder, parentMachine?: typeof NestedStateMachine): string {
-    if (parentMachine != null) return parentMachine.name + parentMachine.stateName + state.name + state.stateName;
-    return state.name + state.stateName;
+  private getName (state: StateBehaviorBuilder, parentMachine?: typeof NestedStateMachine): string {
+    if (parentMachine != null) return parentMachine.name + parentMachine.stateName + state.name + state.stateName
+    return state.name + state.stateName
   }
 
-  public has(state: StateBehaviorBuilder, parentMachine?: typeof NestedStateMachine): boolean {
+  public has (state: StateBehaviorBuilder, parentMachine?: typeof NestedStateMachine): boolean {
     if (parentMachine != null) {
-      const flag = !(this.storage[parentMachine.name + parentMachine.stateName + state.name + state.stateName] == null);
-      if (!flag) return !(this.storage[state.name + state.stateName] == null);
-      return true;
+      const flag = !(this.storage[parentMachine.name + parentMachine.stateName + state.name + state.stateName] == null)
+      if (!flag) return !(this.storage[state.name + state.stateName] == null)
+      return true
     }
-    return !(this.storage[state.name + state.stateName] == null);
+    return !(this.storage[state.name + state.stateName] == null)
   }
 
-  public get(
+  public get (
     state: StateBehaviorBuilder,
     parentMachine?: typeof NestedStateMachine
-  ): { x: number | undefined; y: number | undefined } {
-    if (!this.has(state, parentMachine)) return { x: undefined, y: undefined };
+  ): { x: number | undefined, y: number | undefined } {
+    if (!this.has(state, parentMachine)) return { x: undefined, y: undefined }
     if (parentMachine != null) {
       return (
         this.storage[parentMachine.name + parentMachine.stateName + state.name + state.stateName] ??
         this.storage[state.name + state.stateName] ?? { x: undefined, y: undefined }
-      );
+      )
     } else {
-      return this.storage[state.name + state.stateName] ?? { x: undefined, y: undefined };
+      return this.storage[state.name + state.stateName] ?? { x: undefined, y: undefined }
     }
   }
 
-  public set(state: StateBehaviorBuilder, x: number, y: number, parentMachine?: typeof NestedStateMachine): this {
-    if (this.has(state, parentMachine)) throw Error("State has already been added!");
-    const key = this.getName(state, parentMachine);
-    this.storage[key] = { x, y };
-    return this;
+  public set (state: StateBehaviorBuilder, x: number, y: number, parentMachine?: typeof NestedStateMachine): this {
+    if (this.has(state, parentMachine)) throw Error('State has already been added!')
+    const key = this.getName(state, parentMachine)
+    this.storage[key] = { x, y }
+    return this
   }
 
-  public removeState(state: StateBehaviorBuilder, parentMachine?: typeof NestedStateMachine): this {
-    const key = this.getName(state, parentMachine);
-    this.storage[key] = undefined;
-    return this;
+  public removeState (state: StateBehaviorBuilder, parentMachine?: typeof NestedStateMachine): this {
+    const key = this.getName(state, parentMachine)
+    this.storage[key] = undefined
+    return this
   }
 
-  public clear(): this {
-    for (const key in this.storage) this.storage[key] = undefined;
-    return this;
+  public clear (): this {
+    for (const key in this.storage) this.storage[key] = undefined
+    return this
   }
 }
 
@@ -71,137 +71,137 @@ export class WebserverBehaviorPositions {
  * bot behavior state machine.
  */
 export class StateMachineWebserver {
-  private serverRunning: boolean = false;
+  private serverRunning: boolean = false
 
-  readonly stateMachine: BotStateMachine<any, any>;
-  readonly presetPositions?: WebserverBehaviorPositions;
-  readonly port: number;
+  readonly stateMachine: BotStateMachine<any, any>
+  readonly presetPositions?: WebserverBehaviorPositions
+  readonly port: number
 
-  private lastMachine: typeof NestedStateMachine | undefined;
-  private lastState: StateBehaviorBuilder | undefined;
+  private lastMachine: typeof NestedStateMachine | undefined
+  private lastState: StateBehaviorBuilder | undefined
 
   /**
    * Creates and starts a new webserver.
    * @param stateMachine - The state machine being observed.
    * @param port - The port to open this server on.
    */
-  constructor({
+  constructor ({
     stateMachine,
     presetPositions,
-    port = 8934,
+    port = 8934
   }: {
-    stateMachine: BotStateMachine<any, any>;
-    presetPositions?: WebserverBehaviorPositions;
-    port?: number;
+    stateMachine: BotStateMachine<any, any>
+    presetPositions?: WebserverBehaviorPositions
+    port?: number
   }) {
-    this.stateMachine = stateMachine;
-    this.port = port;
-    this.presetPositions = presetPositions;
-    this.lastMachine = undefined;
-    this.lastState = undefined;
+    this.stateMachine = stateMachine
+    this.port = port
+    this.presetPositions = presetPositions
+    this.lastMachine = undefined
+    this.lastState = undefined
   }
 
   /**
    * Checks whether or not this server is currently running.
    */
-  isServerRunning(): boolean {
-    return this.serverRunning;
+  isServerRunning (): boolean {
+    return this.serverRunning
   }
 
   /**
    * Configures and starts a basic static web server.
    */
-  startServer(): void {
+  startServer (): void {
     if (this.serverRunning) {
-      throw new Error("Server already running!");
+      throw new Error('Server already running!')
     }
 
-    this.serverRunning = true;
+    this.serverRunning = true
 
-    const app = express();
-    app.use("/web", express.static(path.join(__dirname, publicFolder)));
-    app.get("/", (req, res) => res.sendFile(path.join(__dirname, publicFolder, "index.html")));
+    const app = express()
+    app.use('/web', express.static(path.join(__dirname, publicFolder)))
+    app.get('/', (req, res) => res.sendFile(path.join(__dirname, publicFolder, 'index.html')))
 
-    const http = httpLoader.createServer(app);
+    const http = httpLoader.createServer(app)
 
     // @ts-expect-error ; Why? Not sure. Probably a type-def loading issue. Either way, it's safe.
-    const io = socketLoader(http);
+    const io = socketLoader(http)
 
-    io.on("connection", (socket: Socket) => this.onConnected(socket));
+    io.on('connection', (socket: Socket) => this.onConnected(socket))
 
-    http.listen(this.port, () => this.onStarted());
+    http.listen(this.port, () => this.onStarted())
   }
 
   /**
    * Called when the web server is started.
    */
-  private onStarted(): void {
-    console.log(`Started state machine web server at http://localhost:${this.port}.`);
+  private onStarted (): void {
+    console.log(`Started state machine web server at http://localhost:${this.port}.`)
   }
 
   /**
    * Called when a web socket connects to this server.
    */
-  private onConnected(socket: Socket): void {
-    console.log(`Client ${socket.handshake.address} connected to webserver.`);
+  private onConnected (socket: Socket): void {
+    console.log(`Client ${socket.handshake.address} connected to webserver.`)
 
-    this.sendStatemachineStructure(socket);
+    this.sendStatemachineStructure(socket)
 
-    if (this.lastMachine != null && this.lastState != null) this.updateClient(socket, this.lastMachine, this.lastState);
+    if (this.lastMachine != null && this.lastState != null) this.updateClient(socket, this.lastMachine, this.lastState)
 
     const updateClient = (type: typeof NestedStateMachine, _: NestedStateMachine, state: StateBehaviorBuilder): void =>
-      this.updateClient(socket, type, state);
+      this.updateClient(socket, type, state)
 
-    const clearClient = (type: typeof NestedStateMachine): void => this.updateClient(socket, type, undefined);
-    this.stateMachine.on("stateEntered", updateClient);
-    this.stateMachine.on("stateExited", clearClient);
+    const clearClient = (type: typeof NestedStateMachine): void => this.updateClient(socket, type, undefined)
+    this.stateMachine.on('stateEntered', updateClient)
+    this.stateMachine.on('stateExited', clearClient)
 
-    socket.on("disconnect", () => {
-      this.stateMachine.removeListener("stateEntered", updateClient);
-      this.stateMachine.removeListener("stateExited", clearClient);
+    socket.on('disconnect', () => {
+      this.stateMachine.removeListener('stateEntered', updateClient)
+      this.stateMachine.removeListener('stateExited', clearClient)
 
-      console.log(`Client ${socket.handshake.address} disconnected from webserver.`);
-    });
+      console.log(`Client ${socket.handshake.address} disconnected from webserver.`)
+    })
   }
 
-  private sendStatemachineStructure(socket: Socket): void {
-    const states = this.getStates();
-    const transitions = this.getTransitions();
-    const nestGroups = this.getNestGroups();
+  private sendStatemachineStructure (socket: Socket): void {
+    const states = this.getStates()
+    const transitions = this.getTransitions()
+    const nestGroups = this.getNestGroups()
 
     const packet: StateMachineStructurePacket = {
       states,
       transitions,
-      nestGroups,
-    };
+      nestGroups
+    }
 
-    socket.emit("connected", packet);
+    socket.emit('connected', packet)
   }
 
-  private updateClient(
+  private updateClient (
     socket: Socket,
     nested: typeof NestedStateMachine,
     state: StateBehaviorBuilder | undefined
   ): void {
     if (state == null) {
-      socket.emit("stateChanged", { activeStates: [] });
-      return;
+      socket.emit('stateChanged', { activeStates: [] })
+      return
     }
 
-    const activeStates: number[] = [];
-    const index = this.getStateId(state, nested);
+    const activeStates: number[] = []
+    const index = this.getStateId(state, nested)
 
     if (index > -1) {
-      activeStates.push(index);
+      activeStates.push(index)
     }
 
     const packet: StateMachineUpdatePacket = {
-      activeStates,
-    };
+      activeStates
+    }
 
-    socket.emit("stateChanged", packet);
-    this.lastMachine = nested;
-    this.lastState = state;
+    socket.emit('stateChanged', packet)
+    this.lastMachine = nested
+    this.lastState = state
   }
 
   /**
@@ -217,125 +217,125 @@ export class StateMachineWebserver {
    * @param data object to allow pointer passing for recursion (lol js)
    * @returns id of state.
    */
-  private getStateId(
+  private getStateId (
     state: typeof StateBehavior,
     targetMachine: typeof NestedStateMachine,
     searching: typeof NestedStateMachine = this.stateMachine.rootType,
     data = { offset: 0 }
   ): number {
     for (let i = 0; i < searching.states.length; i++) {
-      const foundState = searching.states[i];
+      const foundState = searching.states[i]
       if (foundState === state && searching === targetMachine) {
-        return data.offset;
+        return data.offset
       }
-      data.offset++;
+      data.offset++
 
       if (isNestedStateMachine(foundState)) {
-        const ret = this.getStateId(state, targetMachine, foundState, data);
-        if (ret !== -1) return ret;
+        const ret = this.getStateId(state, targetMachine, foundState, data)
+        if (ret !== -1) return ret
       }
     }
 
-    return -1;
+    return -1
   }
 
   // Don't mind this stupid object -> pointer hack.
   // note: this matches the pattern found locally.
   // note: slight speedup possible by passing array by pointers as well.
-  private getStates(
+  private getStates (
     nested: typeof NestedStateMachine = this.stateMachine.rootType,
     data = { index: 0, offset: 0 },
     offset = 0
   ): StateMachineStatePacket[] {
-    const states: StateMachineStatePacket[] = [];
+    const states: StateMachineStatePacket[] = []
 
     for (let i = 0; i < nested.states.length; i++) {
-      const state = nested.states[i];
+      const state = nested.states[i]
       states.push({
         id: data.index++,
         name: state.stateName !== StateBehavior.stateName ? state.stateName : state.name,
         nestGroup: offset,
-        ...this.presetPositions?.get(state, nested),
-      });
+        ...this.presetPositions?.get(state, nested)
+      })
       if (isNestedStateMachine(state)) {
-        states.push(...this.getStates(state, data, offset + ++data.offset));
+        states.push(...this.getStates(state, data, offset + ++data.offset))
       }
     }
 
-    return states;
+    return states
   }
 
-  private getTransitions(): StateMachineTransitionPacket[] {
-    const transitions: StateMachineTransitionPacket[] = [];
+  private getTransitions (): StateMachineTransitionPacket[] {
+    const transitions: StateMachineTransitionPacket[] = []
 
     for (let i = 0; i < this.stateMachine.nestedMachinesHelp.length; i++) {
-      const machine = this.stateMachine.nestedMachinesHelp[i];
-      const foundTransitions = machine.transitions;
+      const machine = this.stateMachine.nestedMachinesHelp[i]
+      const foundTransitions = machine.transitions
       for (let k = 0; k < foundTransitions.length; k++) {
-        const transition = foundTransitions[k];
+        const transition = foundTransitions[k]
         for (let l = 0; l < transition.parentStates.length; l++) {
-          const parentState = transition.parentStates[l];
+          const parentState = transition.parentStates[l]
           transitions.push({
             id: i,
             name: transition.name,
             parentState: this.getStateId(parentState, machine),
-            childState: this.getStateId(transition.childState, machine),
-          });
+            childState: this.getStateId(transition.childState, machine)
+          })
         }
       }
     }
 
-    return transitions;
+    return transitions
   }
 
-  private getNestGroups(): NestedStateMachinePacket[] {
-    const nestGroups: NestedStateMachinePacket[] = [];
+  private getNestGroups (): NestedStateMachinePacket[] {
+    const nestGroups: NestedStateMachinePacket[] = []
 
     for (let i = 0; i < this.stateMachine.nestedMachinesHelp.length; i++) {
-      const machine = this.stateMachine.nestedMachinesHelp[i];
-      const depth = this.stateMachine.getNestedMachineDepth(machine);
+      const machine = this.stateMachine.nestedMachinesHelp[i]
+      const depth = this.stateMachine.getNestedMachineDepth(machine)
       nestGroups.push({
         id: i,
         enter: this.getStateId(machine.enter, machine),
         exits: machine.exits != null ? machine.exits.map((exit) => this.getStateId(exit, machine)) : undefined,
         indent: depth,
-        name: machine.stateName,
-      });
+        name: machine.stateName
+      })
     }
 
-    return nestGroups;
+    return nestGroups
   }
 }
 
 interface StateMachineStructurePacket {
-  states: StateMachineStatePacket[];
-  transitions: StateMachineTransitionPacket[];
-  nestGroups: NestedStateMachinePacket[];
+  states: StateMachineStatePacket[]
+  transitions: StateMachineTransitionPacket[]
+  nestGroups: NestedStateMachinePacket[]
 }
 
 interface NestedStateMachinePacket {
-  id: number;
-  enter: number;
-  exits?: number[];
-  indent: number;
-  name?: string;
+  id: number
+  enter: number
+  exits?: number[]
+  indent: number
+  name?: string
 }
 
 interface StateMachineStatePacket {
-  id: number;
-  name: string;
-  x?: number;
-  y?: number;
-  nestGroup: number;
+  id: number
+  name: string
+  x?: number
+  y?: number
+  nestGroup: number
 }
 
 interface StateMachineTransitionPacket {
-  id: number;
-  name?: string;
-  parentState: number;
-  childState: number;
+  id: number
+  name?: string
+  parentState: number
+  childState: number
 }
 
 interface StateMachineUpdatePacket {
-  activeStates: number[];
+  activeStates: number[]
 }

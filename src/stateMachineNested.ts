@@ -4,13 +4,13 @@ import { StrictEventEmitter } from 'strict-event-emitter-types'
 import { BehaviorWildcard } from './behaviors'
 import { StateBehavior, clone, transform, StateMachineData } from './stateBehavior'
 import { StateTransition } from './stateTransition'
-import { HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { HasConstructArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, Exits extends readonly StateBehaviorBuilder[] | undefined> {
   stateName: string
   readonly transitions: Array<StateTransition<any, any>>
   readonly enter: Enter
-  readonly enterArgs: HasArgs<Enter> extends Enter ? StateConstructorArgs<Enter> : never
+  readonly enterArgs: HasConstructArgs<Enter> extends Enter ? StateConstructorArgs<Enter> : never
   readonly exits?: Exits extends undefined ? undefined : Exclude<Exits, undefined>
   enterIntermediateStates?: boolean
 }
@@ -55,6 +55,7 @@ export class NestedStateMachine
     for (const listener of this.staticRef.onStartupListeners) {
       this.on(listener[0], listener[1])
     }
+
   }
 
   static addEventualListener<Key extends keyof NestedMachineEvents>(key: Key, listener: NestedMachineEvents[Key]): void {
@@ -94,11 +95,11 @@ export class NestedStateMachine
     this._activeState = undefined
   }
 
-  protected enterState (EnterState: StateBehaviorBuilder<StateBehavior, any[]>, bot: Bot, additional: any[] = []): void {
-    this._activeState = new EnterState(bot, this.data, ...additional)
+  protected enterState (EnterState: StateBehaviorBuilder<StateBehavior, any[]>, bot: Bot, constructorArgs: any[] = [], entryArgs: any[] = []): void {
+    this._activeState = new EnterState(bot, this.data, ...constructorArgs)
     this._activeState.active = true
     this.emit('stateEntered', this, EnterState, this.data)
-    this._activeState.onStateEntered?.()
+    this._activeState.onStateEntered?.(...entryArgs)
     this._activeState.update?.()
   }
 
@@ -112,19 +113,20 @@ export class NestedStateMachine
 
   public update (): void {
     // update will only occur when this is active anyway, so return if not.
+    // console.log(this.activeStateType, this._activeState == null);
     if (this._activeState == null) return
     this._activeState.update?.()
     const transitions = this.staticRef.transitions
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i]
-      if ((this._activeStateType != null && transition.parentStates.includes(this._activeStateType)) || transition.parentStates.includes(BehaviorWildcard)) {
+      if ((this._activeStateType != null && transition.parentStates.includes(this._activeStateType)) || transition.parentStates.includes(BehaviorWildcard)) { 
         if (transition.isTriggered() || transition.shouldTransition(this._activeState as any)) {
           transition.resetTrigger()
           i = -1
           transition.onTransition(this.data)
           this.exitActiveState()
           this._activeStateType = transition.childState
-          this.enterState(this._activeStateType, this.bot, transition.constructorArgs)
+          this.enterState(this._activeStateType, this.bot, transition.constructorArgs, transition.enterArgs)
         }
       }
       // transition.resetTrigger() // always reset to false to avoid false positives.
@@ -141,3 +143,4 @@ export class NestedStateMachine
     return this.staticRef.exits.includes(this._activeStateType)
   }
 }
+

@@ -1,5 +1,5 @@
 import { StateMachineData } from './stateBehavior'
-import { HasArgs, MergeStates, StateBehaviorBuilder, StateConstructorArgs } from './util'
+import { HasConstructArgs, MergeStates, OnEnterArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
 /**
  * The parameters for initializing a state transition.
@@ -10,7 +10,8 @@ export interface StateTransitionInfo<
 > {
   parents: Parents
   child: Child
-  constructorArgs: HasArgs<Child> extends Child ? StateConstructorArgs<Child> : undefined
+  constructorArgs: HasConstructArgs<Child> extends Child ? StateConstructorArgs<Child> : undefined
+  enterArgs: OnEnterArgs<Child> extends [] ? never : OnEnterArgs<Child>
   name?: string
   shouldTransition?: (state: MergeStates<Parents>) => boolean
   onTransition?: (data: StateMachineData) => void
@@ -27,6 +28,7 @@ export class StateTransition<
   readonly parentStates: Parents
   readonly childState: Child
   public readonly constructorArgs: StateTransitionInfo<Parents, Child>['constructorArgs']
+  public readonly enterArgs: StateTransitionInfo<Parents, Child>['enterArgs']
   private triggerState: boolean = false
   shouldTransition: (state: MergeStates<Parents>) => boolean
   onTransition: (data: StateMachineData) => void
@@ -37,6 +39,7 @@ export class StateTransition<
     child,
     name,
     constructorArgs,
+    enterArgs,
     shouldTransition = (data) => false,
     onTransition = (data) => {}
   }: StateTransitionInfo<Parents, Child>) {
@@ -45,6 +48,7 @@ export class StateTransition<
     this.shouldTransition = shouldTransition
     this.onTransition = onTransition
     this.constructorArgs = constructorArgs
+    this.enterArgs = enterArgs
     this.name = name
   }
 
