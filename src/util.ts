@@ -2,7 +2,7 @@ import type { Bot } from 'mineflayer'
 import type { StateBehavior, StateMachineData } from './stateBehavior'
 import { NestedStateMachine, NestedStateMachineOptions } from './stateMachineNested'
 
-export type StateBehaviorBuilder<State extends StateBehavior = StateBehavior, Args extends any[] = any[]> =
+export type StateBehaviorBuilder<State extends StateBehavior = StateBehavior, Args extends any[] = []> =
 NonConstructor<typeof StateBehavior> & (new (bot: Bot, data: StateMachineData, ...additonal: Args) => State)
 
 export type OmitTwo<T extends any[]> = T extends [any, any, ...infer R] ? R : never
@@ -24,7 +24,7 @@ export type StateConstructorArgs<Child extends StateBehaviorBuilder> = OmitTwo<C
 
 export type SpecifcNestedStateMachine<
   Enter extends StateBehaviorBuilder = StateBehaviorBuilder,
-  Exit extends StateBehaviorBuilder[] = StateBehaviorBuilder[]
+  Exit extends readonly any[] | undefined = undefined
 > = typeof NestedStateMachine & NestedStateMachineOptions<Enter, Exit>
 
 type NonConstructorKeys<T> = { [P in keyof T]: T[P] extends new () => any ? never : P }[keyof T]

@@ -22,7 +22,6 @@ import {
   BotStateMachine,
   buildTransition,
   buildNestedMachine,
-  StateBehavior
 } from "../../src";
 
 // Import required behaviors.
@@ -75,14 +74,14 @@ const followAndLookTransitions = [
     .setShouldTransition(state => state.distanceToTarget() <= 2)
     .setOnTransition(() => bot.chat('Found entity!')),
 
-  // new multiple transitions, strongly typed! (W.I.P.)
+  // new multiple transitions, strongly typed!
   buildTransition('followingTooFar', [CustomFollowEntity, LookAtTarget], Exit)
     .setShouldTransition(state => state.distanceToTarget() > 32)
 
 ]
 
 
-const followMachine = buildNestedMachine('followAndLook', followAndLookTransitions, FindPlayer, Exit)
+const followMachine = buildNestedMachine('followAndLook', followAndLookTransitions, FindPlayer);
 
 
 const rootTransitions = [

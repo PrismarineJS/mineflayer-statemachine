@@ -6,12 +6,12 @@ import { StateBehavior, clone, transform, StateMachineData } from './stateBehavi
 import { StateTransition } from './stateTransition'
 import { HasArgs, StateBehaviorBuilder, StateConstructorArgs } from './util'
 
-export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, Exits extends StateBehaviorBuilder[]> {
+export interface NestedStateMachineOptions<Enter extends StateBehaviorBuilder, Exits extends readonly StateBehaviorBuilder[] | undefined> {
   stateName: string
   readonly transitions: Array<StateTransition<any, any>>
   readonly enter: Enter
   readonly enterArgs: HasArgs<Enter> extends Enter ? StateConstructorArgs<Enter> : never
-  readonly exits?: Exits
+  readonly exits?: Exits extends undefined ? undefined : Exclude<Exits, undefined>
   enterIntermediateStates?: boolean
 }
 
@@ -25,10 +25,10 @@ export class NestedStateMachine
   implements StateBehavior {
   public static readonly stateName: string = this.name
   public static readonly transitions: StateTransition[]
-  public static readonly states: StateBehaviorBuilder[]
+  public static readonly states: Array<StateBehaviorBuilder<StateBehavior, any[]>>
   public static readonly enter: StateBehaviorBuilder
   public static readonly enterArgs: any[] | undefined = undefined // StateConstructorArgs<typeof this.enter>; // sadly, this is always undefined (no static generics).
-  public static readonly exits?: StateBehaviorBuilder[]
+  public static readonly exits?: StateBehaviorBuilder[] | undefined
   public static readonly enterIntermediateStates: boolean
 
   public static readonly clone = clone
@@ -83,27 +83,6 @@ export class NestedStateMachine
     return this._activeState
   }
 
-  /**
-   * Getter
-   */
-  public get transitions (): StateTransition[] {
-    return (this.constructor as typeof NestedStateMachine).transitions
-  }
-
-  /**
-   * Getter
-   */
-  public get states (): StateBehaviorBuilder[] {
-    return (this.constructor as typeof NestedStateMachine).states
-  }
-
-  /**
-   * Getter
-   */
-  public get stateName (): string {
-    return (this.constructor as typeof NestedStateMachine).stateName
-  }
-
   public onStateEntered (): void {
     this._activeStateType = this.staticRef.enter
     this.enterState(this._activeStateType, this.bot, this.staticRef.enterArgs)
@@ -115,7 +94,7 @@ export class NestedStateMachine
     this._activeState = undefined
   }
 
-  protected enterState (EnterState: StateBehaviorBuilder, bot: Bot, additional: any[] = []): void {
+  protected enterState (EnterState: StateBehaviorBuilder<StateBehavior, any[]>, bot: Bot, additional: any[] = []): void {
     this._activeState = new EnterState(bot, this.data, ...additional)
     this._activeState.active = true
     this.emit('stateEntered', this, EnterState, this.data)
@@ -135,9 +114,7 @@ export class NestedStateMachine
     // update will only occur when this is active anyway, so return if not.
     if (this._activeState == null) return
     this._activeState.update?.()
-    let lastState = this._activeStateType
     const transitions = this.staticRef.transitions
-    let args: any[] | undefined
     for (let i = 0; i < transitions.length; i++) {
       const transition = transitions[i]
       if ((this._activeStateType != null && transition.parentStates.includes(this._activeStateType)) || transition.parentStates.includes(BehaviorWildcard)) {
@@ -147,20 +124,10 @@ export class NestedStateMachine
           transition.onTransition(this.data)
           this.exitActiveState()
           this._activeStateType = transition.childState
-          args = transition.constructorArgs
-          if (this.staticRef.enterIntermediateStates) {
-            lastState = transition.childState
-            this.enterState(lastState, this.bot, args)
-          }
+          this.enterState(this._activeStateType, this.bot, transition.constructorArgs)
         }
       }
       // transition.resetTrigger() // always reset to false to avoid false positives.
-    }
-
-    if (this.isFinished()) return
-
-    if (this._activeStateType != null && this._activeStateType !== lastState) {
-      this.enterState(this._activeStateType, this.bot, args)
     }
   }
 

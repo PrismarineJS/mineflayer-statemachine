@@ -10,7 +10,7 @@ export interface StateTransitionInfo<
 > {
   parents: Parents
   child: Child
-  constructorArgs: HasArgs<Child> extends Child ? StateConstructorArgs<Child> : never
+  constructorArgs: HasArgs<Child> extends Child ? StateConstructorArgs<Child> : undefined
   name?: string
   shouldTransition?: (state: MergeStates<Parents>) => boolean
   onTransition?: (data: StateMachineData) => void

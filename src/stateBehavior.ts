@@ -20,6 +20,8 @@ export interface StateMachineData {
   positions?: Vec3[]
   items?: Item[]
   players?: Player[]
+
+  [key: string]: any
 }
 
 export class StateBehavior {
@@ -75,9 +77,6 @@ export class StateBehavior {
     return false
   }
 
-  /**
-   * Args is a compatibility hack here. Don't like it, but whatever.
-   */
   constructor (bot: Bot, data: StateMachineData) {
     this.bot = bot
     this.data = data
@@ -123,7 +122,7 @@ export function clone<T extends StateBehaviorBuilder> (this: T, name?: string): 
  * @returns
  */
 export function transform<
-  T extends StateBehaviorBuilder,
+  T extends StateBehaviorBuilder<StateBehavior, any[]>,
   Args extends CustomNarrow<Partial<StateConstructorArgs<T>>>,
   Len extends Args['length'] extends number ? Args['length'] : never
 > (
