@@ -181,7 +181,7 @@ export class BotStateMachine extends EventEmitter {
     this.rootStateMachine.onStateEntered()
   }
 
-  private findNestedStateMachines = (nested: NestedStateMachine, depth: number = 0): void => {
+  private readonly findNestedStateMachines = (nested: NestedStateMachine, depth: number = 0): void => {
     this.nestedStateMachines.push(nested)
     nested.depth = depth
 
@@ -192,7 +192,7 @@ export class BotStateMachine extends EventEmitter {
     }
   }
 
-  private findStatesRecursive = (nested: NestedStateMachine): void => {
+  private readonly findStatesRecursive = (nested: NestedStateMachine): void => {
     for (const state of nested.states) {
       this.states.push(state)
 
@@ -200,7 +200,7 @@ export class BotStateMachine extends EventEmitter {
     }
   }
 
-  private findTransitionsRecursive = (nested: NestedStateMachine): void => {
+  private readonly findTransitionsRecursive = (nested: NestedStateMachine): void => {
     for (const trans of nested.transitions) { this.transitions.push(trans) }
 
     for (const state of nested.states) {
@@ -211,7 +211,7 @@ export class BotStateMachine extends EventEmitter {
   /**
      * Called each tick to update the root state machine.
      */
-  private update = (): void => {
+  private readonly update = (): void => {
     this.rootStateMachine.update()
   }
 }
@@ -308,7 +308,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     this.states = this.findStates()
   }
 
-  private findStates = (): StateBehavior[] => {
+  private readonly findStates = (): StateBehavior[] => {
     const states = []
     states.push(this.enter)
 
