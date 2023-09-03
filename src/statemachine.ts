@@ -175,7 +175,7 @@ export class BotStateMachine extends EventEmitter {
     this.findTransitionsRecursive(this.rootStateMachine)
     this.findNestedStateMachines(this.rootStateMachine)
 
-    this.bot.on('physicTick', () => this.update())
+    this.bot.on('physicsTick', () => this.update())
 
     this.rootStateMachine.active = true
     this.rootStateMachine.onStateEntered()
