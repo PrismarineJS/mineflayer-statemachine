@@ -4,8 +4,6 @@ import { Bot } from 'mineflayer'
 import { Movements, goals, Pathfinder, ComputedPath } from 'mineflayer-pathfinder'
 import { Vec3 } from 'vec3'
 
-import mcDataLoader from 'minecraft-data'
-
 /**
  * Causes the bot to move to the target position.
  *

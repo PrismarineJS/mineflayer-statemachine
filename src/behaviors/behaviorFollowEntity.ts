@@ -2,7 +2,6 @@ import { StateBehavior, StateMachineTargets } from '../statemachine'
 import { Bot } from 'mineflayer'
 import { Entity } from 'prismarine-entity'
 import { Movements, goals } from 'mineflayer-pathfinder'
-import mcDataLoader from 'minecraft-data'
 
 /**
  * Causes the bot to follow the target entity.
@@ -10,8 +9,6 @@ import mcDataLoader from 'minecraft-data'
  * This behavior relies on the mineflayer-pathfinding plugin to be installed.
  */
 export class BehaviorFollowEntity implements StateBehavior {
-  private readonly mcData: any
-
   readonly bot: Bot
   readonly targets: StateMachineTargets
   movements: Movements
@@ -29,7 +26,6 @@ export class BehaviorFollowEntity implements StateBehavior {
   constructor (bot: Bot, targets: StateMachineTargets) {
     this.bot = bot
     this.targets = targets
-    this.mcData = mcDataLoader(this.bot.version)
     this.movements = new Movements(this.bot)
   }
 
