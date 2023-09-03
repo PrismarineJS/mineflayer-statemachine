@@ -32,8 +32,7 @@ export class BehaviorMoveTo implements StateBehavior {
     this.bot = bot
     this.targets = targets
 
-    const mcData = mcDataLoader(bot.version)
-    this.movements = new Movements(bot, mcData)
+    this.movements = new Movements(bot)
   }
 
   onStateEntered (): void {

@@ -30,7 +30,7 @@ export class BehaviorFollowEntity implements StateBehavior {
     this.bot = bot
     this.targets = targets
     this.mcData = mcDataLoader(this.bot.version)
-    this.movements = new Movements(this.bot, this.mcData)
+    this.movements = new Movements(this.bot)
   }
 
   onStateEntered (): void {
