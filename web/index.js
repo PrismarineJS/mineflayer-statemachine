@@ -16,6 +16,34 @@ const LAYER_ENTER_COLOR = '#559966'
 
 let graph
 let nestedGroups
+let currentPacketData
+
+
+const tree = new Tree(document.getElementById('layerButtons'), {
+  navigate: false, // allow navigate with ArrowUp and ArrowDown
+});
+
+tree.on("select", (e) => {
+  selectLayer(e.node.id)
+});
+
+// keep track of the original node objects
+tree.on("created", (e, node) => {
+  e.node = node;
+});
+
+const openAllBtn = document.getElementById('openAll')
+openAllBtn.addEventListener('click', () => tree.openAll())
+
+
+const closeAllBtn = document.getElementById('closeAll')
+closeAllBtn.addEventListener('click', () => tree.closeAll())
+
+let autoOpenNestedBehaviors = false
+const autoOpenCheckbox = document.getElementById('autoopen')
+autoOpenCheckbox.addEventListener('change', () => {
+  autoOpenNestedBehaviors = autoOpenCheckbox.checked
+})
 
 class Graph {
   constructor (canvas) {
@@ -35,7 +63,7 @@ class Graph {
     requestAnimationFrame(() => this.animation())
   }
 
-  clear () {
+  clear () {   
     this.states = []
     this.transitions = []
     this.repaint = true
@@ -45,6 +73,36 @@ class Graph {
     this.canvas.addEventListener('mousemove', e => this.onMouseMove(e))
     this.canvas.addEventListener('mouseup', e => this.onMouseUp(e))
     this.canvas.addEventListener('mousedown', e => this.onMouseDown(e))
+    this.canvas.addEventListener('dblclick', (e) => this.onDblclick(e))
+  }
+
+  onDblclick(event) {
+    event.preventDefault()
+    const { x, y } = this.eventPos(event)
+
+    for (const state of this.states) {
+      const mousedOver = state.isInBounds(x, y)
+
+      if (mousedOver) {
+        const findSubLevel = currentPacketData.nestGroups.find((n) => n.state_id === state?.id)
+        if (findSubLevel) {
+          tree.find((t) => {
+            return t.node.state_id === findSubLevel.state_id
+          })
+          return
+        }
+
+        const nestedStateToPrevious = currentPacketData.nestGroups.find((n) => n.enter === state?.id)
+        if (!nestedStateToPrevious || nestedStateToPrevious.id === 0) return
+        const stateToPrevious = currentPacketData.states.find(s => s.id === nestedStateToPrevious.state_id)
+        tree.find((t) => {
+          return t.node.id === stateToPrevious.nestGroup
+        })
+
+        return
+      }
+    }
+
   }
 
   needsRepaint () {
@@ -67,7 +125,7 @@ class Graph {
 
   drawScene () {
     this.width = this.canvas.width = this.canvas.clientWidth
-    this.height = this.canvas.height = this.canvas.clientHeight
+    this.height = this.canvas.height = this.canvas.clientHeight    
 
     const ctx = this.canvas.getContext('2d')
     this.drawBackground(ctx)
@@ -240,11 +298,15 @@ class State {
     ctx.strokeStyle = this.highlight ? NODE_HIGHLIGHT_COLOR : NODE_BORDER_COLOR
     ctx.stroke()
 
+    const nestedIcon = currentPacketData.nestGroups.findIndex(n => n.state_id === this.id) >= 0 ? ' ⤵️ ' :''
+    const upperIcon = currentPacketData.nestGroups.findIndex(n => n.enter === this.id) >= 0 && this.id !== 0 ? ' ⤴️ ' :''
+
+
     ctx.fillStyle = NODE_TEXT_COLOR
     ctx.font = NODE_TEXT_FONT
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(this.name, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2)
+    ctx.fillText(this.name + nestedIcon + upperIcon, this.rect.x + this.rect.w / 2, this.rect.y + this.rect.h / 2)
   }
 
   drawActive (ctx) {
@@ -491,9 +553,9 @@ class Transition {
 }
 
 class NestedGroup {
-  constructor (id, indent, enter, exit) {
+  constructor (id, state_id, enter, exit) {
     this.id = id
-    this.indent = indent
+    this.state_id = state_id
     this.enter = enter
     this.exit = exit
   }
@@ -511,6 +573,7 @@ function init () {
 
 function onConnected (packet) {
   console.log('Bot connected.')
+  currentPacketData = packet
 
   graph.clear()
   loadNestedGroups(packet)
@@ -572,23 +635,13 @@ function loadTransitions (packet) {
 }
 
 function loadNestedGroups (packet) {
-  const buttonGroup = document.getElementById('layerButtons')
-
   for (const n of packet.nestGroups) {
-    const g = new NestedGroup(n.id, n.indent, n.enter, n.exit)
+    const g = new NestedGroup(n.id, n.state_id, n.enter, n.exit)
     graph.nestedGroups.push(g)
 
-    const button = document.createElement('button')
-    button.innerHTML = n.name || 'unnamed layer'
-    button.id = `nestedLayer${n.id}`
-    button.setAttribute('idnested', n.id)
-    button.addEventListener('click', () => selectLayer(n.id, button))
-
-    if (n.indent > 0) { button.classList.add(`nested${n.indent}`) } else { button.classList.add('selected') }
-
-    buttonGroup.appendChild(button)
-    nestedGroups.push(button)
   }
+
+  tree.load(packet.nestGroupsTree)
 }
 
 function getTransitionGroup (groups, parent, child) {
@@ -612,29 +665,50 @@ function onStateChanged (packet) {
 
   for (const state of graph.states) { state.activeState = packet.activeStates.includes(state.id) }
   const activeNestedGroups = graph.states.filter(state => packet.activeStates.includes(state.id)).map(i => i.nestedGroup)
-  reprintNestedGroups(activeNestedGroups)
 
   graph.repaint = true
-}
 
-function reprintNestedGroups(activeNestedGroups){
-  nestedGroups.forEach(button => {
-    if(activeNestedGroups.includes(parseInt(button.getAttribute('idnested')))){
-      button.classList.add('running')
-    }else{
-      button.classList.remove('running')
+  tree.forEach((el) => {
+    if (activeNestedGroups.includes(el.node.id)) {
+      el.classList.add('active')
+      if(autoOpenNestedBehaviors){
+        tree.open(el.closest('details'))
+      }
+    } else {
+      el.classList.remove('active')
     }
   })
 }
 
-function selectLayer (layer, newLayerButton) {
-  const oldLayerButton = document.getElementById(`nestedLayer${graph.activeLayer}`)
-  oldLayerButton.classList.remove('selected')
-
+function selectLayer(layer) {
   graph.activeLayer = layer
   graph.repaint = true
 
-  newLayerButton.classList.add('selected')
-
   console.log(`Selected layer ${layer}`)
 }
+
+// Dynamic syze for panel and canvas
+
+const BORDER_SIZE = 4;
+const panel = document.getElementById("graph-panel");
+const propertiesPanel = document.getElementById("properties-panel");
+
+function resize(e) {
+  const dx = m_pos - e.x;
+  const ax = e.x - m_pos;
+  m_pos = e.x;
+  console.log((parseInt(getComputedStyle(panel, '').width)))
+  panel.style.width = (parseInt(getComputedStyle(panel, '').width) + dx) + "px";
+  propertiesPanel.style.width = (parseInt(getComputedStyle(propertiesPanel, '').width) + ax) + "px";
+}
+
+panel.addEventListener("mousedown", function (e) {
+  if (e.offsetX < BORDER_SIZE) {
+    m_pos = e.x;
+    document.addEventListener("mousemove", resize, false);
+  }
+}, false);
+
+document.addEventListener("mouseup", function () {
+  document.removeEventListener("mousemove", resize, false);
+}, false);

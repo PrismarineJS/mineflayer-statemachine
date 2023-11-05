@@ -1,13 +1,10 @@
-html {
-    overflow: hidden;
-}
-
 * {
 	margin: 0;
 	padding: 0;
 }
 
-html, body {
+html,
+body {
 	height: 100%;
 }
 
@@ -15,71 +12,72 @@ html, body {
 	height: 100%;
 	width: 100%;
 	font-size: 0;
-}
-
-#properties-panel, canvas {
-	display: inline-block;
-	vertical-align: top;
-	height: 100%;
-	overflow-x: hidden;
+	display: flex;
 }
 
 #properties-panel {
+	display: flex;
+	flex-direction: column;
+	vertical-align: top;
 	width: min(25%, 300px);
 	background-color: #222222;
+	padding: 10px;
 }
 
-canvas {
+#layerButtons {
+	margin-top: 10px;
+	overflow: auto;
+}
+
+#graph-panel {
+	position: relative;
+	display: inline-block;
+	vertical-align: top;
+	height: 100%;
 	width: max(75%, calc(100% - 300px));
 }
 
-#properties-panel button {
-	height: 50px;
-	width: calc(100% - 8px);
+#graph-panel::after {
+	content: '';
+	background-color: #ccc;
+	position: absolute;
+	left: 0;
+	width: 4px;
+	height: 100%;
+	cursor: ew-resize;
+}
 
-	margin: 4px;
+#graph {
+	width: 100%;
+	height: 100%;
+}
+
+#buttons-properties-panel {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+
+#buttons-properties-panel .button {
+	flex: auto;
 	background-color: #444444;
+	border-radius: 8px;
 	color: #dddddd;
-	font-weight: 900;
-	border: none;
-
-	border-radius: 10px;
+	font-size: 16px;
+	text-align: center;
+	margin: 10px;
+	padding: 4px;
+	cursor: pointer;
 }
 
-#properties-panel .selected {
-	background-color: #666666;
+
+#buttons-properties-panel .button:active {
+	background-color: #ccc;
+	color: #222222;
+	transition: 0s
 }
 
-#layerButtons .running {
-	color: #e45f5f;
-}
-
-#properties-panel .nested1 {
-	margin-left: 20px;
-	width: calc(100% - 24px);
-}
-
-#properties-panel .nested2 {
-	margin-left: 40px;
-	width: calc(100% - 44px);
-}
-
-#properties-panel .nested3 {
-	margin-left: 60px;
-	width: calc(100% - 64px);
-}
-
-#properties-panel .nested4 {
-	margin-left: 80px;
-	width: calc(100% - 84px);
-}
-
-#properties-panel .nested5 {
-	margin-left: 100px;
-	width: calc(100% - 104px);
-}
-
-#properties-panel .nested6 {
-	margin-left: 120px;
-	width: calc(100% - 124px);
+.open-checkbox {
+	font-size: 14px;
+	color: #ccc;
 }

@@ -1,5 +1,5 @@
 import { Bot } from 'mineflayer'
-import { BotStateMachine, StateBehavior } from './statemachine'
+import { BotStateMachine, NestedStateMachine, StateBehavior } from './statemachine'
 import socketLoader, { Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
@@ -93,11 +93,13 @@ export class StateMachineWebserver {
     const states = this.getStates()
     const transitions = this.getTransitions()
     const nestGroups = this.getNestGroups()
+    const nestGroupsTree: NestedStateMachinePacketTree[] = this.getNestGroupsTree(this.stateMachine.rootStateMachine, true, nestGroups) as NestedStateMachinePacketTree[]
 
     const packet: StateMachineStructurePacket = {
       states,
       transitions,
-      nestGroups
+      nestGroups,
+      nestGroupsTree
     }
 
     socket.emit('connected', packet)
@@ -175,6 +177,7 @@ export class StateMachineWebserver {
       const nest = this.stateMachine.nestedStateMachines[i]
       nestGroups.push({
         id: i,
+        state_id: this.stateMachine.states.indexOf(nest),
         enter: this.stateMachine.states.indexOf(nest.enter),
         exit: nest.exit != null ? this.stateMachine.states.indexOf(nest.exit) : undefined,
         indent: nest.depth ?? -1,
@@ -184,20 +187,72 @@ export class StateMachineWebserver {
 
     return nestGroups
   }
+
+  private getNestGroupsTree (currentState: NestedStateMachine, firstState: boolean, nestedStateMachine: NestedStateMachinePacket[]): NestedStateMachinePacketTree[] | NestedStateMachinePacketTree {
+    const statesOnThisBehavior: NestedStateMachinePacketTree[] = []
+
+    currentState.states.forEach((state) => {
+      if (isNestedStateMachine(state)) {
+        const subStates = this.getNestGroupsTree(state, false, nestedStateMachine)
+        if (!Array.isArray(subStates)) {
+          statesOnThisBehavior.push(subStates)
+        }
+      }
+    })
+
+    const stateId = this.stateMachine.states.indexOf(currentState)
+
+    const returnData: NestedStateMachinePacketTree = {
+      id: nestedStateMachine.find((n) => n.state_id === stateId)?.id ?? 0,
+      state_id: stateId,
+      enter: this.stateMachine.states.indexOf(currentState.enter),
+      exit: currentState.exit != null ? this.stateMachine.states.indexOf(currentState.exit) : undefined,
+      name: currentState.stateName,
+      open: false,
+      selected: false,
+      type: statesOnThisBehavior.length > 0 ? 'folder' : 'file',
+      children: statesOnThisBehavior
+    }
+
+    if (firstState) {
+      returnData.selected = true
+      return [returnData]
+    }
+
+    return returnData
+  }
+}
+
+const isNestedStateMachine = (state: NestedStateMachine | StateBehavior): state is NestedStateMachine => {
+  return state instanceof NestedStateMachine
 }
 
 interface StateMachineStructurePacket {
   states: StateMachineStatePacket[]
   transitions: StateMachineTransitionPacket[]
   nestGroups: NestedStateMachinePacket[]
+  nestGroupsTree: NestedStateMachinePacketTree[]
+
 }
 
 interface NestedStateMachinePacket {
   id: number
+  state_id: number
   enter: number
   exit?: number
   indent: number
   name?: string
+}
+interface NestedStateMachinePacketTree {
+  id: number
+  state_id: number
+  enter: number
+  exit?: number
+  name: string
+  open: boolean
+  selected: boolean
+  type: 'folder' | 'file'
+  children: NestedStateMachinePacketTree[]
 }
 
 interface StateMachineStatePacket {
