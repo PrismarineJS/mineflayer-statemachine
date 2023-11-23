@@ -293,17 +293,17 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   depth: number = 0
 
   /**
-     * Called when the bot enters this behavior state.
+     * Called when the bot enters this nestedStateMachine.
      */
   onStateEntered?: () => void
 
   /**
-     * Called each tick to update this behavior.
+     * Called each tick to update this nestedStateMachine.
      */
   update?: () => void
 
   /**
-     * Called when the bot leaves this behavior state.
+     * Called when the bot leaves this nestedStateMachine.
      */
   onStateExited?: () => void
 
