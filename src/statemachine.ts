@@ -211,7 +211,7 @@ export class BotStateMachine extends EventEmitter {
   /**
      * Called each tick to update the root state machine.
      */
-  private readonly update (): void {
+  private update (): void {
     this.rootStateMachine.stateMachineUpdate()
   }
 }
