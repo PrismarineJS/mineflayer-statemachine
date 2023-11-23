@@ -384,7 +384,6 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
           } else {
             this.activeState.onStateEntered?.()
           }
-          
 
           return
         }
