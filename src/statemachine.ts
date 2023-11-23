@@ -366,9 +366,10 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
           transition.resetTrigger()
 
           this.activeState.active = false
-          this.activeState.onStateExited?.()
           if (this.activeState instanceof NestedStateMachine) {
             this.activeState.onStateMachineExited()
+          } else {
+            this.activeState.onStateExited?.()
           }
 
           transition.onTransition()
@@ -380,8 +381,10 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
 
           if (this.activeState instanceof NestedStateMachine) {
             this.activeState.onStateMachineEntered()
+          } else {
+            this.activeState.onStateEntered?.()
           }
-          this.activeState.onStateEntered?.()
+          
 
           return
         }
