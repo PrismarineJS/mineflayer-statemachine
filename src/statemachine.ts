@@ -211,7 +211,7 @@ export class BotStateMachine extends EventEmitter {
   /**
      * Called each tick to update the root state machine.
      */
-  private update (): void {
+  private update = (): void => {
     this.rootStateMachine.stateMachineUpdate()
   }
 }
@@ -344,7 +344,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     return states
   }
 
-  onStateMachineEntered (): void {
+  onStateMachineEntered = (): void => {
     this.activeState = this.enter
     this.activeState.active = true
     this.onStateEntered?.()
@@ -355,7 +355,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     this.emit('stateChanged')
   }
 
-  stateMachineUpdate (): void {
+  stateMachineUpdate = (): void => {
     this.update?.()
     this.activeState?.update?.()
 
@@ -391,7 +391,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     }
   }
 
-  onStateMachineExited (): void {
+  onStateMachineExited = (): void => {
     if (this.activeState == null) return
 
     this.activeState.active = false
