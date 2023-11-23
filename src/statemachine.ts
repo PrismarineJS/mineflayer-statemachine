@@ -101,7 +101,7 @@ export class StateTransition {
      * @throws Exception if this transition is not yet bound to a
      * state machine.
      */
-  trigger (): void {
+  trigger = (): void => {
     if (!this.parentState.active) { return }
 
     this.triggerState = true
@@ -113,14 +113,14 @@ export class StateTransition {
      *
      * @returns True if this transition was triggered to occur.
      */
-  isTriggered (): boolean {
+  isTriggered = (): boolean => {
     return this.triggerState
   }
 
   /**
      * Resets the triggered state to false.
      */
-  resetTrigger (): void {
+  resetTrigger = (): void => {
     this.triggerState = false
   }
 }
@@ -175,13 +175,13 @@ export class BotStateMachine extends EventEmitter {
     this.findTransitionsRecursive(this.rootStateMachine)
     this.findNestedStateMachines(this.rootStateMachine)
 
-    this.bot.on('physicTick', () => this.update())
+    this.bot.on('physicsTick', () => this.update())
 
     this.rootStateMachine.active = true
     this.rootStateMachine.onStateMachineEntered()
   }
 
-  private findNestedStateMachines (nested: NestedStateMachine, depth: number = 0): void {
+  private readonly findNestedStateMachines = (nested: NestedStateMachine, depth: number = 0): void => {
     this.nestedStateMachines.push(nested)
     nested.depth = depth
 
@@ -192,7 +192,7 @@ export class BotStateMachine extends EventEmitter {
     }
   }
 
-  private findStatesRecursive (nested: NestedStateMachine): void {
+  private readonly findStatesRecursive = (nested: NestedStateMachine): void => {
     for (const state of nested.states) {
       this.states.push(state)
 
@@ -200,7 +200,7 @@ export class BotStateMachine extends EventEmitter {
     }
   }
 
-  private findTransitionsRecursive (nested: NestedStateMachine): void {
+  private readonly findTransitionsRecursive = (nested: NestedStateMachine): void => {
     for (const trans of nested.transitions) { this.transitions.push(trans) }
 
     for (const state of nested.states) {
@@ -211,7 +211,7 @@ export class BotStateMachine extends EventEmitter {
   /**
      * Called each tick to update the root state machine.
      */
-  private update (): void {
+  private readonly update (): void {
     this.rootStateMachine.stateMachineUpdate()
   }
 }
@@ -323,7 +323,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     this.states = this.findStates()
   }
 
-  private findStates (): StateBehavior[] {
+  private readonly findStates = (): StateBehavior[] => {
     const states = []
     states.push(this.enter)
 
@@ -404,7 +404,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   /**
      * Checks whether or not this state machine layer has finished running.
      */
-  isFinished (): boolean {
+  isFinished = (): boolean => {
     if (this.active == null) return true
     if (this.exit == null) return false
 
