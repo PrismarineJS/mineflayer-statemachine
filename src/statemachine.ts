@@ -349,7 +349,12 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
 
     this.activeState = this.enter
     this.activeState.active = true
-    this.activeState.onStateEntered?.()
+
+    if (this.activeState instanceof NestedStateMachine) {
+      this.activeState.onStateMachineEntered()
+    } else {
+      this.activeState.onStateEntered?.()
+    }
 
     if (globalSettings.debugMode) { console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`) }
 
@@ -359,7 +364,13 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   stateMachineUpdate = (): void => {
     this.update?.()
 
-    this.activeState?.update?.()
+    if (this.activeState !== undefined) {
+      if (this.activeState instanceof NestedStateMachine) {
+        this.activeState.stateMachineUpdate()
+      } else {
+        this.activeState.update?.()
+      }
+    }
 
     for (let i = 0; i < this.transitions.length; i++) {
       const transition = this.transitions[i]
@@ -397,7 +408,13 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     if (this.activeState == null) return
 
     this.activeState.active = false
-    this.activeState.onStateExited?.()
+
+    if (this.activeState instanceof NestedStateMachine) {
+      this.activeState.onStateMachineExited()
+    } else {
+      this.activeState.onStateExited?.()
+    }
+
     this.activeState = undefined
 
     this.onStateExited?.()
