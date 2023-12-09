@@ -307,7 +307,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
      */
   onStateExited?: () => void
 
-  static enterState(state: StateBehavior) {
+  static enterState (state: StateBehavior): void {
     if (state instanceof NestedStateMachine) {
       state.onStateMachineEntered()
     } else {
@@ -315,7 +315,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     }
   }
 
-  static updateState(state: StateBehavior) {
+  static updateState (state: StateBehavior): void {
     if (state instanceof NestedStateMachine) {
       state.stateMachineUpdate()
     } else {
@@ -323,7 +323,7 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     }
   }
 
-  static exitState(state: StateBehavior) {
+  static exitState (state: StateBehavior): void {
     if (state instanceof NestedStateMachine) {
       state.onStateMachineExited()
     } else {
