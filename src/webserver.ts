@@ -16,6 +16,7 @@ const publicFolder = './../web'
  */
 export class StateMachineWebserver {
   private serverRunning: boolean = false
+  private http: httpLoader.Server | undefined
 
   readonly bot: Bot
   readonly stateMachine: BotStateMachine
@@ -54,14 +55,26 @@ export class StateMachineWebserver {
     app.use('/web', express.static(path.join(__dirname, publicFolder)))
     app.get('/', (req, res) => res.sendFile(path.join(__dirname, publicFolder, 'index.html')))
 
-    const http = httpLoader.createServer(app)
+    this.http = httpLoader.createServer(app)
 
     // @ts-expect-error ; Why? Not sure. Probably a type-def loading issue. Either way, it's safe.
-    const io = socketLoader(http)
+    const io = socketLoader(this.http)
 
     io.on('connection', (socket: Socket) => this.onConnected(socket))
 
-    http.listen(this.port, () => this.onStarted())
+    this.http.listen(this.port, () => this.onStarted())
+  }
+
+  /**
+     * Stops the web server.
+     */
+  stopServer (): void {
+    if (this.http !== undefined) {
+      this.serverRunning = false
+      this.http.close()
+
+      this.http = undefined
+    }
   }
 
   /**
