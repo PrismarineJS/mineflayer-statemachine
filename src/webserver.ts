@@ -8,8 +8,6 @@ import { globalSettings } from '.'
 
 const publicFolder = './../web'
 
-// TODO Add option to shutdown server
-
 /**
  * A web server which allows users to view the current state of the
  * bot behavior state machine.
