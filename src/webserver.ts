@@ -1,6 +1,6 @@
 import { Bot } from 'mineflayer'
 import { BotStateMachine, StateBehavior } from './statemachine'
-import socketLoader, { Socket } from 'socket.io'
+import { Server as SocketServer, Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
 import httpLoader from 'http'
@@ -17,6 +17,7 @@ const publicFolder = './../web'
 export class StateMachineWebserver {
   private serverRunning: boolean = false
   private http: httpLoader.Server | undefined
+  private io: SocketServer | undefined
 
   readonly bot: Bot
   readonly stateMachine: BotStateMachine
@@ -56,11 +57,9 @@ export class StateMachineWebserver {
     app.get('/', (req, res) => res.sendFile(path.join(__dirname, publicFolder, 'index.html')))
 
     this.http = httpLoader.createServer(app)
+    this.io = new SocketServer(this.http)
 
-    // @ts-expect-error ; Why? Not sure. Probably a type-def loading issue. Either way, it's safe.
-    const io = socketLoader(this.http)
-
-    io.on('connection', (socket: Socket) => this.onConnected(socket))
+    this.io.on('connection', (socket: Socket) => this.onConnected(socket))
 
     this.http.listen(this.port, () => this.onStarted())
   }
@@ -69,12 +68,13 @@ export class StateMachineWebserver {
      * Stops the web server.
      */
   stopServer (): void {
-    if (this.http !== undefined) {
-      this.serverRunning = false
-      this.http.close()
+    this.serverRunning = false
 
-      this.http = undefined
-    }
+    this.io?.close()
+    this.http?.close()
+
+    this.io = undefined
+    this.http = undefined
   }
 
   /**
