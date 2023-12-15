@@ -177,7 +177,7 @@ export class StateMachineWebserver {
       const nest = this.stateMachine.nestedStateMachines[i]
       nestGroups.push({
         id: i,
-        state_id: this.stateMachine.states.indexOf(nest),
+        stateId: this.stateMachine.states.indexOf(nest),
         enter: this.stateMachine.states.indexOf(nest.enter),
         exit: nest.exit != null ? this.stateMachine.states.indexOf(nest.exit) : undefined,
         indent: nest.depth ?? -1,
@@ -200,11 +200,11 @@ export class StateMachineWebserver {
       }
     })
 
-    const stateId = this.stateMachine.states.indexOf(currentState)
+    const currentStateId = this.stateMachine.states.indexOf(currentState)
 
     const returnData: NestedStateMachinePacketTree = {
-      id: nestedStateMachine.find((n) => n.state_id === stateId)?.id ?? 0,
-      state_id: stateId,
+      id: nestedStateMachine.find((n) => n.stateId === currentStateId)?.id ?? 0,
+      stateId: currentStateId,
       enter: this.stateMachine.states.indexOf(currentState.enter),
       exit: currentState.exit != null ? this.stateMachine.states.indexOf(currentState.exit) : undefined,
       name: currentState.stateName,
@@ -237,7 +237,7 @@ interface StateMachineStructurePacket {
 
 interface NestedStateMachinePacket {
   id: number
-  state_id: number
+  stateId: number
   enter: number
   exit?: number
   indent: number
@@ -245,7 +245,7 @@ interface NestedStateMachinePacket {
 }
 interface NestedStateMachinePacketTree {
   id: number
-  state_id: number
+  stateId: number
   enter: number
   exit?: number
   name: string
