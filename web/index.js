@@ -63,7 +63,7 @@ class Graph {
     requestAnimationFrame(() => this.animation())
   }
 
-  clear () {   
+  clear () {
     this.states = []
     this.transitions = []
     this.repaint = true
@@ -125,7 +125,7 @@ class Graph {
 
   drawScene () {
     this.width = this.canvas.width = this.canvas.clientWidth
-    this.height = this.canvas.height = this.canvas.clientHeight    
+    this.height = this.canvas.height = this.canvas.clientHeight
 
     const ctx = this.canvas.getContext('2d')
     this.drawBackground(ctx)
