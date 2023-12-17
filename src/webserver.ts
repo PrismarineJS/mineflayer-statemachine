@@ -1,6 +1,6 @@
 import { Bot } from 'mineflayer'
 import { BotStateMachine, StateBehavior } from './statemachine'
-import socketLoader, { Socket } from 'socket.io'
+import { Server as SocketServer, Socket } from 'socket.io'
 import path from 'path'
 import express from 'express'
 import httpLoader from 'http'
@@ -8,14 +8,14 @@ import { globalSettings } from '.'
 
 const publicFolder = './../web'
 
-// TODO Add option to shutdown server
-
 /**
  * A web server which allows users to view the current state of the
  * bot behavior state machine.
  */
 export class StateMachineWebserver {
   private serverRunning: boolean = false
+  private http: httpLoader.Server | undefined
+  private io: SocketServer | undefined
 
   readonly bot: Bot
   readonly stateMachine: BotStateMachine
@@ -54,14 +54,25 @@ export class StateMachineWebserver {
     app.use('/web', express.static(path.join(__dirname, publicFolder)))
     app.get('/', (req, res) => res.sendFile(path.join(__dirname, publicFolder, 'index.html')))
 
-    const http = httpLoader.createServer(app)
+    this.http = httpLoader.createServer(app)
+    this.io = new SocketServer(this.http)
 
-    // @ts-expect-error ; Why? Not sure. Probably a type-def loading issue. Either way, it's safe.
-    const io = socketLoader(http)
+    this.io.on('connection', (socket: Socket) => this.onConnected(socket))
 
-    io.on('connection', (socket: Socket) => this.onConnected(socket))
+    this.http.listen(this.port, () => this.onStarted())
+  }
 
-    http.listen(this.port, () => this.onStarted())
+  /**
+     * Stops the web server.
+     */
+  stopServer (): void {
+    this.serverRunning = false
+
+    this.io?.close()
+    this.http?.close()
+
+    this.io = undefined
+    this.http = undefined
   }
 
   /**
