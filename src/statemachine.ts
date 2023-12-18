@@ -293,6 +293,21 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   depth: number = 0
 
   /**
+     * Called when the bot enters this nestedStateMachine.
+     */
+  onStateMachineEntered?: () => void
+
+  /**
+     * Called each tick to update this nestedStateMachine.
+     */
+  stateMachineUpdate?: () => void
+
+  /**
+     * Called when the bot leaves this nestedStateMachine.
+     */
+  onStateMachineExited?: () => void
+
+  /**
      * Creates a new nested state machine layer.
      * @param transitions - The list of transitions within this layer.
      * @param enter - The state to activate when entering this state.
@@ -330,8 +345,11 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   }
 
   onStateEntered = (): void => {
+    this.onStateMachineEntered?.()
+
     this.activeState = this.enter
     this.activeState.active = true
+
     this.activeState.onStateEntered?.()
 
     if (globalSettings.debugMode) { console.log(`Switched bot behavior state to '${this.activeState.stateName}'.`) }
@@ -340,6 +358,8 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
   }
 
   update = (): void => {
+    this.stateMachineUpdate?.()
+
     this.activeState?.update?.()
 
     for (let i = 0; i < this.transitions.length; i++) {
@@ -370,8 +390,12 @@ export class NestedStateMachine extends EventEmitter implements StateBehavior {
     if (this.activeState == null) return
 
     this.activeState.active = false
+
     this.activeState.onStateExited?.()
+
     this.activeState = undefined
+
+    this.onStateMachineExited?.()
   }
 
   /**
