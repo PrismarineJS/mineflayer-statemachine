@@ -63,7 +63,7 @@ class Graph {
     requestAnimationFrame(() => this.animation())
   }
 
-  clear () {   
+  clear () {
     this.states = []
     this.transitions = []
     this.repaint = true
@@ -84,17 +84,17 @@ class Graph {
       const mousedOver = state.isInBounds(x, y)
 
       if (mousedOver) {
-        const findSubLevel = currentPacketData.nestGroups.find((n) => n.state_id === state?.id)
+        const findSubLevel = currentPacketData.nestGroups.find((n) => n.stateId === state?.id)
         if (findSubLevel) {
           tree.find((t) => {
-            return t.node.state_id === findSubLevel.state_id
+            return t.node.stateId === findSubLevel.stateId
           })
           return
         }
 
         const nestedStateToPrevious = currentPacketData.nestGroups.find((n) => n.enter === state?.id)
         if (!nestedStateToPrevious || nestedStateToPrevious.id === 0) return
-        const stateToPrevious = currentPacketData.states.find(s => s.id === nestedStateToPrevious.state_id)
+        const stateToPrevious = currentPacketData.states.find(s => s.id === nestedStateToPrevious.stateId)
         tree.find((t) => {
           return t.node.id === stateToPrevious.nestGroup
         })
@@ -125,7 +125,7 @@ class Graph {
 
   drawScene () {
     this.width = this.canvas.width = this.canvas.clientWidth
-    this.height = this.canvas.height = this.canvas.clientHeight    
+    this.height = this.canvas.height = this.canvas.clientHeight
 
     const ctx = this.canvas.getContext('2d')
     this.drawBackground(ctx)
@@ -298,7 +298,7 @@ class State {
     ctx.strokeStyle = this.highlight ? NODE_HIGHLIGHT_COLOR : NODE_BORDER_COLOR
     ctx.stroke()
 
-    const nestedIcon = currentPacketData.nestGroups.findIndex(n => n.state_id === this.id) >= 0 ? ' ⤵️ ' :''
+    const nestedIcon = currentPacketData.nestGroups.findIndex(n => n.stateId === this.id) >= 0 ? ' ⤵️ ' :''
     const upperIcon = currentPacketData.nestGroups.findIndex(n => n.enter === this.id) >= 0 && this.id !== 0 ? ' ⤴️ ' :''
 
 
@@ -553,9 +553,9 @@ class Transition {
 }
 
 class NestedGroup {
-  constructor (id, state_id, enter, exit) {
+  constructor (id, stateId, enter, exit) {
     this.id = id
-    this.state_id = state_id
+    this.stateId = stateId
     this.enter = enter
     this.exit = exit
   }
@@ -636,7 +636,7 @@ function loadTransitions (packet) {
 
 function loadNestedGroups (packet) {
   for (const n of packet.nestGroups) {
-    const g = new NestedGroup(n.id, n.state_id, n.enter, n.exit)
+    const g = new NestedGroup(n.id, n.stateId, n.enter, n.exit)
     graph.nestedGroups.push(g)
 
   }
